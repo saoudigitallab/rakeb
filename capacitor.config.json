@@ -1,0 +1,6 @@
+{
+  "appId": "com.rakeb.mobile",
+  "appName": "Rakeb",
+  "webDir": "www",
+  "android": { "allowMixedContent": false }
+}

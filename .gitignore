@@ -1,0 +1,13 @@
+# Fichiers générés : ne jamais les commiter
+android/
+ios/
+dist/
+node_modules/
+desktop/www/
+desktop/build/
+.expo/
+.expo-shared/
+eas.json
+# Clés personnelles (la clé de test signing/rakeb-test.jks, elle, est volontairement dans le dépôt)
+*.keystore
+my-*.jks

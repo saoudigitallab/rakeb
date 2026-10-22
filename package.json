@@ -1,0 +1,19 @@
+{
+  "name": "rakeb",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Rakeb — compagnon musulman (SAOU DIGITAL LAB)",
+  "scripts": {
+    "android:setup": "cap add android && node scripts/android-setup.js && cap sync android",
+    "test": "node scripts/test-prayer.js"
+  },
+  "dependencies": {
+    "@capacitor/android": "5.7.8",
+    "@capacitor/core": "5.7.8",
+    "@capacitor/geolocation": "5.0.8",
+    "@capacitor/local-notifications": "5.0.8"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "5.7.8"
+  }
+}
