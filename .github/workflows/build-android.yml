@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   apk:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 45
     env:
       # Secrets facultatifs : si absents, l'APK est signé avec la clé de test du dépôt (signing/rakeb-test.jks)
