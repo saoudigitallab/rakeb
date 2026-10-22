@@ -1,0 +1,55 @@
+{
+  "name": "rakeb-desktop",
+  "version": "1.0.0",
+  "description": "Rakeb — compagnon musulman pour Windows",
+  "author": "SAOU DIGITAL LAB",
+  "main": "main.js",
+  "scripts": {
+    "prepare-app": "node ../scripts/prepare-desktop.js",
+    "start": "npm run prepare-app && electron .",
+    "dist": "npm run prepare-app && electron-builder --win --ia32 --publish never"
+  },
+  "devDependencies": {
+    "electron": "22.3.27",
+    "electron-builder": "24.13.3"
+  },
+  "build": {
+    "appId": "com.rakeb.desktop",
+    "productName": "Rakeb",
+    "copyright": "© 2026 SAOU DIGITAL LAB",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "www/**",
+      "build/icon.png"
+    ],
+    "win": {
+      "icon": "build/icon.png",
+      "target": [
+        {
+          "target": "portable",
+          "arch": [
+            "ia32"
+          ]
+        },
+        {
+          "target": "nsis",
+          "arch": [
+            "ia32"
+          ]
+        }
+      ]
+    },
+    "portable": {
+      "artifactName": "Rakeb-portable-${version}-ia32.exe"
+    },
+    "nsis": {
+      "artifactName": "Rakeb-installateur-${version}-ia32.exe",
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  }
+}
