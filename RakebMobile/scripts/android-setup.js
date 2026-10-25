@@ -4,6 +4,21 @@ const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
 
+// Outil de traitement d'images : « magick » (ImageMagick 7) ou « convert » (ImageMagick 6).
+// Les serveurs GitHub récents ne l'ont pas toujours : on l'installe alors automatiquement.
+function findIM() {
+  const ok = (c) => { try { execSync(c + ' -version', { stdio: 'ignore' }); return true; } catch (e) { return false; } };
+  return ['magick', 'convert'].filter(ok)[0] || null;
+}
+let IM = findIM();
+if (!IM) {
+  console.log('ImageMagick absent : installation…');
+  const sudo = process.getuid && process.getuid() === 0 ? '' : 'sudo ';
+  execSync(sudo + 'apt-get update -qq && ' + sudo + 'apt-get install -y -qq imagemagick', { stdio: 'inherit' });
+  IM = findIM();
+  if (!IM) throw new Error('ImageMagick introuvable après installation');
+}
+
 const root = path.join(__dirname, '..');
 const iconSrc = path.join(root, '..', 'RakebDesktop', 'icon.png');
 const app = path.join(root, 'android', 'app');
@@ -45,7 +60,7 @@ edit(path.join(app, 'src/main/AndroidManifest.xml'), (t) => {
 
 // 3. Icônes (ImageMagick est installé sur les exécuteurs GitHub)
 const icon = iconSrc;
-const bg = execSync('convert "' + icon + '" -format "#%[hex:p{256,30}]" info:').toString().trim().slice(0, 7);
+const bg = execSync(IM + ' "' + icon + '" -format "#%[hex:p{256,30}]" info:').toString().trim().slice(0, 7);
 edit(path.join(app, 'src/main/res/values/ic_launcher_background.xml'), (t) =>
   t.replace(/#[0-9A-Fa-f]{6,8}/, bg));
 const legacy = { mdpi: 48, hdpi: 72, xhdpi: 96, xxhdpi: 144, xxxhdpi: 192 };
@@ -53,9 +68,9 @@ const adaptive = { mdpi: 108, hdpi: 162, xhdpi: 216, xxhdpi: 324, xxxhdpi: 432 }
 Object.keys(legacy).forEach((d) => {
   const dir = path.join(app, 'src/main/res', 'mipmap-' + d);
   const l = legacy[d], a = adaptive[d], inner = Math.round(a * 0.62);
-  execSync('convert "' + icon + '" -resize ' + l + 'x' + l + ' "' + dir + '/ic_launcher.png"');
-  execSync('convert "' + icon + '" -resize ' + l + 'x' + l + ' "' + dir + '/ic_launcher_round.png"');
-  execSync('convert "' + icon + '" -resize ' + inner + 'x' + inner +
+  execSync(IM + ' "' + icon + '" -resize ' + l + 'x' + l + ' "' + dir + '/ic_launcher.png"');
+  execSync(IM + ' "' + icon + '" -resize ' + l + 'x' + l + ' "' + dir + '/ic_launcher_round.png"');
+  execSync(IM + ' "' + icon + '" -resize ' + inner + 'x' + inner +
            ' -background none -gravity center -extent ' + a + 'x' + a + ' "' + dir + '/ic_launcher_foreground.png"');
 });
 console.log('Android prêt : version', pkg.version, '(code ' + versionCode + '), fond d\'icône', bg);
