@@ -1,0 +1,26 @@
+# Configuration de fabrication uniquement : les 5 fichiers de l'application restent identiques à ceux de Rakeb.exe.
+appId: com.rakeb.desktop
+productName: Rakeb
+electronVersion: 31.7.7
+directories:
+  output: dist
+files:
+  - main.js
+  - preload.js
+  - index.html
+  - "*.png"
+  - package.json
+asar: true
+win:
+  icon: icon.png
+  target:
+    - target: portable
+      arch: [ia32, x64]
+    - target: nsis
+      arch: [ia32]
+portable:
+  artifactName: Rakeb-portable-${version}-${arch}.exe
+nsis:
+  artifactName: Rakeb-installateur-${version}-${arch}.exe
+  oneClick: false
+  allowToChangeInstallationDirectory: true
