@@ -1,6 +1,0 @@
-Adhan des notifications Android (facultatif)
---------------------------------------------
-Pour que les notifications de prière jouent un adhan, déposez ici un fichier nommé exactement :
-    adhan.mp3   (ou adhan.ogg / adhan.wav)
-Utilisez un enregistrement dont vous avez les droits. Il sera intégré à l'APK à la prochaine compilation.
-Sans ce fichier, les notifications utilisent le son de notification par défaut du téléphone, avec vibration.
