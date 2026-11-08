@@ -80,6 +80,7 @@ Object.keys(legacy).forEach((d) => {
 const javaDir = path.join(app, 'src/main/java/com/rakeb/mobile');
 if (!fs.existsSync(javaDir)) throw new Error('Dossier Java introuvable : ' + javaDir);
 fs.copyFileSync(path.join(root, 'android-native', 'CompassPlugin.java'), path.join(javaDir, 'CompassPlugin.java'));
+fs.copyFileSync(path.join(root, 'android-native', 'SystemPlugin.java'), path.join(javaDir, 'SystemPlugin.java'));
 fs.writeFileSync(path.join(javaDir, 'MainActivity.java'), `package com.rakeb.mobile;
 
 import android.os.Bundle;
@@ -89,11 +90,12 @@ public class MainActivity extends BridgeActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         registerPlugin(CompassPlugin.class);
+        registerPlugin(SystemPlugin.class);
         super.onCreate(savedInstanceState);
     }
 }
 `);
-console.log('Boussole native installée');
+console.log('Plugins natifs installés (boussole, réglages système)');
 
 // Adhan facultatif pour les notifications (res/raw/adhan.*)
 const resSrc = path.join(root, 'android-res');

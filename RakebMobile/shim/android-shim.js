@@ -177,27 +177,47 @@
   };
   window.Notification = N;
 
-  // Bouton de test (Réglages › Alertes) : une alerte réelle dans 10 secondes, pour vérifier le son et l'arrière-plan
+  // Réglages › Alertes : test réel dans 10 s, diagnostic du canal (importance, son) et raccourcis vers les réglages Android
+  var IMPORTANCE = { 0: 'désactivé', 1: 'minimale', 2: 'faible (sans son)', 3: 'moyenne (son)', 4: 'haute (son)', 5: 'urgente (son)' };
+  function diagnose() {
+    return LN.listChannels().then(function (r) {
+      var ch = (r.channels || []).filter(function (c) { return c.id === CH_ADHAN; })[0];
+      if (!ch) return 'Canal d\'alerte introuvable.';
+      var silent = ch.importance < 3 || !ch.sound;
+      return 'Canal « ' + ch.name + ' » : importance ' + (IMPORTANCE[ch.importance] || ch.importance) + ', son : ' + (ch.sound ? (ADHAN ? 'adhan intégré' : 'son du téléphone') : 'AUCUN') + ', vibration ' + (ch.vibrate ? 'oui' : 'non') + '.' +
+        (silent ? '\n\n⚠ Ce canal est silencieux : touchez « 🔊 Réglages du son » puis choisissez Importance « Urgente » (ou « Élevée ») et un son.' : '');
+    }).catch(function () { return ''; });
+  }
+  function openSys(method, args) {
+    var S = P.RakebSystem;
+    if (!S) { alert('Ces réglages ne sont pas disponibles : ouvrez Réglages › Applications › Rakeb.'); return; }
+    S[method](args || {}).catch(function () { alert('Impossible d\'ouvrir ces réglages : ouvrez-les à la main (Réglages › Applications › Rakeb).'); });
+  }
+  function makeButton(id, label, onClick) {
+    var b = document.createElement('button');
+    b.id = id; b.type = 'button'; b.className = 'btn'; b.style.margin = '8px 8px 0 0'; b.textContent = label;
+    b.addEventListener('click', onClick);
+    return b;
+  }
   function addTestButton() {
     var help = document.getElementById('notif-help');
     if (!help || document.getElementById('notif-test-android')) return;
-    var b = document.createElement('button');
-    b.id = 'notif-test-android'; b.type = 'button'; b.className = 'btn'; b.style.marginTop = '10px';
-    b.textContent = '🔔 Tester l\'alerte (dans 10 secondes)';
-    b.addEventListener('click', function () {
+    help.appendChild(document.createElement('br'));
+    help.appendChild(makeButton('notif-test-android', '🔔 Tester l\'alerte (dans 10 secondes)', function () {
       LN.requestPermissions().then(function (r) {
         if (r.display !== 'granted') { alert('Autorisez d\'abord les notifications pour Rakeb dans les réglages du téléphone.'); return null; }
         return channelsReady.then(function () {
           var n = { id: 99999, title: 'Test Rakeb', body: 'Si vous entendez ce son, les alertes de prière fonctionnent.', channelId: CH_ADHAN, schedule: { at: new Date(Date.now() + 10000), allowWhileIdle: true } };
           if (ADHAN) n.sound = ADHAN;
-          return LN.schedule({ notifications: [n] }).then(function () {
-            alert('Alerte programmée dans 10 secondes.\n' + (ADHAN ? 'Son : adhan intégré à l\'application.' : 'Son : son de notification du téléphone (aucun fichier adhan.mp3 dans cette version).') + '\nFermez l\'application (retour à l\'accueil) pour tester en arrière-plan.');
+          return LN.schedule({ notifications: [n] }).then(diagnose).then(function (info) {
+            alert('Alerte programmée dans 10 secondes.\n' + info + '\n\nQuittez l\'application (retour à l\'accueil) pour tester en arrière-plan.' + (ADHAN ? '' : '\n\nNote : aucun fichier adhan.mp3 dans cette version, le son est celui des notifications du téléphone.'));
           });
         });
       }).catch(function () { alert('Impossible de programmer le test.'); });
-    });
-    help.appendChild(document.createElement('br'));
-    help.appendChild(b);
+    }));
+    help.appendChild(makeButton('notif-sound-settings', '🔊 Réglages du son', function () { openSys('openChannelSettings', { channel: CH_ADHAN }); }));
+    help.appendChild(makeButton('notif-battery-settings', '🔋 Batterie (arrière-plan)', function () { openSys('openBatterySettings'); }));
+    help.appendChild(makeButton('notif-app-settings', '⚙️ Réglages de l\'application', function () { openSys('openAppSettings'); }));
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', addTestButton); else addTestButton();
 
