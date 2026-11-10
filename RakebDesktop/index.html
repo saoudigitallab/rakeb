@@ -2695,7 +2695,7 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
       if(typeof e.webkitCompassHeading === 'number' || e.absolute === true) onOrientation(e);
     }, true);
     setTimeout(()=>{
-      if(!gotEvent){
+      if(!gotEvent && !window.RakebCompassUnavailable){
         $('#qibla-note').textContent = 'Aucun capteur d\'orientation absolu détecté (ou boussole non étalonnée) — bougez le téléphone en dessinant un 8. Beaucoup de téléphones d\'entrée de gamme n\'ont pas de boussole : utilisez alors le repère avec le soleil plus bas, ou l\'angle ci-dessus avec une boussole physique.';
       }
     }, 2500);
@@ -4793,6 +4793,20 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
       : '1. Faites face au soleil (hauteur ' + Math.round(sp.alt) + '°, direction ' + Math.round(sp.az) + '° par rapport au nord).<br>2. Tournez-vous ensuite de <strong>' + Math.round(turn) + '° vers la ' + (right ? 'droite' : 'gauche') + '</strong>' + quarter + '.<br>3. Vous êtes face à la Qibla (' + Math.round(q) + '° par rapport au nord).';
   }
   window.RakebSun = { sunPosition: solarAzimuthAlt };
+  // L'application Android signale qu'il n'y a pas de boussole sur ce téléphone (pas de magnétomètre) : on l'explique et on bascule sur le repère solaire
+  window.addEventListener('rakeb-no-compass', e=>{
+    const i = (e && e.detail) || {};
+    const yn = v=> v === true ? 'oui' : (v === false ? 'non' : '?');
+    const noSensor = i.available === false && ('magnetometer' in i);
+    const note = $('#qibla-note');
+    if(note){
+      note.textContent = noSensor
+        ? 'Ce téléphone n\'a pas de capteur de boussole (magnétomètre) : aucune application ne peut y afficher une boussole. Utilisez le repère avec le soleil ci-dessous. (Capteurs : magnétomètre ' + yn(i.magnetometer) + ', accéléromètre ' + yn(i.accelerometer) + ', gyroscope ' + yn(i.gyroscope) + '.)'
+        : 'La boussole n\'a pas pu démarrer sur cet appareil. Utilisez le repère avec le soleil ci-dessous.';
+    }
+    const sc = $('#sun-card');
+    if(sc){ sc.style.outline = '2px solid var(--gold)'; try{ sc.scrollIntoView({ behavior:'smooth', block:'center' }); }catch(_){} }
+  });
   updateSunGuide();
   setInterval(updateSunGuide, 5000);
 

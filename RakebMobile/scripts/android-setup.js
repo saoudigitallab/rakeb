@@ -44,6 +44,8 @@ const perms = [
   'android.permission.POST_NOTIFICATIONS',
   'android.permission.SCHEDULE_EXACT_ALARM',
   'android.permission.USE_EXACT_ALARM',
+  'android.permission.FOREGROUND_SERVICE',
+  'android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK',
   'android.permission.RECEIVE_BOOT_COMPLETED',
   'android.permission.VIBRATE',
   'android.permission.WAKE_LOCK'
@@ -79,8 +81,9 @@ Object.keys(legacy).forEach((d) => {
 // Boussole native : plugin Java (lecture directe des capteurs) enregistré dans MainActivity
 const javaDir = path.join(app, 'src/main/java/com/rakeb/mobile');
 if (!fs.existsSync(javaDir)) throw new Error('Dossier Java introuvable : ' + javaDir);
-fs.copyFileSync(path.join(root, 'android-native', 'CompassPlugin.java'), path.join(javaDir, 'CompassPlugin.java'));
-fs.copyFileSync(path.join(root, 'android-native', 'SystemPlugin.java'), path.join(javaDir, 'SystemPlugin.java'));
+fs.readdirSync(path.join(root, 'android-native')).filter((f) => f.endsWith('.java')).forEach((f) => {
+  fs.copyFileSync(path.join(root, 'android-native', f), path.join(javaDir, f));
+});
 fs.writeFileSync(path.join(javaDir, 'MainActivity.java'), `package com.rakeb.mobile;
 
 import android.os.Bundle;
@@ -91,11 +94,26 @@ public class MainActivity extends BridgeActivity {
     public void onCreate(Bundle savedInstanceState) {
         registerPlugin(CompassPlugin.class);
         registerPlugin(SystemPlugin.class);
+        registerPlugin(AdhanPlugin.class);
         super.onCreate(savedInstanceState);
     }
 }
 `);
-console.log('Plugins natifs installés (boussole, réglages système)');
+// Composants du manifeste : service de lecture de l'adhan, récepteur d'alarme, récepteur de redémarrage
+edit(path.join(app, 'src/main/AndroidManifest.xml'), (t) => {
+  if (t.includes('.AdhanService')) return t;
+  const comps = `
+        <service android:name=".AdhanService" android:exported="false" android:foregroundServiceType="mediaPlayback" />
+        <receiver android:name=".AdhanReceiver" android:exported="false" />
+        <receiver android:name=".BootReceiver" android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+`;
+  return t.replace('</application>', comps + '    </application>');
+});
+console.log('Plugins natifs installés (boussole, réglages système, adhan)');
 
 // Adhan facultatif pour les notifications (res/raw/adhan.*)
 const resSrc = path.join(root, 'android-res');

@@ -61,6 +61,23 @@ public class CompassPlugin extends Plugin implements SensorEventListener {
         call.resolve(res);
     }
 
+    /** Diagnostic : quels capteurs existent sur ce téléphone ? */
+    @PluginMethod
+    public void sensors(PluginCall call) {
+        SensorManager sm = (SensorManager) getContext().getSystemService(Context.SENSOR_SERVICE);
+        JSObject res = new JSObject();
+        boolean rot = sm != null && sm.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR) != null;
+        boolean acc = sm != null && sm.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) != null;
+        boolean mag = sm != null && sm.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD) != null;
+        boolean gyr = sm != null && sm.getDefaultSensor(Sensor.TYPE_GYROSCOPE) != null;
+        res.put("rotation", rot);
+        res.put("accelerometer", acc);
+        res.put("magnetometer", mag);
+        res.put("gyroscope", gyr);
+        res.put("available", rot || (acc && mag));
+        call.resolve(res);
+    }
+
     @PluginMethod
     public void stop(PluginCall call) {
         wanted = false;

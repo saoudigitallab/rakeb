@@ -114,7 +114,16 @@
       }
       if (compassStarted) return;
       compassStarted = true;
-      CP.start(statePos()).catch(function () { compassStarted = false; });
+      var warn = function (info) {
+        window.RakebCompassInfo = info;
+        window.RakebCompassUnavailable = true;
+        window.dispatchEvent(new CustomEvent('rakeb-no-compass', { detail: info }));
+      };
+      CP.sensors().catch(function () { return {}; }).then(function (info) {
+        window.RakebCompassInfo = info;
+        if (info && info.available === false) warn(info);
+      });
+      CP.start(statePos()).catch(function () { compassStarted = false; if (!window.RakebCompassUnavailable) warn({ available: false }); });
     };
     var addL = window.addEventListener;
     window.addEventListener = function (type) {
@@ -204,23 +213,40 @@
     if (!help || document.getElementById('notif-test-android')) return;
     help.appendChild(document.createElement('br'));
     help.appendChild(makeButton('notif-test-android', '🔔 Tester l\'alerte (dans 10 secondes)', function () {
+      if (AD) {
+        AD.schedule({ events: [{ id: 299999, ts: Date.now() + 10000, title: 'Test Rakeb', body: 'Si vous entendez ceci, l\'adhan fonctionnera à l\'heure de la prière.' }] })
+          .then(function () { return AD.audioInfo(); })
+          .then(function (info) {
+            var src = info.hasUser ? 'votre fichier d\'adhan' : (info.hasBundled ? 'l\'adhan intégré à l\'application' : 'le son de notification du téléphone (ajoutez un fichier dans « Son de l\'adhan »)');
+            alert('Alarme programmée dans 10 secondes.\nSon : ' + src + '.\nLe son suit le volume des ALARMES du téléphone : vérifiez qu\'il n\'est pas à zéro.' +
+              (info.exact ? '' : '\n\n⚠ Android limite les alarmes exactes : touchez « ⏰ Alarmes exactes ».') +
+              '\n\nQuittez l\'application (retour à l\'accueil) pour tester en arrière-plan.');
+          }).catch(function () { alert('Impossible de programmer le test.'); });
+        return;
+      }
       LN.requestPermissions().then(function (r) {
         if (r.display !== 'granted') { alert('Autorisez d\'abord les notifications pour Rakeb dans les réglages du téléphone.'); return null; }
         return channelsReady.then(function () {
           var n = { id: 99999, title: 'Test Rakeb', body: 'Si vous entendez ce son, les alertes de prière fonctionnent.', channelId: CH_ADHAN, schedule: { at: new Date(Date.now() + 10000), allowWhileIdle: true } };
           if (ADHAN) n.sound = ADHAN;
           return LN.schedule({ notifications: [n] }).then(diagnose).then(function (info) {
-            alert('Alerte programmée dans 10 secondes.\n' + info + '\n\nQuittez l\'application (retour à l\'accueil) pour tester en arrière-plan.' + (ADHAN ? '' : '\n\nNote : aucun fichier adhan.mp3 dans cette version, le son est celui des notifications du téléphone.'));
+            alert('Alerte programmée dans 10 secondes.\n' + info + '\n\nQuittez l\'application (retour à l\'accueil) pour tester en arrière-plan.');
           });
         });
       }).catch(function () { alert('Impossible de programmer le test.'); });
     }));
+    if (AD) {
+      help.appendChild(makeButton('adhan-play-now', '▶ Écouter l\'adhan maintenant', function () { AD.playNow().catch(function () { alert('Lecture impossible.'); }); }));
+      help.appendChild(makeButton('adhan-stop', '⏹ Arrêter le son', function () { AD.stop().catch(noop); }));
+      help.appendChild(makeButton('adhan-exact', '⏰ Alarmes exactes', function () { AD.openExactAlarmSettings().catch(function () { alert('Rien à régler sur ce téléphone : les alarmes exactes sont déjà autorisées.'); }); }));
+    }
     help.appendChild(makeButton('notif-sound-settings', '🔊 Réglages du son', function () { openSys('openChannelSettings', { channel: CH_ADHAN }); }));
     help.appendChild(makeButton('notif-battery-settings', '🔋 Batterie (arrière-plan)', function () { openSys('openBatterySettings'); }));
     help.appendChild(makeButton('notif-app-settings', '⚙️ Réglages de l\'application', function () { openSys('openAppSettings'); }));
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', addTestButton); else addTestButton();
 
+  var AD = P.RakebAdhan; // alarmes + lecture native de l'adhan (volume des alarmes, indépendant des notifications)
   var running = false, again = false, lastSig = null;
   function schedule(force) {
     if (!window.RakebBridge) return;
@@ -230,12 +256,20 @@
     if (!force && sig === lastSig) return;
     if (running) { again = true; return; }
     running = true;
-    LN.checkPermissions().then(function (p) { perm = map(p.display); if (perm !== 'granted') throw new Error('permission'); return channelsReady; })
+    var prayers = list.filter(function (x) { return !x.reminder; });
+    var reminders = list.filter(function (x) { return x.reminder; });
+    var toLN = AD ? reminders : list; // avec le module natif, seuls les rappels « Bientôt » passent par les notifications
+    var nativeStep = AD
+      ? AD.schedule({ events: prayers.slice(0, 40).map(function (x, i) { return { id: 200000 + i, ts: x.ts, title: 'Heure de ' + x.name, body: x.hhmm }; }) })
+      : Promise.resolve();
+    nativeStep.catch(noop)
+      .then(function () { return LN.checkPermissions(); })
+      .then(function (p) { perm = map(p.display); if (perm !== 'granted') throw new Error('permission'); return channelsReady; })
       .then(function () { return LN.getPending(); })
       .then(function (r) { return r.notifications && r.notifications.length ? LN.cancel({ notifications: r.notifications }) : null; })
       .then(function () {
-        if (!list.length) return null;
-        var notifs = list.slice(0, 60).map(function (x, i) {
+        if (!toLN.length) return null;
+        var notifs = toLN.slice(0, 60).map(function (x, i) {
           var n = {
             id: 100000 + i,
             title: x.reminder ? 'Bientôt ' + x.name : 'Heure de ' + x.name,
@@ -251,6 +285,56 @@
       .then(function () { lastSig = sig; }, function () { lastSig = null; })
       .then(function () { running = false; if (again) { again = false; schedule(false); } });
   }
+
+  /* Son de l'adhan choisi dans Réglages (stocké dans IndexedDB par l'application) : copié vers le module natif */
+  var audioBusy = false;
+  function readAdhanRecord(cb) {
+    try {
+      var req = indexedDB.open('rakeb-media', 1);
+      req.onupgradeneeded = function () { req.result.createObjectStore('audio'); };
+      req.onerror = function () { cb(null); };
+      req.onsuccess = function () {
+        var db = req.result;
+        try {
+          var g = db.transaction('audio', 'readonly').objectStore('audio').get('adhan');
+          g.onsuccess = function () { cb(g.result || null); db.close(); };
+          g.onerror = function () { cb(null); db.close(); };
+        } catch (e) { cb(null); try { db.close(); } catch (e2) { /* ignoré */ } }
+      };
+    } catch (e) { cb(null); }
+  }
+  function sendAudio(rec, sig) {
+    var CH = 600 * 1024, total = Math.max(1, Math.ceil(rec.blob.size / CH)), i = 0;
+    return new Promise(function (resolve, reject) {
+      (function next() {
+        if (i >= total) { resolve(); return; }
+        var fr = new FileReader();
+        fr.onload = function () {
+          AD.setAudio({ data: String(fr.result).split(',')[1] || '', index: i, total: total, sig: sig }).then(function () { i++; next(); }, reject);
+        };
+        fr.onerror = function () { reject(new Error('lecture')); };
+        fr.readAsDataURL(rec.blob.slice(i * CH, (i + 1) * CH));
+      })();
+    });
+  }
+  function syncAudio() {
+    if (!AD || audioBusy) return;
+    audioBusy = true;
+    var done = function () { audioBusy = false; };
+    readAdhanRecord(function (rec) {
+      AD.audioInfo().then(function (info) {
+        if (rec && rec.blob) {
+          var sig = (rec.name || '') + '|' + rec.blob.size;
+          if (info.hasUser && info.sig === sig) return null;
+          return sendAudio(rec, sig);
+        }
+        return info.hasUser ? AD.clearAudio() : null;
+      }).catch(noop).then(done);
+    });
+  }
+  syncAudio();
+  setInterval(syncAudio, 5000);
+
   // L'application change ses réglages (position, méthode, alertes activées, prières décochées…) : on reprogramme
   setInterval(function () { schedule(false); }, 4000);
   document.addEventListener('visibilitychange', function () { schedule(false); });

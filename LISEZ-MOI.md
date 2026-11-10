@@ -53,3 +53,10 @@ Une ancienne Rakeb installée avec une autre signature doit être désinstallée
 - **Tasbih** : 4 formules authentiques supplémentaires.
 - **Alertes Android** : boutons de diagnostic dans Réglages › Alertes (test dans 10 secondes avec l'état réel du canal : importance, son) et raccourcis vers les réglages du son, de la batterie et de l'application.
 - **Correctif important** : la version du 26 octobre contenait un conflit de nom (`sunPosition`) qui cassait le calcul des horaires de prière. Corrigé ici.
+
+## Adhan natif et boussole : correction de fond (9 novembre 2026)
+- **Adhan par alarmes Android** : à l'heure de chaque prière, Android réveille Rakeb (alarme exacte) qui joue l'adhan lui-même via un service au premier plan, sur le **volume des alarmes** : cela ne dépend plus des réglages de notification de HiOS. Une notification avec le bouton « Arrêter l'adhan » s'affiche pendant la lecture. Les alarmes sont reprogrammées après un redémarrage du téléphone. Les rappels « Bientôt » restent des notifications silencieuses.
+- **Source du son** (dans l'ordre) : le fichier choisi dans Réglages › Son de l'adhan (copié automatiquement vers le module natif, sans recompiler), sinon `adhan.mp3` intégré à l'APK, sinon le son de notification du téléphone.
+- **Boutons Réglages › Alertes** : tester dans 10 s, écouter maintenant, arrêter le son, alarmes exactes, réglages du son, batterie, application.
+- **Boussole** : l'application interroge les capteurs du téléphone. Sans magnétomètre (cas du Tecno KG5P), elle l'explique en clair, affiche les capteurs détectés et met en évidence le repère avec le soleil.
+- Nouvelles classes Java (`android-native/`) : `AdhanPlugin`, `AdhanScheduler`, `AdhanService`, `AdhanReceiver`, `BootReceiver`, plus `sensors()` dans `CompassPlugin`. Vérifiées par compilation contre l'API Android 14.
