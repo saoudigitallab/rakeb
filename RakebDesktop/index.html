@@ -500,6 +500,13 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
 @media (max-width: 899px){
   main{ padding-bottom: calc(92px + env(safe-area-inset-bottom, 0px)); }
 }
+/* ---- Évolutions : mises à jour, ajustement des horaires, Coran hors ligne ---- */
+.adj-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(110px,1fr)); gap:10px; margin:10px 0; }
+.adj-grid label{ display:block; font-size:.8rem; color:var(--text-dim); margin-bottom:4px; }
+.adj-grid input.btn{ width:100%; text-align:center; }
+.mark-btn{ margin-top:6px; }
+.progress{ height:8px; border-radius:6px; background:var(--line); overflow:hidden; margin-top:8px; }
+.progress > div{ height:100%; width:0; background:var(--gold); transition:width .2s; }
 /* ---- Ajout de duas, d'azkar et de formules de tasbih par l'utilisateur ---- */
 .add-actions{ display:flex; flex-wrap:wrap; gap:8px; margin:10px 0 4px; }
 .add-form{ display:none; border:1px solid var(--line); border-radius:14px; padding:12px; margin:10px 0; }
@@ -672,6 +679,7 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
       <div class="row-btns" style="margin-top:10px;">
         <button class="btn mini" id="aya-play">▶ Écouter</button>
         <button class="btn mini" id="aya-copy">📋 Copier</button>
+        <button class="btn mini" id="aya-share">📤 Partager</button>
         <button class="btn mini" id="aya-read">📖 Lire la sourate</button>
         <button class="btn mini" id="aya-other">🔄 Autre verset</button>
       </div>
@@ -682,6 +690,7 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
       <div id="doua-content"></div>
       <div class="row-btns" style="margin-top:10px;">
         <button class="btn mini" id="doua-copy">📋 Copier</button>
+        <button class="btn mini" id="doua-share">📤 Partager</button>
         <button class="btn mini" id="doua-other">🔄 Autre doua</button>
         <button class="btn mini" data-goto="duas">Toutes les duas</button>
       </div>
@@ -717,6 +726,19 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
           </select>
         </div>
       </div>
+    </div>
+
+    <div class="card" id="adjust-card">
+      <h2 class="small">Ajustement des horaires (minutes)</h2>
+      <p class="muted">Pour vous aligner sur votre mosquée : valeur positive = plus tard, négative = plus tôt (de −30 à +30 minutes).</p>
+      <div class="adj-grid">
+        <div><label for="adj-fajr">Fajr</label><input class="btn" id="adj-fajr" type="number" min="-30" max="30" step="1" value="0"></div>
+        <div><label for="adj-dhuhr">Dhuhr</label><input class="btn" id="adj-dhuhr" type="number" min="-30" max="30" step="1" value="0"></div>
+        <div><label for="adj-asr">Asr</label><input class="btn" id="adj-asr" type="number" min="-30" max="30" step="1" value="0"></div>
+        <div><label for="adj-maghrib">Maghrib</label><input class="btn" id="adj-maghrib" type="number" min="-30" max="30" step="1" value="0"></div>
+        <div><label for="adj-isha">Isha</label><input class="btn" id="adj-isha" type="number" min="-30" max="30" step="1" value="0"></div>
+      </div>
+      <button class="btn mini" id="adj-reset" type="button">↺ Remettre à zéro</button>
     </div>
 
     <div class="card">
@@ -854,7 +876,14 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
       <label class="muted" style="display:flex;gap:6px;align-items:center;margin:8px 0;">
         <input type="checkbox" id="reader-translation" checked> Afficher la traduction française
       </label>
-      <div id="reader-content"><div class="muted">Choisissez une sourate pour la lire (connexion requise, sauf les sourates hors-ligne ci-dessous).</div></div>
+      <div class="add-actions" style="margin-top:0;">
+        <button class="btn mini" id="quran-dl-btn" type="button">📥 Télécharger tout le Coran (hors ligne)</button>
+        <button class="btn mini" id="quran-dl-cancel" type="button" style="display:none;">✖ Arrêter</button>
+        <button class="btn mini" id="quran-resume" type="button" style="display:none;"></button>
+      </div>
+      <div class="muted" id="quran-dl-status" style="font-size:.85rem;"></div>
+      <div class="progress" id="quran-dl-bar" style="display:none;"><div></div></div>
+      <div id="reader-content"><div class="muted">Choisissez une sourate pour la lire. Une sourate déjà ouverte ou téléchargée se lit sans connexion ; touchez 🔖 sur un verset pour y reprendre plus tard.</div></div>
     </div>
 
     <div class="card span2">
@@ -1187,6 +1216,14 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
 
   <!-- ==================== PARAMÈTRES ==================== -->
   <section class="panel grid" id="panel-parametres">
+    <div class="card" id="update-card">
+      <h2 class="small">Version et mises à jour</h2>
+      <div id="update-status" class="muted">Version installée : <strong id="app-version"></strong></div>
+      <div class="add-actions">
+        <button class="btn mini" id="update-check" type="button">🔄 Vérifier les mises à jour</button>
+        <a class="btn mini" id="update-link" href="#" target="_blank" rel="noopener" style="display:none;">⬇ Télécharger la nouvelle version</a>
+      </div>
+    </div>
     <div class="card">
       <h2 class="small" data-i18n="card.notif">Notifications d'appel à la prière</h2>
       <div class="toggle-row">
@@ -1334,6 +1371,7 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
       <h3 style="margin:12px 0 4px;font-size:1rem;">Nous contacter</h3>
       <div class="about-actions">
         <a class="btn gold" href="https://wa.me/221764182200?text=Bonjour%20SAOU%20DIGITAL%20LAB%2C%20je%20vous%20contacte%20depuis%20l%27application%20Rakeb." target="_blank" rel="noopener">💬 WhatsApp</a>
+        <a class="btn" id="report-problem" href="#" target="_blank" rel="noopener">🛠 Signaler un problème</a>
         <button class="btn" id="about-call" type="button">📞 Appeler : +221 76 418 22 00</button>
         <a class="btn" href="mailto:saoudigitallab@gmail.com?subject=Rakeb%20%E2%80%94%20contact">✉️ E-mail</a>
         <button class="btn" type="button" data-goto="confidentialite">🔒 Politique de confidentialité</button>
@@ -1347,7 +1385,7 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
     <div class="subhead"><button class="btn mini" data-goto="parametres">← Réglages</button><h2>🔒 Confidentialité</h2></div>
     <div class="card span2 priv">
       <h2 class="small">Rakeb — Politique de confidentialité</h2>
-      <p class="muted">Dernière mise à jour : 11 octobre 2026</p>
+      <p class="muted">Dernière mise à jour : 10 novembre 2026</p>
       <h3>1. Qui sommes-nous</h3>
       <p>Rakeb est édité par SAOU DIGITAL LAB, pôle numérique de SAOU SYNERGY GROUP, basé à Mbour, région de Thiès, Sénégal. Pour toute question : saoudigitallab@gmail.com ou WhatsApp / appel au +221 76 418 22 00.</p>
       <h3>2. L'essentiel</h3>
@@ -1381,6 +1419,8 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
         <li>api.alquran.cloud : texte du Coran et traductions (numéro de sourate ou de verset demandé).</li>
         <li>mp3quran.net : écoute des sourates (fichier audio demandé).</li>
         <li>cdn.jsdelivr.net (dépôt public de hadiths) : hadith du jour.</li>
+        <li>api.github.com : vérification de la présence d'une nouvelle version de l'application (aucune donnée personnelle n'est envoyée).</li>
+        <li>fonts.googleapis.com et fonts.gstatic.com (Google Fonts) : polices d'affichage de l'application.</li>
         <li>Anthropic (API Claude) : fonction Muslim IA, voir section 6.</li>
         <li>(PC et web uniquement) Overpass API / OpenStreetMap : recherche de mosquées et de commerces halal ; ce service reçoit les coordonnées de la position utilisée pour la recherche.</li>
         <li>(PC et web uniquement) ipapi.co : localisation approximative à partir de votre adresse IP, uniquement si vous choisissez cette option.</li>
@@ -1513,9 +1553,10 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
     const asr = timeForAngle(-asrAngle, jd, lat, lon, true);
 
     const tzOffset = tzOffsetHours(tz, date);
-    function toLocal(t){
+    const adj = store.get('rakeb-time-adjust', {});
+    function toLocal(t, key){
       if(t === null || isNaN(t)) return null;
-      let h = t + tzOffset;
+      let h = t + tzOffset + ((key && Number(adj[key])) || 0)/60;
       h = ((h % 24)+24)%24;
       const hh = Math.floor(h);
       let mm = Math.round((h-hh)*60);
@@ -1524,8 +1565,8 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
       return {h: hour, m: mm, decimal: h};
     }
     return {
-      fajr: toLocal(fajr), sunrise: toLocal(sunrise), dhuhr: toLocal(noon),
-      asr: toLocal(asr), maghrib: toLocal(sunset), isha: toLocal(isha)
+      fajr: toLocal(fajr,'fajr'), sunrise: toLocal(sunrise), dhuhr: toLocal(noon,'dhuhr'),
+      asr: toLocal(asr,'asr'), maghrib: toLocal(sunset,'maghrib'), isha: toLocal(isha,'isha')
     };
   }
 
@@ -2560,6 +2601,7 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
   const DUA_CUSTOM_KEY = 'rakeb-custom-duas';
   const customDuas = ()=> { const v = store.get(DUA_CUSTOM_KEY, []); return Array.isArray(v) ? v : []; };
   let duaCatCurrent = 'matin';
+  let lastDuaItems = [];
   function buildDuaChips(){
     $('#dua-chips').innerHTML = DUA_CATS.map(([id,label])=>
       '<div class="chip' + (id===duaCatCurrent ? ' active' : '') + '" data-cat="' + id + '">' + escapeHtml(label) + '</div>').join('') +
@@ -2575,13 +2617,15 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
     const f = (filter||'').trim().toLowerCase();
     const items = duaItems(cat).filter(d=> !f || (d.fr||'').toLowerCase().includes(f) || (d.tr||'').toLowerCase().includes(f) ||
                                           (d.ref||'').toLowerCase().includes(f) || (d.ar||'').includes(f));
-    $('#dua-list').innerHTML = items.map(d=>
+    lastDuaItems = items;
+    $('#dua-list').innerHTML = items.map((d,i)=>
       '<div class="dua-item">' +
         (d.ar  ? '<div class="dua-ar" lang="ar">' + escapeHtml(d.ar) + '</div>' : '') +
         (d.tr  ? '<div class="dua-translit">' + escapeHtml(d.tr) + '</div>' : '') +
         (d.fr  ? '<div class="dua-fr">' + escapeHtml(d.fr) + '</div>' : '') +
         (d.ref ? '<div class="dua-ref">' + escapeHtml(d.ref) + '</div>' : '') +
-        (d.id  ? '<button class="btn mini dua-del" type="button" data-dua-del="' + escapeHtml(d.id) + '">🗑 Supprimer</button>' : '') +
+        '<div class="add-actions" style="margin:6px 0 0;"><button class="btn mini" type="button" data-dua-share="' + i + '">📤 Partager</button>' +
+          (d.id ? '<button class="btn mini dua-del" type="button" data-dua-del="' + escapeHtml(d.id) + '">🗑 Supprimer</button>' : '') + '</div>' +
       '</div>').join('') ||
       '<div class="muted">' + (cat === 'perso' ? 'Vous n\'avez encore rien ajouté : touchez « ➕ Ajouter une doua / un dhikr ».' : 'Aucun résultat.') + '</div>';
   }
@@ -3187,21 +3231,29 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
     $('#reader-card').scrollIntoView({behavior:'smooth', block:'start'});
     try{
       const withTr = $('#reader-translation').checked;
-      const eds = withTr ? 'quran-uthmani,fr.hamidullah' : 'quran-uthmani';
-      const res = await netFetch('https://api.alquran.cloud/v1/surah/' + num + '/editions/' + eds);
-      if(!res.ok) throw new Error('HTTP ' + res.status);
-      const j = await res.json();
-      const arData = j.data[0];
-      const frData = withTr ? j.data[1] : null;
+      let rec = await qGet(num);
+      if(!rec){
+        const res = await netFetch('https://api.alquran.cloud/v1/surah/' + num + '/editions/quran-uthmani,fr.hamidullah');
+        if(!res.ok) throw new Error('HTTP ' + res.status);
+        const j = await res.json();
+        rec = { ar: j.data[0].ayahs.map(a=> ({ n: a.numberInSurah, t: a.text })), fr: j.data[1].ayahs.map(a=> a.text) };
+        qPut(num, rec).then(updateQuranDlStatus, ()=>{});
+      }
+      const mark = store.get('rakeb-quran-mark', null);
       let html = '';
       if(num !== 1 && num !== 9) html += `<div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>`;
-      arData.ayahs.forEach((a,i)=>{
-        html += `<div class="ayah-row">
-          <div class="dua-ar">${a.text}<span class="ayah-no">﴿${a.numberInSurah}﴾</span></div>
-          ${frData ? `<div class="dua-fr" style="margin-top:6px;">${frData.ayahs[i].text}</div>` : ''}
+      rec.ar.forEach((a,i)=>{
+        const marked = mark && mark.n === num && mark.a === a.n;
+        html += `<div class="ayah-row" id="ayah-${num}-${a.n}">
+          <div class="dua-ar">${escapeHtml(a.t)}<span class="ayah-no">﴿${a.n}﴾</span></div>
+          ${withTr && rec.fr[i] ? `<div class="dua-fr" style="margin-top:6px;">${escapeHtml(rec.fr[i])}</div>` : ''}
+          <button class="btn mini mark-btn" type="button" data-mark="${num}:${a.n}" aria-label="Marquer le verset ${a.n}">${marked ? '🔖 Marqué' : '🔖'}</button>
         </div>`;
       });
       box.innerHTML = html;
+      store.set('rakeb-quran-last', { n: num });
+      updateResumeButton();
+      if(mark && mark.n === num){ const target = document.getElementById('ayah-' + num + '-' + mark.a); if(target) target.scrollIntoView({ block:'center' }); }
     }catch(e){
       box.innerHTML = '<div class="muted">Impossible de charger ce texte (connexion requise). Réessayez.</div>';
     }
@@ -4759,6 +4811,205 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
       return out;
     }
   };
+  /* ---------- Version, vérification des mises à jour, signalement ---------- */
+  const APP_VERSION = '1.1.0';
+  const APP_REPO = 'saoudigitallab/rakeb';
+  function cmpVer(a, b){
+    const pa = String(a).replace(/^v/i,'').split('.').map(n=> parseInt(n,10) || 0), pb = String(b).replace(/^v/i,'').split('.').map(n=> parseInt(n,10) || 0);
+    for(let i = 0; i < 3; i++){ if((pa[i]||0) !== (pb[i]||0)) return (pa[i]||0) > (pb[i]||0) ? 1 : -1; }
+    return 0;
+  }
+  async function checkUpdate(manual){
+    const st = $('#update-status'), link = $('#update-link');
+    if(!st) return;
+    if(manual) st.textContent = 'Vérification…';
+    try{
+      const res = await netFetch('https://api.github.com/repos/' + APP_REPO + '/releases/latest');
+      store.set('rakeb-update-check', Date.now());
+      if(res.status === 404){ if(manual) st.innerHTML = 'Version installée : <strong>' + APP_VERSION + '</strong> — aucune publication trouvée pour le moment.'; return; }
+      if(!res.ok) throw new Error('HTTP ' + res.status);
+      const j = await res.json();
+      const tag = j.tag_name || '';
+      if(cmpVer(tag, APP_VERSION) > 0){
+        st.innerHTML = '🎉 Nouvelle version disponible : <strong>' + escapeHtml(tag) + '</strong> (installée : ' + APP_VERSION + ')' +
+          (j.body ? '<br><span style="font-size:.85rem;">' + escapeHtml(String(j.body).slice(0, 300)) + '</span>' : '');
+        link.href = j.html_url || ('https://github.com/' + APP_REPO + '/releases'); link.style.display = '';
+        if(!manual) toast('Nouvelle version de Rakeb disponible : ' + tag);
+      } else if(manual){
+        st.innerHTML = '✅ Vous avez la dernière version (<strong>' + APP_VERSION + '</strong>).';
+      }
+    }catch(e){
+      if(manual) st.innerHTML = 'Version installée : <strong>' + APP_VERSION + '</strong> — vérification impossible (connexion requise).';
+    }
+  }
+  (function(){
+    const v = $('#app-version'); if(v) v.textContent = APP_VERSION;
+    const b = $('#update-check'); if(b) b.addEventListener('click', ()=> checkUpdate(true));
+    const last = store.get('rakeb-update-check', 0);
+    if(Date.now() - last > 86400000) setTimeout(()=> checkUpdate(false), 8000);
+    const rep = $('#report-problem');
+    if(rep) rep.href = 'https://wa.me/221764182200?text=' + encodeURIComponent('Bonjour, j\'ai un problème avec Rakeb ' + APP_VERSION + '.\nAppareil : ' + navigator.userAgent.slice(0, 180) + '\nProblème : ');
+  })();
+
+  /* ---------- Ajustement manuel des horaires (alignement sur la mosquée) ---------- */
+  const ADJ_KEYS = ['fajr','dhuhr','asr','maghrib','isha'];
+  function loadAdjInputs(){
+    const a = store.get('rakeb-time-adjust', {});
+    ADJ_KEYS.forEach(k=>{ const el = $('#adj-' + k); if(el) el.value = Number(a[k]) || 0; });
+  }
+  loadAdjInputs();
+  ADJ_KEYS.forEach(k=>{
+    const el = $('#adj-' + k); if(!el) return;
+    el.addEventListener('change', ()=>{
+      let v = parseInt(el.value, 10); if(isNaN(v)) v = 0;
+      v = Math.max(-30, Math.min(30, v)); el.value = v;
+      const a = store.get('rakeb-time-adjust', {}); a[k] = v; store.set('rakeb-time-adjust', a);
+      refreshTimes();
+    });
+  });
+  const adjReset = $('#adj-reset');
+  if(adjReset) adjReset.addEventListener('click', ()=>{ store.set('rakeb-time-adjust', {}); loadAdjInputs(); refreshTimes(); toast('Ajustements remis à zéro.'); });
+
+  /* ---------- Partage d'une doua ou d'un verset sous forme d'image (WhatsApp, etc.) ---------- */
+  async function makeShareBlob(d){
+    const W = 1080, pad = 80, maxW = W - 2*pad;
+    const FONT_AR = '"Amiri","Noto Naskh Arabic","Traditional Arabic","Scheherazade New",serif';
+    const FONT_UI = 'system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif';
+    try{ if(document.fonts && document.fonts.load) await document.fonts.load('48px "Amiri"'); }catch(e){}
+    const probe = document.createElement('canvas').getContext('2d');
+    const wrap = (text, font, rtl)=>{
+      probe.font = font; probe.direction = rtl ? 'rtl' : 'ltr';
+      const words = String(text).split(/\s+/).filter(Boolean), lines = []; let cur = '';
+      words.forEach(w=>{ const t = cur ? cur + ' ' + w : w; if(probe.measureText(t).width > maxW && cur){ lines.push(cur); cur = w; } else cur = t; });
+      if(cur) lines.push(cur);
+      return lines;
+    };
+    const arLen = (d.ar || '').length, arSize = arLen < 90 ? 66 : (arLen < 220 ? 54 : (arLen < 480 ? 44 : 36));
+    const blocks = [];
+    if(d.ar)  blocks.push({ lines: wrap(d.ar,  arSize + 'px ' + FONT_AR, true),  font: arSize + 'px ' + FONT_AR, color:'#e3c766', lh: arSize*1.75, rtl:true, gap:40 });
+    if(d.tr)  blocks.push({ lines: wrap(d.tr,  'italic 28px ' + FONT_UI, false), font:'italic 28px ' + FONT_UI, color:'#7fd1a8', lh:40, gap:30 });
+    if(d.fr)  blocks.push({ lines: wrap(d.fr,  '32px ' + FONT_UI, false),        font:'32px ' + FONT_UI,        color:'#eef3f1', lh:46, gap:26 });
+    if(d.ref) blocks.push({ lines: wrap(d.ref, '24px ' + FONT_UI, false),        font:'24px ' + FONT_UI,        color:'#a3bcb5', lh:34, gap:0 });
+    let h = 250; blocks.forEach(b=> h += b.lines.length*b.lh + b.gap);
+    h = Math.max(1080, h + 150);
+    const c = document.createElement('canvas'); c.width = W; c.height = h;
+    const x = c.getContext('2d');
+    const g = x.createLinearGradient(0, 0, 0, h); g.addColorStop(0, '#0b1f1c'); g.addColorStop(1, '#17403a');
+    x.fillStyle = g; x.fillRect(0, 0, W, h);
+    x.strokeStyle = '#c9a227'; x.lineWidth = 4; x.strokeRect(28, 28, W - 56, h - 56);
+    const img = await new Promise(r=>{ const i = new Image(); i.onload = ()=> r(i); i.onerror = ()=> r(null); i.src = 'icon.png'; });
+    if(img) x.drawImage(img, W/2 - 40, 58, 80, 80);
+    x.textAlign = 'center'; x.textBaseline = 'alphabetic'; x.direction = 'ltr';
+    x.font = 'bold 34px ' + FONT_UI; x.fillStyle = '#e3c766'; x.fillText('Rakeb', W/2, 182);
+    let y = 230;
+    blocks.forEach(b=>{
+      x.font = b.font; x.fillStyle = b.color; x.direction = b.rtl ? 'rtl' : 'ltr';
+      b.lines.forEach(l=>{ y += b.lh; x.fillText(l, W/2, y - b.lh*0.25); });
+      y += b.gap;
+    });
+    x.direction = 'ltr'; x.font = '24px ' + FONT_UI; x.fillStyle = '#a3bcb5';
+    x.fillText('Rakeb · SAOU DIGITAL LAB', W/2, h - 62);
+    return new Promise(res=> c.toBlob(res, 'image/png'));
+  }
+  async function shareImage(d){
+    if(!d) return;
+    try{
+      toast('Création de l\'image…');
+      const blob = await makeShareBlob(d);
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'rakeb-partage.png';
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(()=> URL.revokeObjectURL(url), 60000);
+    }catch(e){ toast('Impossible de créer l\'image.'); }
+  }
+  $('#dua-list').addEventListener('click', e=>{
+    const b = e.target.closest('[data-dua-share]'); if(!b) return;
+    shareImage(lastDuaItems[parseInt(b.dataset.duaShare, 10)]);
+  });
+  const douaShareBtn = $('#doua-share'); if(douaShareBtn) douaShareBtn.addEventListener('click', ()=> shareImage(currentDoua));
+  const ayaShareBtn = $('#aya-share'); if(ayaShareBtn) ayaShareBtn.addEventListener('click', ()=> shareImage(currentAya));
+  window.RakebShare = { makeShareBlob };
+
+  /* ---------- Coran : lecture hors ligne (IndexedDB) et marque-page ---------- */
+  let quranDbP = null;
+  function quranDB(){
+    if(!quranDbP) quranDbP = new Promise((res, rej)=>{
+      const r = indexedDB.open('rakeb-quran', 1);
+      r.onupgradeneeded = ()=> r.result.createObjectStore('surah');
+      r.onsuccess = ()=> res(r.result); r.onerror = ()=> rej(r.error);
+    });
+    return quranDbP;
+  }
+  function qGet(n){
+    return quranDB().then(db=> new Promise(res=>{
+      try{ const g = db.transaction('surah','readonly').objectStore('surah').get(n); g.onsuccess = ()=> res(g.result || null); g.onerror = ()=> res(null); }catch(e){ res(null); }
+    })).catch(()=> null);
+  }
+  function qPut(n, rec){
+    return quranDB().then(db=> new Promise((res, rej)=>{
+      const tx = db.transaction('surah','readwrite'); tx.objectStore('surah').put(rec, n); tx.oncomplete = ()=> res(); tx.onerror = ()=> rej(tx.error);
+    }));
+  }
+  function qCount(){
+    return quranDB().then(db=> new Promise(res=>{
+      try{ const g = db.transaction('surah','readonly').objectStore('surah').count(); g.onsuccess = ()=> res(g.result); g.onerror = ()=> res(0); }catch(e){ res(0); }
+    })).catch(()=> 0);
+  }
+  async function updateQuranDlStatus(){
+    const st = $('#quran-dl-status'); if(!st) return;
+    const n = await qCount();
+    st.textContent = n >= 114 ? '✅ Coran complet disponible hors ligne (114 sourates).' : (n + ' / 114 sourates disponibles hors ligne.');
+  }
+  let quranDlCancel = false;
+  async function downloadQuran(){
+    const btn = $('#quran-dl-btn'), st = $('#quran-dl-status'), cancel = $('#quran-dl-cancel'), bar = $('#quran-dl-bar');
+    quranDlCancel = false; btn.disabled = true; cancel.style.display = ''; bar.style.display = '';
+    let done = 0, fail = 0;
+    for(let n = 1; n <= 114 && !quranDlCancel; n++){
+      if(await qGet(n)){ done++; }
+      else {
+        try{
+          const res = await netFetch('https://api.alquran.cloud/v1/surah/' + n + '/editions/quran-uthmani,fr.hamidullah');
+          if(!res.ok) throw new Error('HTTP ' + res.status);
+          const j = await res.json();
+          await qPut(n, { ar: j.data[0].ayahs.map(a=> ({ n: a.numberInSurah, t: a.text })), fr: j.data[1].ayahs.map(a=> a.text) });
+          done++;
+        }catch(e){
+          fail++;
+          if(fail >= 5){ st.textContent = 'Connexion instable : téléchargement interrompu (' + done + ' / 114). Réessayez plus tard.'; break; }
+          n--; await new Promise(r=> setTimeout(r, 1500)); continue;
+        }
+      }
+      bar.firstElementChild.style.width = Math.round(done/114*100) + '%';
+      st.textContent = 'Téléchargement… ' + done + ' / 114';
+    }
+    btn.disabled = false; cancel.style.display = 'none';
+    if(done >= 114){ bar.style.display = 'none'; }
+    if(fail < 5) updateQuranDlStatus();
+  }
+  function updateResumeButton(){
+    const b = $('#quran-resume'); if(!b) return;
+    const m = store.get('rakeb-quran-mark', null);
+    if(m && m.n){ b.style.display = ''; b.textContent = '▶ Reprendre : sourate ' + m.n + ', verset ' + m.a; }
+    else b.style.display = 'none';
+  }
+  const dlBtn = $('#quran-dl-btn');
+  if(dlBtn){
+    dlBtn.addEventListener('click', downloadQuran);
+    $('#quran-dl-cancel').addEventListener('click', ()=>{ quranDlCancel = true; });
+    $('#quran-resume').addEventListener('click', ()=>{ const m = store.get('rakeb-quran-mark', null); if(m){ $('#reader-select').value = String(m.n); openReaderSurah(m.n); } });
+    $('#reader-content').addEventListener('click', e=>{
+      const b = e.target.closest('[data-mark]'); if(!b) return;
+      const [n, a] = b.dataset.mark.split(':').map(Number);
+      store.set('rakeb-quran-mark', { n, a });
+      $$('#reader-content .mark-btn').forEach(x=> x.textContent = '🔖');
+      b.textContent = '🔖 Marqué';
+      updateResumeButton(); toast('Verset marqué : sourate ' + n + ', verset ' + a + '.');
+    });
+    updateQuranDlStatus(); updateResumeButton();
+  }
+
   /* ---------- Repère solaire : retrouver la Qibla sans boussole, quand le soleil est visible ---------- */
   function solarAzimuthAlt(lat, lon, date){
     const rad = Math.PI/180;

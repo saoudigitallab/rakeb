@@ -60,3 +60,14 @@ Une ancienne Rakeb installée avec une autre signature doit être désinstallée
 - **Boutons Réglages › Alertes** : tester dans 10 s, écouter maintenant, arrêter le son, alarmes exactes, réglages du son, batterie, application.
 - **Boussole** : l'application interroge les capteurs du téléphone. Sans magnétomètre (cas du Tecno KG5P), elle l'explique en clair, affiche les capteurs détectés et met en évidence le repère avec le soleil.
 - Nouvelles classes Java (`android-native/`) : `AdhanPlugin`, `AdhanScheduler`, `AdhanService`, `AdhanReceiver`, `BootReceiver`, plus `sensors()` dans `CompassPlugin`. Vérifiées par compilation contre l'API Android 14.
+
+## Évolutions du 10 novembre 2026 (version 1.1.0)
+- **Tests automatiques** (`tests/`, 37 vérifications) : lancés par GitHub avant chaque compilation et dans le workflow « Tests automatiques ». Ils contrôlent la syntaxe, les fonctions déclarées deux fois (l'erreur qui avait cassé les horaires), les horaires de Dakar, les écrans, les duas, le tasbih, les ajustements, le pont des alarmes Android et la vérification des mises à jour. Si un test échoue, la compilation s'arrête. En local : `cd tests && npm install && npm test`.
+- **Numéro de version unique** : `const APP_VERSION` dans `RakebDesktop/index.html`. `scripts/sync-version.js` le recopie dans les `package.json` (noms des `.exe`, versionName de l'APK).
+- **Publier une version** : changer `APP_VERSION` (par exemple 1.2.0), valider, puis créer la Release `v1.2.0` (ou `git tag v1.2.0 && git push --tags`). Les fichiers `.exe` et `.apk` sont joints automatiquement.
+- **Mises à jour intégrées** : Réglages › « Version et mises à jour » compare la version installée à la dernière Release GitHub (`saoudigitallab/rakeb`) et propose le téléchargement ; vérification automatique une fois par jour.
+- **Signaler un problème** (À propos) : message WhatsApp prérempli avec la version et le modèle d'appareil.
+- **Ajustement des horaires** (Horaires) : de −30 à +30 minutes par prière pour s'aligner sur la mosquée ; pris en compte par l'affichage, le mois, les alertes et les alarmes Android.
+- **Partage en image** : bouton « 📤 Partager » sur chaque doua, la doua du jour et l'aya du jour (image 1080 px, texte arabe, translittération, traduction, source). Android : feuille de partage (WhatsApp, etc.) ; PC : enregistrement du fichier.
+- **Coran hors ligne** : « 📥 Télécharger tout le Coran » (texte arabe et traduction, 114 sourates, stockés sur l'appareil, reprise possible) ; une sourate lue est mémorisée automatiquement ; marque-page 🔖 par verset et bouton « Reprendre ».
+- **Confidentialité** : ajout de api.github.com et de Google Fonts à la liste des services contactés ; date mise à jour.

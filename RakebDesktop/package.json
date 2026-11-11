@@ -1,6 +1,6 @@
 {
   "name": "rakeb-desktop",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Rakeb — Compagnon musulman, application de bureau (horaires de prière, Qibla, duas, Coran, recherche de mosquées en direct via OpenStreetMap/Overpass).",
   "main": "main.js",
   "author": "Rakeb",
