@@ -30,6 +30,16 @@ jobs:
         with:
           node-version: 22
 
+      - name: Tests automatiques de l'application
+        working-directory: tests
+        run: |
+          npm ci --no-audit --no-fund
+          npm test
+
+      - name: Synchroniser le numéro de version
+        working-directory: .
+        run: node scripts/sync-version.js
+
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
