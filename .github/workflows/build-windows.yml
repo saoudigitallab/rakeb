@@ -25,6 +25,16 @@ jobs:
           node-version: 22
 
       # --no-save : package.json de l'application reste strictement identique à celui de Rakeb.exe
+      - name: Tests automatiques de l'application
+        working-directory: tests
+        run: |
+          npm ci --no-audit --no-fund
+          npm test
+
+      - name: Synchroniser le numéro de version
+        working-directory: .
+        run: node scripts/sync-version.js
+
       - name: Installer Electron 31.7.7 et electron-builder
         run: npm install --no-save --no-audit --no-fund electron@31.7.7 electron-builder@24.13.3
 
