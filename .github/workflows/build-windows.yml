@@ -43,8 +43,12 @@ jobs:
           node --check main.js
           node --check preload.js
 
-      - name: Compiler les .exe (32 bits + 64 bits portables, installateur 32 bits)
-        run: npx electron-builder --win --publish never
+      - name: "Compiler les .exe (portable et installateur, 32 bits, 64 bits et ARM64, Windows 10/11)"
+        # une compilation par architecture : un installateur et un portable distincts pour chacune
+        run: |
+          npx electron-builder --win --ia32 --publish never
+          npx electron-builder --win --x64 --publish never
+          npx electron-builder --win --arm64 --publish never
         env:
           CSC_IDENTITY_AUTO_DISCOVERY: "false"
 
@@ -54,6 +58,50 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: rakeb-windows-exe
+          path: RakebDesktop/dist/*.exe
+          if-no-files-found: error
+
+      - name: Publier dans les Releases (tag vX.Y.Z)
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: RakebDesktop/dist/*.exe
+
+  exe-win7:
+    name: "exe-win7 (Windows 7 SP1, 8 et 8.1, 32 et 64 bits)"
+    runs-on: windows-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: RakebDesktop
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Synchroniser le numéro de version
+        working-directory: .
+        run: node scripts/sync-version.js
+
+      # Electron 22 : dernière version compatible avec Windows 7, 8 et 8.1
+      - name: Installer Electron 22.3.27 et electron-builder
+        run: npm install --no-save --no-audit --no-fund electron@22.3.27 electron-builder@24.13.3
+
+      - name: Compiler les .exe pour Windows 7/8/8.1
+        run: |
+          npx electron-builder --win --ia32 --config electron-builder.legacy.yml --publish never
+          npx electron-builder --win --x64 --config electron-builder.legacy.yml --publish never
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: "false"
+
+      - name: Lister les fichiers produits
+        run: Get-ChildItem dist -Filter *.exe | Select-Object Name, Length
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: rakeb-windows7-8-exe
           path: RakebDesktop/dist/*.exe
           if-no-files-found: error
 
