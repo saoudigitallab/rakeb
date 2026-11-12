@@ -25,7 +25,15 @@ const names = [...main.matchAll(/^\s*(?:async\s+)?function\s+([A-Za-z0-9_$]+)\s*
 const counts = {}; names.forEach((n) => { counts[n] = (counts[n] || 0) + 1; });
 const dups = Object.keys(counts).filter((n) => counts[n] > 1);
 check('aucune fonction déclarée deux fois (un doublon écrase la première)', dups.length === 0, dups.join(', '));
-check('APP_VERSION définie', /const APP_VERSION = '\d+\.\d+\.\d+'/.test(main));
+check('APP_VERSION définie', /const APP_VERSION = ['"]\d+\.\d+\.\d+['"]/.test(main));
+if (process.env.RAKEB_TRANSPILED) {
+  // Version pour anciennes WebView Android : plus aucune syntaxe moderne (Chrome 51 et plus suffit)
+  check('Android : pas de chaînage optionnel (?.)', !/\?\.[A-Za-z_\[(]/.test(main));
+  check('Android : pas de fusion nulle (??)', !/\?\?/.test(main));
+  check('Android : pas de async/await natifs', !/\basync\s+(function|\()|\basync\s+\w+\s*=>/.test(main) && !/(?<![\w.])await\s/.test(main));
+  check('Android : pas de décomposition d\'objet étalé ({...x})', !/\{\s*\.\.\./.test(main));
+  check('Android : compléments et pont chargés avant l\'application', html.indexOf('polyfills.js') > -1 && html.indexOf('polyfills.js') < html.indexOf('android-shim.js') && html.indexOf('android-shim.js') < html.indexOf(main.slice(0, 40)));
+}
 ['AdhanPlugin', 'AdhanService', 'AdhanReceiver', 'AdhanScheduler', 'BootReceiver', 'CompassPlugin', 'SystemPlugin'].forEach((c) => {
   check('classe Java ' + c + ' présente', fs.existsSync(path.join(__dirname, '..', 'RakebMobile', 'android-native', c + '.java')));
 });

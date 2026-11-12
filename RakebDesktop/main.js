@@ -1,5 +1,6 @@
 const { app, BrowserWindow, shell, ipcMain, net, session, Tray, Menu, nativeImage } = require('electron');
 const path = require('path');
+const { fetchCompat } = require('./netcompat');
 
 // Allow the adhan chime to play without a prior click in the window.
 app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required');
@@ -121,7 +122,7 @@ ipcMain.handle('net:request', async (_event, opts) => {
     const ctrl = new AbortController();
     const timer = setTimeout(() => ctrl.abort(), Math.min(Number(timeout) || 20000, 60000));
     try {
-      const res = await net.fetch(url, {
+      const res = await fetchCompat(net, url, {
         method,
         headers: { 'User-Agent': UA, ...headers },
         body: body === undefined ? undefined : String(body),

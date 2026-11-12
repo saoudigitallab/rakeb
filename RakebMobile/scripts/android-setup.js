@@ -57,7 +57,10 @@ edit(path.join(app, 'src/main/AndroidManifest.xml'), (t) => {
     .join('\n');
   // l'écran tactile n'est pas obligatoire : l'APK reste installable sur tout appareil (tablettes, TV box…)
   const feat = '    <uses-feature android:name="android.hardware.touchscreen" android:required="false" />\n' +
-               '    <uses-feature android:name="android.hardware.location" android:required="false" />\n';
+               '    <uses-feature android:name="android.hardware.location" android:required="false" />\n' +
+               '    <uses-feature android:name="android.hardware.screen.portrait" android:required="false" />\n' +
+               '    <uses-feature android:name="android.hardware.screen.landscape" android:required="false" />\n' +
+               '    <supports-screens android:smallScreens="true" android:normalScreens="true" android:largeScreens="true" android:xlargeScreens="true" android:anyDensity="true" />\n';
   // Synthèse vocale (99 Noms d'Allah) : Android 11+ exige de déclarer le service
   const q = '    <queries><intent><action android:name="android.intent.action.TTS_SERVICE" /></intent></queries>\n';
   return t.replace('</manifest>', add + '\n' + feat + q + '</manifest>');
@@ -99,6 +102,10 @@ public class MainActivity extends BridgeActivity {
     }
 }
 `);
+// Tablettes, pliables et multi-fenêtre : l'activité accepte tous les formats d'écran
+edit(path.join(app, 'src/main/AndroidManifest.xml'), (t) =>
+  t.includes('android:resizeableActivity') ? t : t.replace('android:name=".MainActivity"', 'android:name=".MainActivity"\n            android:resizeableActivity="true"'));
+
 // Composants du manifeste : service de lecture de l'adhan, récepteur d'alarme, récepteur de redémarrage
 edit(path.join(app, 'src/main/AndroidManifest.xml'), (t) => {
   if (t.includes('.AdhanService')) return t;

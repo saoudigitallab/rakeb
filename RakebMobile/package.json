@@ -2,7 +2,7 @@
   "name": "rakeb-mobile",
   "version": "1.1.0",
   "private": true,
-  "description": "Rakeb pour Android : le même index.html que la version Windows, emballé avec Capacitor",
+  "description": "Rakeb pour Android : le m\u00eame index.html que la version Windows, emball\u00e9 avec Capacitor",
   "scripts": {
     "prepare-web": "node scripts/prepare-web.js"
   },
@@ -17,6 +17,7 @@
     "@capacitor/share": "5.0.8"
   },
   "devDependencies": {
-    "@capacitor/cli": "5.7.8"
+    "@capacitor/cli": "5.7.8",
+    "esbuild": "0.24.2"
   }
 }

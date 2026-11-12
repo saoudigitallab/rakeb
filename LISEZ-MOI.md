@@ -71,3 +71,24 @@ Une ancienne Rakeb installée avec une autre signature doit être désinstallée
 - **Partage en image** : bouton « 📤 Partager » sur chaque doua, la doua du jour et l'aya du jour (image 1080 px, texte arabe, translittération, traduction, source). Android : feuille de partage (WhatsApp, etc.) ; PC : enregistrement du fichier.
 - **Coran hors ligne** : « 📥 Télécharger tout le Coran » (texte arabe et traduction, 114 sourates, stockés sur l'appareil, reprise possible) ; une sourate lue est mémorisée automatiquement ; marque-page 🔖 par verset et bouton « Reprendre ».
 - **Confidentialité** : ajout de api.github.com et de Google Fonts à la liste des services contactés ; date mise à jour.
+
+## PC et Android : toutes les architectures et versions (11 novembre 2026)
+**Windows (workflow « Build Windows »)** — un portable et un installateur par architecture :
+| Windows | Fichiers | Moteur |
+|---|---|---|
+| 10 et 11, 32 bits | `Rakeb-portable-…-ia32.exe`, `Rakeb-installateur-…-ia32.exe` | Electron 31 |
+| 10 et 11, 64 bits | `…-x64.exe` | Electron 31 |
+| 10 et 11 sur ARM (Surface Pro X…) | `…-arm64.exe` | Electron 31 |
+| **7 SP1, 8, 8.1**, 32 et 64 bits | `Rakeb-win7-portable-…` et `Rakeb-win7-installateur-…` (ia32, x64) | Electron 22 (dernière version compatible) |
+- Le code réseau passe par `RakebDesktop/netcompat.js` : `net.fetch` n'existe qu'à partir d'Electron 25, la version Windows 7/8 utilise `net.request` avec le même comportement (testé sur Electron 22 et 31 : GET, 404, redirection, POST, annulation, UTF-8, User-Agent).
+- Windows 7 : installer Windows 7 SP1 et ses mises à jour de sécurité (SHA-2) ; un .exe de la série « win7 » est inutile sur Windows 10/11.
+
+**Android (workflow « Build Android »)** — un seul APK universel, sans bibliothèque native (fonctionne sur ARM 32/64 bits et x86) :
+- **Android 5.1 (API 22) et plus**, jusqu'aux versions les plus récentes ; téléphones, tablettes, pliables et multi-fenêtre (`supports-screens`, `resizeableActivity`).
+- Android 5.0 et 4.x : impossible (Capacitor 5 exige l'API 22 et ces appareils n'ont plus de WebView exploitable).
+- **Anciennes WebView** : le JavaScript de l'APK est converti en ES2015 (esbuild) et complété par des polyfills : l'application fonctionne avec une WebView Chrome 51 ou plus. Android 5/6 : mettre à jour « Android System WebView » dans le Play Store ; si elle est trop ancienne, l'application affiche un message clair au lieu d'un écran vide.
+- Les tests automatiques sont aussi lancés sur la version convertie.
+- Mise en page vérifiée sur 7 tailles (téléphones, tablettes 600 à 800 px, paysage, PC) × 15 écrans : aucun débordement, aucun contenu masqué.
+
+## Plan A → E des prochaines évolutions
+Cahier des charges de référence : `docs/CAHIER-DES-CHARGES-EVOLUTIONS.md`. **Rien n'est implémenté tant que le plan n'est pas validé.**
