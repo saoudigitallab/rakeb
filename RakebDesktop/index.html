@@ -21,8 +21,8 @@
   --text-dim:#B9CFC8;
   --gold:#C9A227;
   --gold-soft:#E4C868;
-  --jade:#4FA88C;
-  --danger:#C9603A;
+  --jade:#61B59A;
+  --danger:#C9603A; --danger-text:#DC977E;
   --radius:14px;
   --font-display:'Amiri', 'Georgia', serif;
   --font-ui:'Work Sans', -apple-system, sans-serif;
@@ -36,9 +36,9 @@
     --text:#152420;
     --text-dim:#4F5E58;
     --gold:#A6791C;
-    --gold-soft:#8F6A18;
-    --jade:#2E7A63;
-    --danger:#A8492A;
+    --gold-soft:#826016;
+    --jade:#2B735D;
+    --danger:#A8492A; --danger-text:#A8492A;
   }
 }
 :root[data-theme="light"]{
@@ -49,21 +49,21 @@
   --text:#152420;
   --text-dim:#4F5E58;
   --gold:#A6791C;
-  --gold-soft:#8F6A18;
-  --jade:#2E7A63;
-  --danger:#A8492A;
+  --gold-soft:#826016;
+  --jade:#2B735D;
+  --danger:#A8492A; --danger-text:#A8492A;
 }
 :root[data-palette="nuit"]{
   --bg:#0D0B21; --surface:#181433; --surface-2:#211B44; --line:#332B5E;
-  --text:#EEEAFB; --text-dim:#B6ADD6; --gold:#8E7CE8; --gold-soft:#AC9EF2; --jade:#5FA8D3; --danger:#D3577A;
+  --text:#EEEAFB; --text-dim:#B6ADD6; --gold:#8E7CE8; --gold-soft:#AC9EF2; --jade:#5FA8D3; --danger:#D3577A; --danger-text:#D66384;
 }
 :root[data-palette="sable"]{
   --bg:#FBF4E4; --surface:#FFFFFF; --surface-2:#F1E4C6; --line:#E3D2A4;
-  --text:#3A2E1E; --text-dim:#7A6A4C; --gold:#B4791E; --gold-soft:#8F5D12; --jade:#6E8F55; --danger:#B4502C;
+  --text:#3A2E1E; --text-dim:#7A6A4C; --gold:#B4791E; --gold-soft:#8A5A11; --jade:#536C40; --danger:#B4502C; --danger-text:#A44928;
 }
 :root[data-palette="emeraude"]{
   --bg:#052E20; --surface:#0B4231; --surface-2:#0F543E; --line:#1B6B4E;
-  --text:#EAFBF3; --text-dim:#A9D9C4; --gold:#D9C24E; --gold-soft:#EBDD86; --jade:#4FD8A0; --danger:#E07B54;
+  --text:#EAFBF3; --text-dim:#A9D9C4; --gold:#D9C24E; --gold-soft:#EBDD86; --jade:#4FD8A0; --danger:#E07B54; --danger-text:#ECAD95;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 html,body{height:100%;}
@@ -485,6 +485,27 @@ textarea.btn{ resize:vertical; min-height:44px; }
 .saved-item:last-child{ border-bottom:none; }
 
 
+/* ---- Muslim IA sources, Ramadan, carte Qibla (v1.2) ---- */
+.src-answer .src-card{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin:8px 0;background:var(--surface-2);}
+.src-title{font-weight:600;margin-bottom:6px;color:var(--gold-soft);}
+.src-ref{font-size:.82rem;margin-top:8px;color:var(--text-dim);overflow-wrap:anywhere;}
+.src-ref a,.src-answer a{color:var(--jade);}
+.src-banner{font-size:.78rem;color:var(--text-dim);margin-top:10px;line-height:1.45;border-top:1px dashed var(--line);padding-top:8px;}
+.src-warn,.src-err{font-size:.85rem;margin-top:8px;color:var(--danger-text,var(--danger));}
+.fiqh-box{border:1px solid var(--danger);border-radius:12px;padding:10px 12px;}
+.src-table{width:100%;border-collapse:collapse;font-size:.9rem;}
+.src-table th,.src-table td{padding:4px 8px;text-align:left;border-bottom:1px solid var(--line);}
+.src-table tr.hl td{background:var(--surface);font-weight:600;}
+.ram-count{text-align:center;margin:12px 0 8px;}
+.ram-countdown{font-family:var(--font-display);font-size:2.6rem;color:var(--gold-soft);font-variant-numeric:tabular-nums;line-height:1.1;}
+.ram-times{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;margin-top:10px;color:var(--text-dim);}
+.fast-grid{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;}
+.fast-chip{min-width:40px;text-align:center;cursor:pointer;}
+.hijri-adj-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px;}
+.today-dates{color:var(--text-dim);margin:2px 0 10px;font-size:.95rem;}
+.qibla-map-canvas-wrap{position:relative;max-width:640px;margin-top:10px;}
+.qibla-map-canvas-wrap canvas{width:100%;height:auto;border-radius:12px;display:block;}
+#qibla-map-overlay{position:absolute;left:0;top:0;}
 /* ---- À propos enrichi, contact et confidentialité ---- */
 a.btn{ display:inline-block; text-decoration:none; text-align:center; }
 .about-logos{ display:flex; flex-wrap:wrap; gap:16px; justify-content:center; align-items:center; margin:6px 0 10px; }
@@ -608,6 +629,7 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
       <div class="card-head">
         <h2>Muslim IA</h2>
         <button class="btn mini" id="ai-clear-btn">🗑️ Nouvelle conversation</button>
+        <button class="btn mini" id="ai-cache-clear" type="button" aria-label="Vider le cache des réponses sourcées">🧹 Vider le cache</button>
       </div>
       <p class="muted" id="ai-key-hint"></p>
       <div class="chip-row" id="ai-suggestions" style="margin-top:8px;"></div>
@@ -622,6 +644,10 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
 
   <!-- ==================== HORAIRES ==================== -->
   <section class="panel grid active" id="panel-horaires">
+    <div class="card span2" id="ramadan-home-card" style="display:none;">
+      <div class="card-head"><h2 id="ramadan-home-day">🌙 Ramadan</h2><button class="btn mini primary" type="button" data-goto="ramadan">Ouvrir l'écran Ramadan</button></div>
+      <div class="muted" id="ramadan-home-label" aria-live="off"></div>
+    </div>
     <div class="card span2">
       <div class="card-head">
         <h2 data-i18n="card.horaires">Horaires de prière</h2>
@@ -633,6 +659,7 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
         <div class="chip" id="vchip-month">Mois</div>
       </div>
 
+      <div class="today-dates" id="today-dates"></div>
       <div id="view-today">
         <div class="prayer-list" id="prayer-list"><div class="muted">Calcul en cours…</div></div>
       </div>
@@ -645,9 +672,9 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
       <div id="view-month" style="display:none;">
         <div class="card-head" style="margin-bottom:8px;">
           <div class="row-btns" style="margin:0;">
-            <button class="btn mini" id="month-prev">◀</button>
+            <button class="btn mini" id="month-prev" aria-label="Mois précédent">◀</button>
             <strong id="month-label" style="min-width:130px;text-align:center;align-self:center;">—</strong>
-            <button class="btn mini" id="month-next">▶</button>
+            <button class="btn mini" id="month-next" aria-label="Mois suivant">▶</button>
             <button class="btn mini" id="month-today">Ce mois</button>
           </div>
           <button class="btn mini" id="month-csv">⬇ Exporter (CSV)</button>
@@ -710,7 +737,7 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
       <div class="row-btns">
         <div class="field">
           <label>Méthode</label>
-          <select id="calc-method">
+          <select id="calc-method" aria-label="Méthode de calcul">
             <option value="MWL">Ligue Islamique Mondiale</option>
             <option value="ISNA">ISNA (Amérique du Nord)</option>
             <option value="Egypt">Autorité Égyptienne</option>
@@ -720,7 +747,7 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
         </div>
         <div class="field">
           <label>École (Asr)</label>
-          <select id="madhab">
+          <select id="madhab" aria-label="École (Asr)">
             <option value="1">Standard (Shafi'i, Maliki, Hanbali)</option>
             <option value="2">Hanafi</option>
           </select>
@@ -739,6 +766,19 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
         <div><label for="adj-isha">Isha</label><input class="btn" id="adj-isha" type="number" min="-30" max="30" step="1" value="0"></div>
       </div>
       <button class="btn mini" id="adj-reset" type="button">↺ Remettre à zéro</button>
+      <div id="mosque-profiles" style="border-top:1px solid var(--line);margin-top:14px;padding-top:12px;">
+        <h3 style="font-size:.95rem;margin:0 0 6px;">Profils par mosquée</h3>
+        <p class="muted">Enregistrez les ajustements ci-dessus sous le nom d'une mosquée, puis choisissez-la ici quand vous voulez.</p>
+        <div class="row-btns">
+          <select class="btn" id="mp-select" aria-label="Choisir un profil de mosquée"></select>
+          <button class="btn mini" id="mp-delete" type="button" aria-label="Supprimer le profil choisi">🗑 Supprimer</button>
+        </div>
+        <div class="row-btns">
+          <input class="btn" id="mp-name" type="text" maxlength="40" placeholder="Nom de la mosquée" aria-label="Nom de la mosquée" style="flex:2;min-width:180px;">
+          <button class="btn mini primary" id="mp-save" type="button">💾 Enregistrer ces ajustements</button>
+        </div>
+        <div class="muted" id="mp-status" role="status"></div>
+      </div>
     </div>
 
     <div class="card">
@@ -775,7 +815,20 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
         <div class="row-btns" style="margin-top:14px;" id="qibla-compass-btn-row">
           <button class="btn primary" id="btn-compass">🧭 Activer la boussole</button>
         </div>
+        <div class="row-btns" style="margin-top:8px;"><button class="btn" id="qibla-map-link" type="button">🗺️ Pas de boussole ? Voir la carte de la Qibla</button></div>
       </div>
+    </div>
+
+    <div class="card span2" id="qibla-map-card">
+      <h2 class="small">🗺️ Carte de la Qibla (secours sans capteur)</h2>
+      <p class="muted">Pour les appareils sans boussole : la ligne dorée montre la direction de La Mecque depuis votre position. La carte est chargée depuis OpenStreetMap <strong>seulement si vous touchez le bouton</strong> ; sans réseau, la ligne reste affichée.</p>
+      <div class="row-btns"><button class="btn primary" id="qibla-map-btn" type="button">🗺️ Afficher la carte (connexion requise)</button><button class="btn" id="qibla-map-hide" type="button" style="display:none;">Masquer</button></div>
+      <div class="qibla-map-canvas-wrap" id="qibla-map-wrap" style="display:none;">
+        <canvas id="qibla-map-base" width="640" height="420" role="img" aria-label="Carte montrant la direction de La Mecque"></canvas>
+        <canvas id="qibla-map-overlay" width="640" height="420" aria-hidden="true"></canvas>
+      </div>
+      <div class="muted" id="qibla-map-status" role="status" style="margin-top:6px;"></div>
+      <div class="muted" style="font-size:.78rem;">© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener" style="color:var(--jade);">contributeurs d'OpenStreetMap</a></div>
     </div>
 
     <div class="card" id="sun-card">
@@ -839,13 +892,14 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
       <div class="row-btns" style="margin-top:10px;">
         <div class="field" style="flex:2;min-width:220px;">
           <label>Récitateur</label>
-          <select class="btn" id="reciter-select"><option>Chargement…</option></select>
+          <select class="btn" id="reciter-select" aria-label="Récitateur"><option>Chargement…</option></select>
         </div>
         <div class="field" style="flex:2;min-width:220px;">
           <label>Rechercher une sourate</label>
           <input class="btn" id="surah-search" type="text" placeholder="Nom ou numéro…">
         </div>
       </div>
+      <div class="chip-row" id="surah-hist" style="margin-top:8px;"></div>
       <div id="surah-list" style="margin-top:10px;max-height:340px;overflow-y:auto;"></div>
 
       <div id="audio-player-bar" style="display:none;border-top:1px solid var(--line);margin-top:14px;padding-top:14px;">
@@ -867,9 +921,9 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
       <div class="card-head">
         <h2 class="small">Lecture du texte (arabe + français)</h2>
         <div class="row-btns" style="margin:0;">
-          <select class="btn" id="reader-select"><option value="">Choisir une sourate…</option></select>
-          <button class="btn mini" id="reader-prev">◀</button>
-          <button class="btn mini" id="reader-next">▶</button>
+          <select class="btn" id="reader-select" aria-label="Choisir une sourate"><option value="">Choisir une sourate…</option></select>
+          <button class="btn mini" id="reader-prev" aria-label="Sourate précédente">◀</button>
+          <button class="btn mini" id="reader-next" aria-label="Sourate suivante">▶</button>
           <button class="btn mini" id="reader-listen">▶ Écouter</button>
         </div>
       </div>
@@ -879,7 +933,7 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
       <div class="add-actions" style="margin-top:0;">
         <button class="btn mini" id="quran-dl-btn" type="button">📥 Télécharger tout le Coran (hors ligne)</button>
         <button class="btn mini" id="quran-dl-cancel" type="button" style="display:none;">✖ Arrêter</button>
-        <button class="btn mini" id="quran-resume" type="button" style="display:none;"></button>
+        <button class="btn mini" id="quran-resume" type="button" style="display:none;" aria-label="Reprendre la lecture du Coran"></button>
       </div>
       <div class="muted" id="quran-dl-status" style="font-size:.85rem;"></div>
       <div class="progress" id="quran-dl-bar" style="display:none;"><div></div></div>
@@ -903,7 +957,7 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
     <div class="card span2">
       <div class="card-head">
         <h2 data-i18n="card.duas">Duas &amp; Azkar</h2>
-        <input class="btn" id="dua-search" type="text" placeholder="🔎 Rechercher une doua…" style="max-width:260px;">
+        <input class="btn" id="dua-search" type="text" placeholder="🔎 Mot-clé, thème ou source…" aria-label="Rechercher une doua" style="max-width:260px;">
       </div>
       <div class="chip-row" id="dua-chips" style="margin-top:8px;">
         <div class="chip active" data-cat="matin" data-i18n="tab.matin">Matin</div>
@@ -916,7 +970,7 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
       </div>
       <div class="add-actions"><button class="btn primary" id="dua-add-toggle" type="button">➕ Ajouter une doua / un dhikr</button></div>
       <div class="add-form" id="dua-form">
-        <div class="field"><label for="dua-f-cat">Catégorie</label><select class="btn" id="dua-f-cat"></select></div>
+        <div class="field"><label for="dua-f-cat">Catégorie</label><select class="btn" id="dua-f-cat" aria-label="Catégorie"></select></div>
         <div class="field"><label for="dua-f-ar">Texte en arabe</label><textarea class="btn ar" id="dua-f-ar" rows="3" dir="rtl" placeholder="اللَّهُمَّ …"></textarea></div>
         <div class="field"><label for="dua-f-tr">Translittération (facultatif)</label><input class="btn" id="dua-f-tr" type="text"></div>
         <div class="field"><label for="dua-f-fr">Traduction ou sens (facultatif)</label><textarea class="btn" id="dua-f-fr" rows="2"></textarea></div>
@@ -937,6 +991,7 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
       <button class="menu-tile" data-goto="tasbih"><span class="ico">📿</span><span class="t">Tasbih</span><span class="s">Compteur de dhikr avec formules prédéfinies</span></button>
       <button class="menu-tile" data-goto="zakat"><span class="ico">🧮</span><span class="t">Zakat</span><span class="s">Calculez votre zakat al-mal avec le nisab</span></button>
       <button class="menu-tile" data-goto="inspiration"><span class="ico">✨</span><span class="t">Inspiration Islamique</span><span class="s">Versets, hadiths et invocations à méditer</span></button>
+      <button class="menu-tile" data-goto="ramadan"><span class="ico">🌙</span><span class="t">Ramadan</span><span class="s">Compte à rebours imsak / iftar, jeûnes, dua de rupture</span></button>
       <button class="menu-tile" data-goto="calendrier"><span class="ico">📅</span><span class="t">Calendrier</span><span class="s">Calendrier hégirien, fêtes et jours blancs</span></button>
       <button class="menu-tile" data-goto="noms99"><span class="ico">🌙</span><span class="t">Les 99 Noms d'Allah</span><span class="s">Lecture, audio et suivi de mémorisation</span></button>
       <button class="menu-tile" data-goto="coran365"><span class="ico">📗</span><span class="t">Maîtriser le Coran (365j)</span><span class="s">Alphabet, voyelles, tajwid puis lecture guidée — un programme sur un an</span></button>
@@ -960,7 +1015,7 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
       <div class="line-item"><span>Jours validés (30 derniers jours)</span><strong id="streak-30">0</strong></div>
       <div style="margin-top:12px;">
         <label class="muted">Un jour est « validé » si…</label>
-        <select class="btn" id="streak-threshold" style="margin-top:6px;width:100%;">
+        <select class="btn" id="streak-threshold" style="margin-top:6px;width:100%;" aria-label="Seuil de la série">
           <option value="5">les 5 prières sont accomplies</option>
           <option value="3">au moins 3 prières sont accomplies</option>
           <option value="1">au moins 1 prière est accomplie</option>
@@ -984,9 +1039,9 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
     <div class="card">
       <div class="card-head" style="margin-bottom:8px;">
         <div class="row-btns" style="margin:0;">
-          <button class="btn mini" id="suivi-prev">◀</button>
+          <button class="btn mini" id="suivi-prev" aria-label="Semaine précédente">◀</button>
           <strong id="suivi-date" style="min-width:200px;text-align:center;align-self:center;">—</strong>
-          <button class="btn mini" id="suivi-next">▶</button>
+          <button class="btn mini" id="suivi-next" aria-label="Semaine suivante">▶</button>
         </div>
         <button class="btn mini" id="suivi-today">Aujourd'hui</button>
       </div>
@@ -1045,7 +1100,7 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
         <button class="tasbih-btn" id="tasbih-btn">Toucher</button>
         <div class="tasbih-actions">
           <button class="btn" id="tasbih-reset">Réinitialiser</button>
-          <select class="btn" id="tasbih-target">
+          <select class="btn" id="tasbih-target" aria-label="Objectif du tasbih">
             <option value="33">33</option>
             <option value="34">34</option>
             <option value="99">99</option>
@@ -1063,11 +1118,11 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
     <div class="card">
       <h2 class="small">Vos biens</h2>
       <div class="form-grid">
-        <div class="field"><label>Devise (libellé)</label><input class="btn" id="z-cur" type="text" value="FCFA"></div>
+        <div class="field"><label>Devise (libellé)</label><input class="btn" id="z-cur" type="text" value="FCFA" aria-label="Devise"></div>
         <div class="field"><label>Prix du gramme d'or (24k)</label><input class="btn zin" id="z-goldprice" type="number" min="0" step="any" placeholder="0"></div>
         <div class="field"><label>Prix du gramme d'argent</label><input class="btn zin" id="z-silverprice" type="number" min="0" step="any" placeholder="0"></div>
         <div class="field"><label>Base du nisab</label>
-          <select class="btn zin" id="z-basis">
+          <select class="btn zin" id="z-basis" aria-label="Base de calcul de la zakat">
             <option value="silver">Argent — 595 g (prudent)</option>
             <option value="gold">Or — 85 g</option>
           </select>
@@ -1119,15 +1174,57 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
     </div>
   </section>
 
+  <!-- ==================== RAMADAN ==================== -->
+  <section class="panel grid" id="panel-ramadan">
+    <div class="subhead"><button class="btn mini" data-goto="menu">← Menu</button><h2>🌙 Ramadan</h2></div>
+    <div class="card span2">
+      <div class="hijri-big hijri-adj-today" id="ram-hijri">—</div>
+      <div class="muted" id="ram-day">—</div>
+      <div class="ram-count">
+        <div class="muted" id="ram-label">—</div>
+        <div class="ram-countdown" id="ram-countdown">—:—:—</div>
+      </div>
+      <div class="ramadan-bar"><div class="ramadan-fill" id="ram-progress" style="width:0%"></div></div>
+      <div class="ram-times"><span>Imsak <strong id="ram-imsak">--:--</strong></span><span>Fajr <strong id="ram-fajr">--:--</strong></span><span>Iftar (Maghrib) <strong id="ram-iftar">--:--</strong></span></div>
+    </div>
+    <div class="card">
+      <h2 class="small">🍽️ Dua de la rupture du jeûne</h2>
+      <div id="ram-dua"></div>
+      <div class="add-actions" style="margin:8px 0 0;"><button class="btn mini" id="ram-dua-copy" type="button" aria-label="Copier la dua de la rupture du jeûne">📋 Copier</button></div>
+    </div>
+    <div class="card">
+      <h2 class="small">Compteur de jeûnes</h2>
+      <div id="ram-fast-count" class="muted">—</div>
+      <div class="ramadan-bar" style="margin-top:8px;"><div class="ramadan-fill" id="ram-fast-bar" style="width:0%"></div></div>
+      <div class="row-btns" style="margin-top:10px;"><button class="btn primary" id="ram-fast-today" type="button" aria-pressed="false" aria-label="Marquer aujourd'hui comme jour jeûné">—</button></div>
+      <div class="fast-grid" id="ram-fast-grid" role="group" aria-label="Jours de Ramadan jeûnés"></div>
+    </div>
+    <div class="card span2">
+      <h2 class="small">Réglages du mode Ramadan</h2>
+      <div class="row-btns">
+        <div class="field"><label for="ram-imsak-min">Imsak avant le Fajr</label>
+          <select class="btn" id="ram-imsak-min" aria-label="Imsak avant le Fajr"><option value="0">0 minute (au Fajr)</option><option value="5">5 minutes</option><option value="10">10 minutes</option><option value="15">15 minutes</option></select></div>
+        <label class="chip" style="cursor:pointer;align-self:flex-end;"><input type="checkbox" id="ram-reminder" style="margin-right:6px;">Rappel 10 min avant l'iftar (silencieux)</label>
+      </div>
+      <div class="hijri-adj-row"><span class="muted">Calendrier lunaire :</span>
+        <button class="btn mini hijri-adj-minus" type="button" aria-label="Reculer la date hégirienne d'un jour">− 1 jour</button>
+        <span class="chip hijri-adj-val" role="status">0 j</span>
+        <button class="btn mini hijri-adj-plus" type="button" aria-label="Avancer la date hégirienne d'un jour">+ 1 jour</button>
+        <button class="btn mini hijri-adj-reset" type="button" aria-label="Remettre l'ajustement hégirien à zéro">↺ Zéro</button>
+      </div>
+      <p class="muted" style="margin-top:8px;">Le calcul est fait sur votre appareil, sans réseau. Le début du Ramadan dépend de l'observation du croissant dans votre pays : ajustez d'un jour si l'annonce officielle diffère, et confirmez auprès des autorités religieuses locales. Le rappel de l'iftar demande que les notifications soient autorisées.</p>
+    </div>
+  </section>
+
   <!-- ==================== CALENDRIER ==================== -->
   <section class="panel grid" id="panel-calendrier">
     <div class="subhead"><button class="btn mini" data-goto="menu">← Menu</button><h2>📅 Calendrier</h2></div>
     <div class="card span2">
       <div class="card-head" style="margin-bottom:10px;">
         <div class="row-btns" style="margin:0;">
-          <button class="btn mini" id="cal-prev">◀</button>
+          <button class="btn mini" id="cal-prev" aria-label="Mois précédent">◀</button>
           <strong id="cal-label" style="min-width:230px;text-align:center;align-self:center;">—</strong>
-          <button class="btn mini" id="cal-next">▶</button>
+          <button class="btn mini" id="cal-next" aria-label="Mois suivant">▶</button>
           <button class="btn mini" id="cal-today">Aujourd'hui</button>
         </div>
         <div class="view-chips" style="margin:0;">
@@ -1165,8 +1262,8 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
       <div class="row-btns" style="align-items:flex-end;">
         <button class="btn primary" id="names-playall">▶ Lire tous les noms</button>
         <button class="btn" id="names-stop">⏹ Arrêter</button>
-        <div class="field" style="max-width:190px;"><label>Voix</label><select class="btn" id="names-voice"><option value="">Voix par défaut</option></select></div>
-        <div class="field" style="max-width:150px;"><label>Vitesse</label><select class="btn" id="names-rate"><option value="0.6">Lente</option><option value="0.8" selected>Normale</option><option value="1">Rapide</option></select></div>
+        <div class="field" style="max-width:190px;"><label>Voix</label><select class="btn" id="names-voice" aria-label="Voix des 99 noms"><option value="">Voix par défaut</option></select></div>
+        <div class="field" style="max-width:150px;"><label>Vitesse</label><select class="btn" id="names-rate" aria-label="Vitesse de lecture"><option value="0.6">Lente</option><option value="0.8" selected>Normale</option><option value="1">Rapide</option></select></div>
         <div class="field" style="min-width:200px;"><label>Rechercher</label><input class="btn" id="names-search" type="text" placeholder="Nom, numéro, sens…"></div>
       </div>
       <div class="muted" id="names-voice-note" style="margin-top:8px;"></div>
@@ -1185,7 +1282,7 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
       <div class="row-btns" style="margin-top:10px;">
         <div class="field" style="max-width:160px;">
           <label>Aller au jour</label>
-          <input class="btn" id="c365-jump" type="number" min="1" max="365" value="1">
+          <input class="btn" id="c365-jump" type="number" min="1" max="365" value="1" aria-label="Aller au jour">
         </div>
         <button class="btn mini" id="c365-jump-go" style="align-self:flex-end;">Aller</button>
         <button class="btn mini" id="c365-goto-current" style="align-self:flex-end;">📍 Reprendre où j'en suis</button>
@@ -1237,7 +1334,7 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
       <div style="border-top:1px solid var(--line);margin-top:14px;padding-top:14px;">
         <div style="font-weight:600;font-size:.9rem;">Rappel avant la prière</div>
         <div class="muted">Une alerte discrète (sans carillon) avant l'heure, en plus de l'alerte principale.</div>
-        <select class="btn" id="reminder-select" style="margin-top:8px;">
+        <select class="btn" id="reminder-select" style="margin-top:8px;" aria-label="Rappel avant la prière">
           <option value="0">Aucun rappel</option>
           <option value="5">5 minutes avant</option>
           <option value="10">10 minutes avant</option>
@@ -1260,7 +1357,7 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
       <div style="border-top:1px solid var(--line);margin-top:14px;padding-top:14px;">
         <div style="font-weight:600;font-size:.9rem;">Style du carillon</div>
         <div class="muted">Utilisé quand aucun fichier audio personnalisé n'est ajouté ci-dessous.</div>
-        <select class="btn" id="chime-style-select" style="margin-top:8px;">
+        <select class="btn" id="chime-style-select" style="margin-top:8px;" aria-label="Style du carillon">
           <option value="soft">Carillon doux (3 notes montantes)</option>
           <option value="classic">Carillon classique (2 notes)</option>
           <option value="beep">Simple bip</option>
@@ -1287,7 +1384,7 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
       <div class="row-btns">
         <div class="field">
           <label>Palette de couleurs</label>
-          <select class="btn" id="palette-select">
+          <select class="btn" id="palette-select" aria-label="Palette de couleurs">
             <option value="rakeb">Rakeb (défaut)</option>
             <option value="nuit">Nuit profonde</option>
             <option value="sable">Sable</option>
@@ -1296,14 +1393,14 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
         </div>
         <div class="field">
           <label>Langue de l'interface</label>
-          <select class="btn" id="lang-select">
+          <select class="btn" id="lang-select" aria-label="Langue">
             <option value="fr">Français</option>
             <option value="en">English</option>
           </select>
         </div>
         <div class="field">
           <label>Taille du texte</label>
-          <select class="btn" id="fontsize-select">
+          <select class="btn" id="fontsize-select" aria-label="Taille du texte">
             <option value="small">Petit</option>
             <option value="normal" selected>Normal</option>
             <option value="large">Grand</option>
@@ -1313,8 +1410,21 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
       <p class="muted" style="margin-top:8px;">La langue ne traduit que les menus pour l'instant — les duas et le contenu religieux restent en arabe/français.</p>
     </div>
 
+    <div class="card" id="hijri-adj-card">
+      <h2 class="small">Calendrier hégirien</h2>
+      <p class="muted">Aujourd'hui : <strong class="hijri-adj-today">—</strong></p>
+      <p class="muted">Calculé sur l'appareil, sans réseau. L'observation du croissant peut différer d'un jour selon les pays : ajustez ici si l'annonce de votre pays est différente. Cela décale toutes les dates hégiriennes (accueil, calendrier, Ramadan).</p>
+      <div class="hijri-adj-row">
+        <button class="btn hijri-adj-minus" type="button" aria-label="Reculer la date hégirienne d'un jour">− 1 jour</button>
+        <span class="chip hijri-adj-val" role="status">0 j</span>
+        <button class="btn hijri-adj-plus" type="button" aria-label="Avancer la date hégirienne d'un jour">+ 1 jour</button>
+        <button class="btn mini hijri-adj-reset" type="button">↺ Zéro</button>
+      </div>
+    </div>
+
     <div class="card">
       <h2 class="small">Muslim IA (assistant)</h2>
+      <p class="muted">La clé API est <strong>facultative</strong> : sans clé, Muslim IA répond avec des sources vérifiées (versets, hadiths, tafsir, horaires, duas). La clé sert seulement à des réponses plus personnalisées.</p>
       <p class="muted">Clé API Anthropic, créée sur <a href="https://console.anthropic.com" target="_blank" rel="noopener" style="color:var(--jade);">console.anthropic.com</a> et facturée à l'usage par Anthropic (quelques centimes par question). La clé reste sur cet appareil ; elle n'est transmise qu'à Anthropic.</p>
       <div class="row-btns" style="margin-top:10px;">
         <div class="field" style="flex:3;min-width:240px;">
@@ -1326,7 +1436,7 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
       <div class="muted" id="ai-key-status" style="margin-top:6px;"></div>
       <div class="field" style="margin-top:10px;">
         <label>Modèle</label>
-        <select class="btn" id="ai-model-select">
+        <select class="btn" id="ai-model-select" aria-label="Modèle de Muslim IA">
           <option value="claude-haiku-4-5-20251001">Claude Haiku 4.5 — rapide, économique (défaut)</option>
           <option value="claude-sonnet-5">Claude Sonnet 5 — plus précis</option>
           <option value="claude-opus-5-5">Claude Opus 5.5 — le plus poussé (plus cher)</option>
@@ -1367,6 +1477,7 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
         <img src="saou-digital-lab.png" alt="Logo SAOU DIGITAL LAB" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'logo-txt',textContent:'SAOU DIGITAL LAB'}))">
       </div>
       <div class="about-devise">Créer · Apprendre · Innover</div>
+      <p class="muted">Version de Rakeb : <strong id="app-version-about"></strong></p>
       <p class="muted">Rakeb est développé par SAOU DIGITAL LAB, pôle numérique de SAOU SYNERGY GROUP, à Mbour (région de Thiès, Sénégal).</p>
       <h3 style="margin:12px 0 4px;font-size:1rem;">Nous contacter</h3>
       <div class="about-actions">
@@ -1385,7 +1496,7 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
     <div class="subhead"><button class="btn mini" data-goto="parametres">← Réglages</button><h2>🔒 Confidentialité</h2></div>
     <div class="card span2 priv">
       <h2 class="small">Rakeb — Politique de confidentialité</h2>
-      <p class="muted">Dernière mise à jour : 10 novembre 2026</p>
+      <p class="muted">Dernière mise à jour : 16 novembre 2026</p>
       <h3>1. Qui sommes-nous</h3>
       <p>Rakeb est édité par SAOU DIGITAL LAB, pôle numérique de SAOU SYNERGY GROUP, basé à Mbour, région de Thiès, Sénégal. Pour toute question : saoudigitallab@gmail.com ou WhatsApp / appel au +221 76 418 22 00.</p>
       <h3>2. L'essentiel</h3>
@@ -1416,20 +1527,25 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
       <h3>5. Services tiers contactés</h3>
       <p>Quand vous utilisez les fonctions concernées, votre appareil se connecte directement à ces services, qui reçoivent au minimum votre adresse IP, comme tout site web que vous consultez. Chacun applique sa propre politique de confidentialité, que nous ne contrôlons pas.</p>
       <ul>
-        <li>api.alquran.cloud : texte du Coran et traductions (numéro de sourate ou de verset demandé).</li>
+        <li>api.alquran.cloud : texte du Coran, traductions, translittération, recherche dans la traduction et tafsir de repli (sourate, verset ou mot-clé demandé).</li>
+        <li>api.quran.com : tafsir court d'un verset, quand vous le demandez à Muslim IA (numéros de sourate et de verset).</li>
+        <li>api.aladhan.com : recoupement des horaires de prière, quand vous le demandez à Muslim IA ; votre position arrondie à 2 décimales est envoyée, sans identifiant.</li>
+        <li>sunnah.com : lien de référence des hadiths, qui s'ouvre dans votre navigateur seulement si vous le touchez (aucune requête automatique de l'application).</li>
+        <li>tile.openstreetmap.org : tuiles de la carte de la Qibla, uniquement si vous touchez « Afficher la carte » ; ce service voit votre adresse IP et la zone demandée.</li>
         <li>mp3quran.net : écoute des sourates (fichier audio demandé).</li>
-        <li>cdn.jsdelivr.net (dépôt public de hadiths) : hadith du jour.</li>
+        <li>cdn.jsdelivr.net (dépôt public de hadiths) : hadith du jour et hadiths demandés à Muslim IA (collection et numéro).</li>
         <li>api.github.com : vérification de la présence d'une nouvelle version de l'application (aucune donnée personnelle n'est envoyée).</li>
         <li>fonts.googleapis.com et fonts.gstatic.com (Google Fonts) : polices d'affichage de l'application.</li>
-        <li>Anthropic (API Claude) : fonction Muslim IA, voir section 6.</li>
+        <li>api.anthropic.com (Anthropic, API Claude) : fonction Muslim IA avec votre clé API, voir section 6.</li>
         <li>(PC et web uniquement) Overpass API / OpenStreetMap : recherche de mosquées et de commerces halal ; ce service reçoit les coordonnées de la position utilisée pour la recherche.</li>
         <li>(PC et web uniquement) ipapi.co : localisation approximative à partir de votre adresse IP, uniquement si vous choisissez cette option.</li>
-        <li>(PC et web uniquement) Wikipédia ou le flux RSS que vous avez indiqué : article du jour.</li>
+        <li>(PC et web uniquement) fr.wikipedia.org (Wikipédia) ou le flux RSS que vous avez indiqué : article du jour.</li>
         <li>Liens externes (cartes, sites web) : ils s'ouvrent dans votre navigateur ou votre application et dépendent alors de leur éditeur.</li>
         <li>WhatsApp, appel téléphonique, e-mail : si vous nous contactez par ces boutons, c'est vous qui lancez l'échange. Nous recevons ce que vous nous envoyez (votre numéro ou votre adresse, votre message) et l'utilisons uniquement pour vous répondre.</li>
       </ul>
       <h3>6. Muslim IA</h3>
-      <p>Muslim IA envoie vos questions, ainsi que les derniers échanges de la conversation, à Anthropic, avec votre propre clé API. Les réponses sont générées par une intelligence artificielle : elles peuvent comporter des erreurs et ne remplacent pas l'avis d'un savant qualifié. Ne saisissez pas d'informations personnelles sensibles dans vos questions. Votre clé API est stockée uniquement sur votre appareil ; nous n'y avons pas accès. Vous pouvez la supprimer dans les paramètres de l'application et la révoquer depuis votre compte Anthropic.</p>
+      <p>Sans clé API, Muslim IA fonctionne en mode « sources vérifiées » : il identifie localement le type de question et ne contacte que quatre services d'une liste fermée (api.alquran.cloud, api.quran.com, api.aladhan.com, cdn.jsdelivr.net), sans recherche web ouverte. Il ne génère aucune fatwa : les questions de jurisprudence sont renvoyées à un savant qualifié. Les réponses obtenues sont gardées sur l'appareil (cache) et peuvent être effacées.</p>
+      <p>Avec une clé API, Muslim IA envoie vos questions, ainsi que les derniers échanges de la conversation, à Anthropic, avec votre propre clé API. Les réponses sont générées par une intelligence artificielle : elles peuvent comporter des erreurs et ne remplacent pas l'avis d'un savant qualifié. Ne saisissez pas d'informations personnelles sensibles dans vos questions. Votre clé API est stockée uniquement sur votre appareil ; nous n'y avons pas accès. Vous pouvez la supprimer dans les paramètres de l'application et la révoquer depuis votre compte Anthropic.</p>
       <h3>7. Conservation et suppression</h3>
       <p>Vos données restent sur votre appareil tant que vous ne les supprimez pas. Pour tout effacer : désinstallez l'application, ou effacez ses données dans les réglages de votre système (sur Android : Paramètres › Applications › Rakeb › Stockage › Effacer les données). Sur PC, la section « Mes données » des paramètres permet aussi d'effacer le suivi et la série.</p>
       <h3>8. Enfants</h3>
@@ -1581,7 +1697,10 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
 
   /* ---------- Hijri (Kuwaiti algorithm, arithmetic approximation) ---------- */
   const HIJRI_MONTHS = ['Mouharram','Safar',"Rabi al-Awwal","Rabi ath-Thani","Joumada al-Oula","Joumada ath-Thania",'Rajab',"Cha'ban",'Ramadan','Chawwal',"Dhou al-Qi'da","Dhou al-Hijja"];
-  function gregorianToHijri(date){
+  function hijriAdjDays(){ let v = 0; try{ v = parseInt(JSON.parse(localStorage.getItem('rakeb-hijri-adj')), 10); }catch(e){} return isNaN(v) ? 0 : Math.max(-1, Math.min(1, v)); }
+  function gregorianToHijri(date, noAdj){
+    const adj = noAdj ? 0 : hijriAdjDays();
+    if(adj) date = new Date(date.getTime() + adj*86400000);
     const jd = Math.floor(julianDate(date)) + 1;
     let l = jd - 1948440 + 10632;
     let n = Math.floor((l-1)/10631);
@@ -1670,7 +1789,7 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
   };
 
   /* ---------- navigation: tabs + Menu sub-menu ---------- */
-  const SUB_PANELS = ['serie','suivi','tasbih','zakat','inspiration','calendrier','noms99','coran365'];
+  const SUB_PANELS = ['serie','suivi','tasbih','zakat','inspiration','calendrier','noms99','coran365','ramadan'];
   const PANEL_HOOKS = {};
   function showPanel(id){
     const panel = $('#panel-'+id);
@@ -2614,9 +2733,9 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
     return (DUAS[cat] || []).concat(mine.filter(d=> d.cat === cat));
   }
   function renderDuas(cat, filter){
-    const f = (filter||'').trim().toLowerCase();
-    const items = duaItems(cat).filter(d=> !f || (d.fr||'').toLowerCase().includes(f) || (d.tr||'').toLowerCase().includes(f) ||
-                                          (d.ref||'').toLowerCase().includes(f) || (d.ar||'').includes(f));
+    const f = (filter||'').trim();
+    // Recherche (mot-clé, thème, source) dans toutes les catégories ; sans recherche : la catégorie choisie
+    const items = f ? duaMatches(allDuaItems(), f) : duaItems(cat);
     lastDuaItems = items;
     $('#dua-list').innerHTML = items.map((d,i)=>
       '<div class="dua-item">' +
@@ -2624,7 +2743,8 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
         (d.tr  ? '<div class="dua-translit">' + escapeHtml(d.tr) + '</div>' : '') +
         (d.fr  ? '<div class="dua-fr">' + escapeHtml(d.fr) + '</div>' : '') +
         (d.ref ? '<div class="dua-ref">' + escapeHtml(d.ref) + '</div>' : '') +
-        '<div class="add-actions" style="margin:6px 0 0;"><button class="btn mini" type="button" data-dua-share="' + i + '">📤 Partager</button>' +
+        (f && d.catLabel ? '<div class="dua-ref">📂 ' + escapeHtml(d.catLabel) + '</div>' : '') +
+        '<div class="add-actions" style="margin:6px 0 0;"><button class="btn mini" type="button" data-dua-copy="' + i + '" aria-label="Copier cette doua">📋 Copier</button><button class="btn mini" type="button" data-dua-share="' + i + '">📤 Partager</button>' +
           (d.id ? '<button class="btn mini dua-del" type="button" data-dua-del="' + escapeHtml(d.id) + '">🗑 Supprimer</button>' : '') + '</div>' +
       '</div>').join('') ||
       '<div class="muted">' + (cat === 'perso' ? 'Vous n\'avez encore rien ajouté : touchez « ➕ Ajouter une doua / un dhikr ».' : 'Aucun résultat.') + '</div>';
@@ -2829,6 +2949,7 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
     renderTimes();
     renderTomorrow();
     if(horairesView === 'month') renderMonth();
+    try{ renderRamadanHome(); }catch(e){}
   }
 
   setInterval(renderTimes, 1000);
@@ -3184,7 +3305,7 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
       `<div class="linkout" style="cursor:pointer;" data-surah="${s.number}">
         <div><div class="t">${s.number}. ${s.englishName}</div><div class="s">${s.numberOfAyahs} versets</div></div>
         <div class="row-btns" style="margin:0;">
-          <button class="btn mini read-surah" data-surah="${s.number}">📖</button>
+          <button class="btn mini read-surah" data-surah="${s.number}" aria-label="Lire la sourate ${s.number}">📖</button>
           <span class="arrow" style="font-family:var(--font-display);font-size:1.1rem;color:var(--gold-soft);">${s.name}</span>
         </div>
       </div>`).join('');
@@ -3248,6 +3369,7 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
           <div class="dua-ar">${escapeHtml(a.t)}<span class="ayah-no">﴿${a.n}﴾</span></div>
           ${withTr && rec.fr[i] ? `<div class="dua-fr" style="margin-top:6px;">${escapeHtml(rec.fr[i])}</div>` : ''}
           <button class="btn mini mark-btn" type="button" data-mark="${num}:${a.n}" aria-label="Marquer le verset ${a.n}">${marked ? '🔖 Marqué' : '🔖'}</button>
+          <button class="btn mini" type="button" data-copy-ayah="${num}:${a.n}" aria-label="Copier le verset ${a.n}">📋</button>
         </div>`;
       });
       box.innerHTML = html;
@@ -4021,7 +4143,7 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
     const day = data[key] || {};
     $('#suivi-date').textContent = FR_DAYS[suiviCursor.getDay()] + ' ' + suiviCursor.getDate() + ' ' + FR_MONTHS[suiviCursor.getMonth()] + ' ' + suiviCursor.getFullYear();
     $('#suivi-list').innerHTML = TRACK_PRAYERS.map(([k,label])=>
-      `<div class="check-row"><span>${label}</span><button class="check-btn ${day[k]?'on':''}" data-p="${k}">✓</button></div>`).join('');
+      `<div class="check-row"><span>${label}</span><button class="check-btn ${day[k]?'on':''}" data-p="${k}" aria-label="Prière ${k} accomplie" aria-pressed="${day[k]?'true':'false'}">✓</button></div>`).join('');
     $$('.check-btn', $('#suivi-list')).forEach(btn=>{
       btn.addEventListener('click', ()=>{
         const d = getTrackData(); const dd = d[key] || {};
@@ -4260,6 +4382,7 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
       ${data.ar ? `<div class="dua-ar">${escapeHtml(data.ar)}</div>` : ''}
       <div class="dua-fr" style="margin-top:6px;">${escapeHtml(data.fr || '—')}</div>
       <div class="dua-ref" style="margin-top:6px;">${escapeHtml(data.ref)}</div>
+      <div class="add-actions" style="margin:6px 0 0;"><button class="btn mini" type="button" data-copy-hadith aria-label="Copier le hadith">📋 Copier</button></div>
     `;
   }
   const hadithCard = $('#hadith-content');
@@ -4539,7 +4662,7 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
           <div class="tr">${n[1]}</div>
           <div class="fr">${n[2]}</div>
           <div class="acts">
-            <button class="btn mini play-name" data-i="${i}">🔊</button>
+            <button class="btn mini play-name" data-i="${i}" aria-label="Écouter le nom n°${i+1}">🔊</button>
             <button class="btn mini learn-name" data-i="${i}">${learned.has(i)?'✓ Appris':'Marquer appris'}</button>
           </div>
         </div>`).join('') || '<div class="muted">Aucun résultat.</div>';
@@ -4786,7 +4909,8 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
   window.RakebBridge = {
     upcoming(days){
       const out = [];
-      if(state.lat === null || state.lon === null || !store.get('rakeb-notif', false)) return out;
+      const notifOn = !!store.get('rakeb-notif', false), iftarOn = iftarReminderOn();
+      if(state.lat === null || state.lon === null || (!notifOn && !iftarOn)) return out;
       const mutes = store.get('rakeb-prayer-mutes', {});
       const rem = parseInt(store.get('rakeb-reminder-min', 0), 10) || 0;
       const n = nowInTz(state.tz), now = Date.now();
@@ -4796,6 +4920,12 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
         const off = tzOffsetHours(state.tz, date);
         const midnight = Date.UTC(n.y, n.m, n.d + d) - off*3600000;
         let prev = -1;
+        // Rappel de l'iftar (10 min avant le Maghrib, pendant le mois de Ramadan) : notification silencieuse
+        if(iftarOn && t.maghrib && gregorianToHijri(new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), 12))).month === 9){
+          const ifts = midnight + (t.maghrib.h*60 + t.maghrib.m - 10)*60000;
+          if(ifts > now) out.push({ id:'iftar', name:'iftar', ts: ifts, reminder: 10, hhmm: pad(t.maghrib.h) + ':' + pad(t.maghrib.m), title:'Iftar dans 10 minutes', body:'Maghrib à ' + pad(t.maghrib.h) + ':' + pad(t.maghrib.m) + ' — préparez la rupture du jeûne.' });
+        }
+        if(!notifOn) return;
         PRAYER_LABELS.forEach(([key, name])=>{
           if(key === 'sunrise' || !t[key]) return;
           let mins = t[key].h*60 + t[key].m;
@@ -4844,6 +4974,7 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
   }
   (function(){
     const v = $('#app-version'); if(v) v.textContent = APP_VERSION;
+    const va = $('#app-version-about'); if(va) va.textContent = APP_VERSION;
     const b = $('#update-check'); if(b) b.addEventListener('click', ()=> checkUpdate(true));
     const last = store.get('rakeb-update-check', 0);
     if(Date.now() - last > 86400000) setTimeout(()=> checkUpdate(false), 8000);
@@ -5153,14 +5284,18 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
 - Pour les questions personnelles ou complexes (fatwas individuelles, situations familiales, santé), rappelle qu'il vaut mieux consulter un savant qualifié ou un imam de confiance.
 - Reste concis (quelques paragraphes maximum) sauf si la question demande clairement plus de détail.
 - Tu peux utiliser des paragraphes et des listes à puces simples ; pas de tableaux.
-- Si la question sort du cadre de l'islam, réponds brièvement puis recentre poliment sur ce que tu peux aider à couvrir.`;
+- Si la question sort du cadre de l'islam, réponds brièvement puis recentre poliment sur ce que tu peux aider à couvrir.
+- Toute réponse religieuse doit citer ses sources : pour le Coran la sourate et le numéro du verset (ex. 2:255), pour un hadith la collection et le numéro (ex. Boukhari 1), avec son degré d'authenticité s'il est connu. Si tu n'es pas certain de la source exacte, dis-le clairement au lieu d'en inventer.
+- Ne donne jamais de fatwa ni d'avis juridique tranché (licite/illicite, divorce, héritage, validité d'un acte) : explique brièvement que la question relève d'un savant qualifié.
+- Termine par un court rappel : consultez une personne qualifiée pour une question religieuse.`;
 
   const AI_SUGGESTIONS = [
-    'Quelles sont les conditions de validité du jeûne ?',
-    'Comment faire les ablutions (woudou) ?',
-    'Quelle est la différence entre sunna et fard ?',
-    'Que dire en sortant de la mosquée ?',
-    'Qu\'est-ce que la zakat al-fitr ?'
+    'Verset 2:255 (Ayat al-Kursi)',
+    'Hadith Boukhari 1',
+    'Tafsir du verset 112:1',
+    'Horaires de prière aujourd\'hui',
+    'Dua avant de manger',
+    'Versets sur la patience'
   ];
 
   function mdLite(text){
@@ -5193,7 +5328,7 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
       const key = (store.get('rakeb-ai-key','')||'').trim();
       $('#ai-key-hint').textContent = key
         ? ''
-        : 'Aucune clé API enregistrée — allez dans Paramètres → Muslim IA pour en ajouter une (nécessaire, facturée par Anthropic).';
+        : 'Mode sources vérifiées (sans clé) : versets, hadiths, tafsir, horaires et duas. Une clé API facultative (Paramètres → Muslim IA) permet des réponses personnalisées.';
     }
     refreshKeyHint();
     PANEL_HOOKS.ia = refreshKeyHint;
@@ -5220,7 +5355,7 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
         addBubble('bot', '<p>As-salamu \'alaykum 👋 Posez-moi une question sur l\'islam — jeûne, prière, croyance, histoire, jurisprudence…</p>');
         return;
       }
-      h.forEach(m=> addBubble(m.role, m.role==='user' ? escapeHtml(m.content) : mdLite(m.content)));
+      h.forEach(m=> addBubble(m.role, m.role==='user' ? escapeHtml(m.content) : (m.html ? m.html : mdLite(m.content) + aiFooterHtml(m.content))));
     }
     renderHistory();
 
@@ -5231,37 +5366,52 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
       const question = input.value.trim();
       if(!question) return;
       const key = (store.get('rakeb-ai-key','')||'').trim();
-      if(!key){ toast('Ajoutez votre clé API dans Paramètres → Muslim IA.'); showPanel('parametres'); return; }
+      const intent = detectIntent(question);
 
       const history = loadHistory();
       history.push({ role:'user', content: question });
       saveHistory(history);
       addBubble('user', escapeHtml(question));
       input.value = '';
+
+      // Fiqh : jamais de réponse générée (avec ou sans clé)
+      if(intent === 'fiqh'){
+        addBubble('bot', FIQH_HTML);
+        const hf = loadHistory(); hf.push({ role:'assistant', content: FIQH_TEXT, html: FIQH_HTML }); saveHistory(hf);
+        return;
+      }
       const thinking = addBubble('bot', '<p>…</p>');
       $('#ai-ask-btn').disabled = true;
 
       try{
-        const model = store.get('rakeb-ai-model','claude-haiku-4-5-20251001');
-        const msgs = history.slice(-12).map(m=> ({ role: m.role, content: m.content }));
-        const res = await netFetch('https://api.anthropic.com/v1/messages', {
-          method: 'POST',
-          headers: {
-            'content-type': 'application/json',
-            'x-api-key': key,
-            'anthropic-version': '2023-06-01',
-            'anthropic-dangerous-direct-browser-access': 'true'
-          },
-          body: JSON.stringify({ model, max_tokens: 900, system: AI_SYSTEM_PROMPT, messages: msgs })
-        });
-        const json = await res.json();
-        if(!res.ok){
-          thinking.classList.add('err');
-          thinking.innerHTML = '<p>Erreur : ' + escapeHtml(json.error?.message || ('HTTP '+res.status)) + '. Vérifiez votre clé API dans Paramètres.</p>';
+        if(!key){
+          // Mode sources vérifiées (sans clé)
+          const r = await askSources(question);
+          thinking.innerHTML = r.html;
+          if(r.kind === 'error') thinking.classList.add('err');
+          const h2 = loadHistory(); h2.push({ role:'assistant', content: r.text, html: r.html }); saveHistory(h2);
         } else {
-          const text = (json.content || []).map(b=>b.text || '').join('\n').trim() || 'Réponse vide.';
-          thinking.innerHTML = mdLite(text);
-          const h2 = loadHistory(); h2.push({ role:'assistant', content: text }); saveHistory(h2);
+          const model = store.get('rakeb-ai-model','claude-haiku-4-5-20251001');
+          const msgs = history.slice(-12).map(m=> ({ role: m.role, content: m.content }));
+          const res = await netFetch('https://api.anthropic.com/v1/messages', {
+            method: 'POST',
+            headers: {
+              'content-type': 'application/json',
+              'x-api-key': key,
+              'anthropic-version': '2023-06-01',
+              'anthropic-dangerous-direct-browser-access': 'true'
+            },
+            body: JSON.stringify({ model, max_tokens: 900, system: AI_SYSTEM_PROMPT, messages: msgs })
+          });
+          const json = await res.json();
+          if(!res.ok){
+            thinking.classList.add('err');
+            thinking.innerHTML = '<p>Erreur : ' + escapeHtml(json.error?.message || ('HTTP '+res.status)) + '. Vérifiez votre clé API dans Paramètres.</p>';
+          } else {
+            const text = (json.content || []).map(b=>b.text || '').join('\n').trim() || 'Réponse vide.';
+            thinking.innerHTML = mdLite(text) + aiFooterHtml(text);
+            const h2 = loadHistory(); h2.push({ role:'assistant', content: text }); saveHistory(h2);
+          }
         }
       }catch(e){
         thinking.classList.add('err');
@@ -5292,6 +5442,838 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
   }
 
 
+  /* ===== sourcesblock.js ===== */
+  /* =========================================================
+     MUSLIM IA — « MODE SOURCES VÉRIFIÉES » (sans clé API)
+     • detectIntent : classement local de la question (aucun réseau)
+     • Liste blanche stricte : api.alquran.cloud, api.quran.com,
+       cdn.jsdelivr.net (dépôt public de hadiths), api.aladhan.com
+     • Aucune recherche web ouverte, aucun site d'avis juridique,
+       aucune fatwa générée : le fiqh est refusé et renvoyé à un savant.
+     • Délai maximal 5 s, erreurs détaillées, cache local.
+  ========================================================= */
+  const SRC_ALLOWED_HOSTS = ['api.alquran.cloud', 'api.quran.com', 'cdn.jsdelivr.net', 'api.aladhan.com'];
+  let SRC_TIMEOUT = 5000;
+  const SRC_CACHE_KEY = 'rakeb-src-cache';
+  const SRC_CACHE_MAX = 60;
+  const HADITH_BASE = 'https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/';
+
+  const SURAH_NAMES = ("Al-Fatiha|Al-Baqara|Al-Imran|An-Nisa|Al-Ma'ida|Al-An'am|Al-A'raf|Al-Anfal|At-Tawba|Yunus|Hud|Yusuf|Ar-Ra'd|Ibrahim|Al-Hijr|An-Nahl|Al-Isra|Al-Kahf|Maryam|Ta-Ha|Al-Anbiya|Al-Hajj|Al-Mu'minun|An-Nur|Al-Furqan|Ash-Shu'ara|An-Naml|Al-Qasas|Al-Ankabut|Ar-Rum|Luqman|As-Sajda|Al-Ahzab|Saba|Fatir|Ya-Sin|As-Saffat|Sad|Az-Zumar|Ghafir|Fussilat|Ash-Shura|Az-Zukhruf|Ad-Dukhan|Al-Jathiya|Al-Ahqaf|Muhammad|Al-Fath|Al-Hujurat|Qaf|Adh-Dhariyat|At-Tur|An-Najm|Al-Qamar|Ar-Rahman|Al-Waqi'a|Al-Hadid|Al-Mujadila|Al-Hashr|Al-Mumtahana|As-Saff|Al-Jumu'a|Al-Munafiqun|At-Taghabun|At-Talaq|At-Tahrim|Al-Mulk|Al-Qalam|Al-Haqqa|Al-Ma'arij|Nuh|Al-Jinn|Al-Muzzammil|Al-Muddaththir|Al-Qiyama|Al-Insan|Al-Mursalat|An-Naba|An-Nazi'at|Abasa|At-Takwir|Al-Infitar|Al-Mutaffifin|Al-Inshiqaq|Al-Buruj|At-Tariq|Al-A'la|Al-Ghashiya|Al-Fajr|Al-Balad|Ash-Shams|Al-Layl|Ad-Duha|Ash-Sharh|At-Tin|Al-Alaq|Al-Qadr|Al-Bayyina|Az-Zalzala|Al-Adiyat|Al-Qari'a|At-Takathur|Al-Asr|Al-Humaza|Al-Fil|Quraysh|Al-Ma'un|Al-Kawthar|Al-Kafirun|An-Nasr|Al-Masad|Al-Ikhlas|Al-Falaq|An-Nas").split('|');
+  const AYAH_COUNTS = [7,286,200,176,120,165,206,75,129,109,123,111,43,52,99,128,111,110,98,135,112,78,118,64,77,227,93,88,69,60,34,30,73,54,45,83,182,88,75,85,54,53,89,59,37,35,38,29,18,45,60,49,62,55,78,96,29,22,24,13,14,11,11,18,12,12,30,52,52,44,28,28,20,56,40,31,50,40,46,42,29,19,36,25,22,17,19,26,30,20,15,21,11,8,8,19,5,8,8,11,11,8,3,9,5,4,7,3,6,3,5,4,5,6];
+  const SURAH_AR = { 'الفاتحة':1, 'البقرة':2, 'ال عمران':3, 'يس':36, 'الرحمن':55, 'الملك':67, 'الكهف':18, 'الاخلاص':112, 'الفلق':113, 'الناس':114, 'الكوثر':108, 'العصر':103 };
+
+  /* ---------- normalisation : minuscules, sans accents ni voyelles arabes, chiffres arabes → 0-9 ---------- */
+  function srcNorm(s){
+    return String(s == null ? '' : s).toLowerCase()
+      .replace(/[٠-٩]/g, function(d){ return String('٠١٢٣٤٥٦٧٨٩'.indexOf(d)); })
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f\u064B-\u065F\u0670\u0640]/g, '')
+      .replace(/[’‘`´]/g, "'")
+      .replace(/\s+/g, ' ').trim();
+  }
+
+  /* ---------- A1. Détection d'intention (local, sans réseau) ---------- */
+  const FIQH_RE = /\bhal+a+l\b|\bhar+a+m\b|\bfatwa|\bfatawa|\btalaq\b|\btaccu\b|divorc|repudi|herit|\bmirath\b|succession|\blicite|illicite|est[- ]il permis|est[- ]ce permis|est[- ]ce autorise|est[- ]ce licite|a[- ]t[- ]on le droit|ai[- ]je le droit|\bribaa?\b|\busure\b|avortement|contraception|polygam|\bnikah\b|\bkhul|\bzihar\b|testament|\bmahr\b|\bjaiz\b|(est[- ]il|est[- ]elle|sont[- ]ils) (valide|nul|annule|invalide)/;
+  const FIQH_AR = ['حلال', 'حرام', 'فتوي', 'فتوى', 'طلاق', 'ميراث', 'يجوز', 'ما حكم'];
+  const HADITH_RE = /hadith|\bhadis\b|\bsunna|boukhari|bukhari|\bsahih\b|\bnawawi|tirmid|abou? ?daou?d|nasa[iy]|ibn ma(dj|j)a|(selon|dans|rapporte par) muslim|muslim n/;
+  const TAFSIR_RE = /tafsir|tafseer|exegese|commentaire/;
+  const EXPLAIN_RE = /expliqu|explication|signification|que signifie|interpret/;
+  const QURAN_RE = /verset|sourate|\bsourat|coran|quran|qur'?an|\bayah?\b|\bayat\b|\baaya|\bsura\b|surah|kursi|fatiha/;
+  const DUA_RE = /\bdou?a+s?\b|\bdu'?a\b|invocation|supplication|azkar|adhkar|\bdhikr|\bzikr|que dire|que dit[- ]on|quoi dire/;
+  const PRAYER_RE = /horaire|heure (de|du|des|d')|a quelle heure|mawaqit|\bfa?djr\b|\bsubh\b|\bdhuhr\b|\bzuhr\b|\bdohr\b|\bmaghrib\b|\bisha\b|\bicha\b|\badhan\b|\bazan\b|iftar|imsak|prochaine priere|quand (est|commence)|waxtu|\bsube\b|tisbaar|takusaan|\btimis\b|gaawu/;
+
+  function detectIntent(question){
+    const raw = String(question == null ? '' : question).toLowerCase();
+    const n = srcNorm(question);
+    const has = function(re){ return re.test(n); };
+    const hasAr = function(list){ return list.some(function(w){ return n.indexOf(w) >= 0; }); };
+    if(!n) return 'general';
+    // 1. Le fiqh passe toujours en premier : aucune réponse générée
+    if(has(FIQH_RE) || hasAr(FIQH_AR) || n.split(' ').indexOf('حكم') >= 0) return 'fiqh';
+    if(has(HADITH_RE) || hasAr(['حديث', 'البخاري', 'صحيح مسلم', 'الترمذي', 'ابو داود'])) return 'hadith';
+    const quranWord = has(QURAN_RE) || hasAr(['اية', 'ايه', 'سوره', 'سورة', 'قران']);
+    if(has(TAFSIR_RE) || hasAr(['تفسير', 'شرح اية']) || (has(EXPLAIN_RE) && (quranWord || /\d{1,3}\s*:\s*\d{1,3}/.test(n)))) return 'tafsir';
+    if(quranWord) return 'quran';
+    if(has(DUA_RE) || /ñaan/.test(raw) || hasAr(['دعاء', 'دعا ', 'اذكار', 'ذكر'])) return 'dua';
+    if(has(PRAYER_RE) || hasAr(['مواقيت', 'وقت الصلاة', 'وقت الصلاه', 'اذان'])) return 'prayer_time';
+    if(/\b\d{1,3}\s*:\s*\d{1,3}\b/.test(n)) return 'quran';
+    return 'general';
+  }
+
+  const FIQH_TEXT = "Cette question relève du fiqh (jurisprudence islamique) : Muslim IA ne génère ni fatwa ni avis juridique. Adressez-vous à un savant ou à un imam qualifié, ou à une institution de fatwa reconnue dans votre pays.";
+  const FIQH_HTML = '<div class="fiqh-box" role="alert"><p><strong>⚠️ Question de jurisprudence (fiqh)</strong></p>' +
+    '<p>Cette question porte sur un avis juridique (licite ou illicite, divorce, héritage, validité d\'un acte…). Muslim IA ne génère <strong>ni fatwa ni avis juridique</strong> : une réponse approximative pourrait vous induire en erreur.</p>' +
+    '<p>Adressez-vous à un <strong>savant ou à un imam qualifié</strong>, ou à une <strong>institution de fatwa reconnue</strong> dans votre pays. Je peux en revanche vous montrer, par leur référence, des versets, des hadiths, un tafsir, des duas ou les horaires de prière.</p></div>';
+
+  /* ---------- Cache local (réponses déjà obtenues : mode hors ligne partiel) ---------- */
+  const srcCache = {
+    load: function(){ const c = store.get(SRC_CACHE_KEY, {}); return (c && typeof c === 'object' && !Array.isArray(c)) ? c : {}; },
+    get: function(k){ const e = this.load()[k]; return e ? e.d : null; },
+    set: function(k, d){
+      const c = this.load(); c[k] = { t: Date.now(), d: d };
+      const keys = Object.keys(c);
+      if(keys.length > SRC_CACHE_MAX) keys.sort(function(a, b){ return c[a].t - c[b].t; }).slice(0, keys.length - SRC_CACHE_MAX).forEach(function(x){ delete c[x]; });
+      store.set(SRC_CACHE_KEY, c);
+    },
+    clear: function(){ store.set(SRC_CACHE_KEY, {}); }
+  };
+  async function srcCached(key, ctx, loader){
+    const hit = srcCache.get(key);
+    if(hit){ ctx.hits = (ctx.hits || 0) + 1; return hit; }
+    ctx.miss = (ctx.miss || 0) + 1;
+    const data = await loader();
+    srcCache.set(key, data);
+    return data;
+  }
+
+  /* ---------- A2. Réseau : liste blanche, délai de 5 s, erreurs lisibles ---------- */
+  async function srcFetch(url){
+    let host = ''; try{ host = new URL(url).hostname; }catch(e){}
+    if(SRC_ALLOWED_HOSTS.indexOf(host) < 0) throw new Error('Domaine non autorisé : ' + host);
+    let timer;
+    const timeout = new Promise(function(_, rej){ timer = setTimeout(function(){ const e = new Error('Délai dépassé (' + Math.round(SRC_TIMEOUT / 1000) + ' s)'); e.timeout = true; rej(e); }, SRC_TIMEOUT); });
+    try{
+      const res = await Promise.race([netFetch(url, { timeout: SRC_TIMEOUT, headers: { 'Accept': 'application/json' } }), timeout]);
+      if(!res.ok){ const e = new Error('HTTP ' + res.status); e.status = res.status; throw e; }
+      return await Promise.race([res.json(), timeout]);
+    } finally { clearTimeout(timer); }
+  }
+  function srcErrorDetail(e){
+    const m = String((e && e.message) || '');
+    if(/^HTTP \d+/.test(m) || /^Délai/.test(m) || /^Domaine/.test(m)) return m;
+    if(!m || /failed to fetch|network|fetch failed|ENOTFOUND|ECONN|ERR_/i.test(m)) return 'Connexion impossible (hors ligne ?)';
+    return m;
+  }
+
+  /* ---------- Références du Coran ---------- */
+  function surahKey(s){
+    s = srcNorm(s).replace(/[^a-z]/g, '');
+    s = s.replace(/^(adh|ash|ath|al|an|as|ar|at|az|ad)(?=[a-z]{3,})/, '');
+    s = s.replace(/([a-z])\1+/g, '$1');
+    return s.replace(/ah$/, 'a');
+  }
+  const SURAH_KEYS = (function(){ const m = {}; SURAH_NAMES.forEach(function(nm, i){ m[surahKey(nm)] = i + 1; }); return m; })();
+  function findSurahInText(text, hasSurahWord){
+    const n = srcNorm(text);
+    for(const ar in SURAH_AR){ if(n.indexOf(ar) >= 0) return SURAH_AR[ar]; }
+    const words = n.replace(/[^a-z' -]/g, ' ').split(/[\s-]+/).filter(Boolean);
+    for(let len = 3; len >= 1; len--){
+      for(let i = 0; i + len <= words.length; i++){
+        const win = words.slice(i, i + len).join('');
+        const k = surahKey(win);
+        const idx = SURAH_KEYS[k];
+        if(!idx) continue;
+        const articled = len >= 2 && /^(al|an|as|ar|at|az|ash|ad|adh|ath)$/.test(words[i]);
+        if(k.length >= 5 || hasSurahWord || articled) return idx;
+      }
+    }
+    return null;
+  }
+  function parseQuranRef(q){
+    const n = srcNorm(q);
+    const bad = function(s, a){ return { error: 'Référence invalide : la sourate ' + s + ' compte ' + AYAH_COUNTS[s - 1] + ' versets (vous avez demandé le verset ' + a + ').' }; };
+    let m = n.match(/(\d{1,3})\s*:\s*(\d{1,3})(?:\s*[-–]\s*(\d{1,3}))?/);
+    if(m){
+      const s = parseInt(m[1], 10), a = parseInt(m[2], 10), b = m[3] ? parseInt(m[3], 10) : a;
+      if(s < 1 || s > 114) return { error: 'Référence invalide : le Coran compte 114 sourates.' };
+      if(a < 1 || a > AYAH_COUNTS[s - 1]) return bad(s, a);
+      return { s: s, a: a, b: Math.max(a, Math.min(b, AYAH_COUNTS[s - 1], a + 6)) };
+    }
+    if(/ay(a|e)t(ul)?[\s-]*(al|el)?[\s-]*kursi|اية الكرسي|ايه الكرسي/.test(n)) return { s: 2, a: 255, b: 255 };
+    const hasSurahWord = /sourat|surah|\bsura\b|سوره|سورة/.test(n);
+    let s = null;
+    m = n.match(/(?:sourate|surah|sura|سوره|سورة)\s*(?:n[°o]?\s*)?(\d{1,3})\b/);
+    if(m) s = parseInt(m[1], 10);
+    if(s === null) s = findSurahInText(q, hasSurahWord);
+    if(s === null) return null;
+    if(s < 1 || s > 114) return { error: 'Référence invalide : le Coran compte 114 sourates.' };
+    const v = n.match(/(?:verset|aya|ayah|ayat|aaya|v\.?|اية|ايه)\s*(?:n[°o]?\s*)?(\d{1,3})(?:\s*[-–]\s*(\d{1,3}))?/) || n.match(/(\d{1,3})\s*(?:e|eme)?\s*verset/);
+    if(v){
+      const a = parseInt(v[1], 10), b = v[2] ? parseInt(v[2], 10) : a;
+      if(a < 1 || a > AYAH_COUNTS[s - 1]) return bad(s, a);
+      return { s: s, a: a, b: Math.max(a, Math.min(b, AYAH_COUNTS[s - 1], a + 6)) };
+    }
+    const total = AYAH_COUNTS[s - 1];
+    return { s: s, a: 1, b: Math.min(total, 7), whole: true };
+  }
+
+  /* ---------- Mise en forme ---------- */
+  function srcLink(href, label){ return '<a href="' + escapeHtml(href) + '" target="_blank" rel="noopener">' + escapeHtml(label) + '</a>'; }
+  function copyBtn(text){ return '<button class="btn mini" type="button" data-src-copy="' + escapeHtml(text) + '" aria-label="Copier cette réponse">📋 Copier</button>'; }
+  function srcBanner(srcLabel, cached){
+    return '<div class="src-banner" role="note">ℹ️ Réponse issue de ' + escapeHtml(srcLabel) + (cached ? ' (copie locale)' : '') +
+      '. Activez la clé API dans Réglages › Muslim IA pour des réponses personnalisées.' +
+      '<br>Consultez une personne qualifiée pour une question religieuse.</div>';
+  }
+  function srcAnswer(inner, text, srcLabel, ctx){
+    return { html: '<div class="src-answer">' + inner + srcBanner(srcLabel, ctx && ctx.miss === 0 && ctx.hits > 0) + '</div>', text: text, source: srcLabel };
+  }
+  function stripTags(h){ return String(h || '').replace(/<[^>]+>/g, ' ').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim(); }
+  function shorten(t, max){ if(t.length <= max) return t; const cut = t.slice(0, max); return cut.slice(0, Math.max(cut.lastIndexOf(' '), max - 40)) + '…'; }
+
+  /* ---------- Versets (api.alquran.cloud) ---------- */
+  async function loadVerses(ref){
+    const eds = ['quran-uthmani', 'fr.hamidullah', 'en.transliteration'];
+    const get = async function(list){
+      if(ref.a === ref.b && !ref.whole){
+        const j = await srcFetch('https://api.alquran.cloud/v1/ayah/' + ref.s + ':' + ref.a + '/editions/' + list.join(','));
+        const d = j && j.data; if(!Array.isArray(d) || !d.length) throw new Error('format inattendu');
+        return d.map(function(e){ return { id: e.edition && e.edition.identifier, list: [e] }; });
+      }
+      const j = await srcFetch('https://api.alquran.cloud/v1/surah/' + ref.s + '/editions/' + list.join(','));
+      const d = j && j.data; if(!Array.isArray(d) || !d.length) throw new Error('format inattendu');
+      return d.map(function(e){ return { id: e.edition && e.edition.identifier, list: (e.ayahs || []).filter(function(x){ return x.numberInSurah >= ref.a && x.numberInSurah <= ref.b; }) }; });
+    };
+    let eds2;
+    try{ eds2 = await get(eds); }
+    catch(e){ if(e && e.status){ eds2 = await get(eds.slice(0, 2)); } else throw e; }
+    const by = function(prefix){ const x = eds2.filter(function(e){ return (e.id || '').indexOf(prefix) === 0; })[0]; return x ? x.list : []; };
+    const ar = by('quran'), fr = by('fr.'), tr = by('en.transliteration');
+    if(!ar.length) throw new Error('verset introuvable');
+    const first = ar[0], meta = first.surah || {};
+    return {
+      s: ref.s, name: meta.englishName || SURAH_NAMES[ref.s - 1], nameAr: meta.name || '',
+      ayahs: ar.map(function(x, i){ return { n: x.numberInSurah, ar: x.text, fr: (fr[i] && fr[i].text) || '', tr: (tr[i] && tr[i].text) || '' }; })
+    };
+  }
+  function renderVerses(rec, extraHtml){
+    const a0 = rec.ayahs[0].n, a1 = rec.ayahs[rec.ayahs.length - 1].n;
+    const refTxt = rec.s + ':' + (a0 === a1 ? a0 : a0 + '-' + a1);
+    let inner = '<div class="src-card"><div class="src-title">Sourate ' + escapeHtml(rec.name) + ' (' + rec.s + ') — ' + (a0 === a1 ? 'verset ' + a0 : 'versets ' + a0 + ' à ' + a1) + '</div>';
+    let text = '';
+    rec.ayahs.forEach(function(x){
+      inner += '<div class="dua-ar" lang="ar" dir="rtl">' + escapeHtml(x.ar) + ' <span class="ayah-no">﴿' + x.n + '﴾</span></div>' +
+        (x.tr ? '<div class="dua-translit">' + escapeHtml(x.tr) + '</div>' : '') +
+        (x.fr ? '<div class="dua-fr">' + escapeHtml(x.fr) + '</div>' : '');
+      text += x.ar + '\n' + (x.tr ? x.tr + '\n' : '') + (x.fr ? x.fr + '\n' : '');
+    });
+    text += '(Coran ' + refTxt + ')';
+    inner += '<div class="src-ref">📖 Source : ' + srcLink('https://quran.com/' + rec.s + ':' + a0, 'Coran ' + refTxt + ' — quran.com') + ' · traduction française : Hamidullah (api.alquran.cloud)</div>' +
+      (extraHtml || '') + '<div class="add-actions" style="margin:6px 0 0;">' + copyBtn(text) + '</div></div>';
+    return { inner: inner, text: text };
+  }
+  async function srcQuran(q, ctx){
+    const ref = parseQuranRef(q);
+    if(ref && ref.error) return { html: '<p>' + escapeHtml(ref.error) + '</p>', text: ref.error, source: 'références du Coran', kind: 'info' };
+    if(ref){
+      const rec = await srcCached('quran:' + ref.s + ':' + ref.a + ':' + ref.b + (ref.whole ? 'w' : ''), ctx, function(){ return loadVerses(ref); });
+      const r = renderVerses(rec, ref.whole && AYAH_COUNTS[ref.s - 1] > ref.b ? '<div class="muted">Début de la sourate (' + ref.b + ' premiers versets sur ' + AYAH_COUNTS[ref.s - 1] + ') : ouvrez l\'onglet Coran pour la lire en entier.</div>' : '');
+      return srcAnswer(r.inner, r.text, 'api.alquran.cloud (texte arabe, translittération, traduction Hamidullah)', ctx);
+    }
+    // recherche par thème : mot-clé dans la traduction française
+    const kws = topicWords(q);
+    if(!kws.length) return srcAnswer('<p>Indiquez une référence (ex. : <strong>2:255</strong>, « sourate Al-Ikhlas verset 1 ») ou un thème (ex. : « versets sur la patience »).</p>', 'Indiquez une référence ou un thème.', 'Rakeb', ctx);
+    let found = null, usedKw = '';
+    for(let i = 0; i < kws.length && !found; i++){
+      const tries = [kws[i]]; if(kws[i].length > 6) tries.push(kws[i].slice(0, kws[i].length - 2));
+      for(let k = 0; k < tries.length && !found; k++){
+        const list = await srcCached('search:' + tries[k], ctx, async function(){
+          try{
+            const j = await srcFetch('https://api.alquran.cloud/v1/search/' + encodeURIComponent(tries[k]) + '/all/fr.hamidullah');
+            const ms = (j && j.data && j.data.matches) || [];
+            return ms.slice(0, 3).map(function(x){ return { s: x.surah && x.surah.number, a: x.numberInSurah }; });
+          }catch(e){ if(e && e.status === 404) return []; throw e; }
+        });
+        if(list.length){ found = list; usedKw = tries[k]; }
+      }
+    }
+    if(!found) return srcAnswer('<p>Aucun verset trouvé pour « ' + escapeHtml(kws[0]) + ' ». Essayez avec une référence (ex. : 2:255) ou un autre mot.</p>', 'Aucun verset trouvé.', 'api.alquran.cloud', ctx);
+    let inner = '<p>Versets dont la traduction contient « ' + escapeHtml(usedKw) + ' » :</p>', text = '';
+    for(let i = 0; i < found.length; i++){
+      const f = found[i], rf = { s: f.s, a: f.a, b: f.a };
+      const rec = await srcCached('quran:' + rf.s + ':' + rf.a + ':' + rf.b, ctx, function(){ return loadVerses(rf); });
+      const r = renderVerses(rec); inner += r.inner; text += r.text + '\n\n';
+    }
+    return srcAnswer(inner, text.trim(), 'api.alquran.cloud (recherche dans la traduction Hamidullah)', ctx);
+  }
+  const STOP = 'le la les un une des du de d l que qui quel quelle quels quelles est sont pour dans sur par avec en et ou au aux ce cette ces mon ma mes ton ta tes son sa ses donne donnez moi je me te il elle on nous vous ils elles parle parlent dit disent verset versets sourate sourates coran quran aya ayat ayah hadith hadiths dua doua invocation tafsir explique expliquer explication signification que quoi comment pourquoi trouve trouver cherche chercher peux peut pouvez moi svp stp'.split(' ');
+  function topicWords(q){
+    const n = srcNorm(q).replace(/[^a-z' ]/g, ' ').replace(/'/g, ' ');
+    return n.split(/\s+/).filter(function(w){ return w.length >= 4 && STOP.indexOf(w) < 0; })
+      .sort(function(a, b){ return b.length - a.length; }).slice(0, 2);
+  }
+
+  /* ---------- Tafsir court (api.quran.com, repli api.alquran.cloud) ---------- */
+  async function srcTafsir(q, ctx){
+    const ref = parseQuranRef(q);
+    if(ref && ref.error) return { html: '<p>' + escapeHtml(ref.error) + '</p>', text: ref.error, source: 'références du Coran', kind: 'info' };
+    if(!ref || ref.whole) return srcAnswer('<p>Pour un tafsir, indiquez le verset concerné (ex. : <strong>tafsir 2:255</strong> ou « tafsir sourate Al-Ikhlas verset 1 »).</p>', 'Indiquez le verset concerné.', 'Rakeb', ctx);
+    ref.b = ref.a;
+    const verse = await srcCached('quran:' + ref.s + ':' + ref.a + ':' + ref.b, ctx, function(){ return loadVerses(ref); });
+    let taf = null, tafSrc = '', tafErr = '';
+    try{
+      taf = await srcCached('tafsir:' + ref.s + ':' + ref.a, ctx, async function(){
+        let text = '', src = '';
+        try{
+          const j = await srcFetch('https://api.quran.com/api/v4/quran/tafsirs/16?verse_key=' + ref.s + ':' + ref.a);
+          const t = (j.tafsirs && j.tafsirs[0]) || j.tafsir;
+          text = stripTags(t && t.text); src = 'api.quran.com (Tafsir al-Muyassar)';
+          if(!text) throw new Error('tafsir vide');
+        }catch(e1){
+          const j2 = await srcFetch('https://api.alquran.cloud/v1/ayah/' + ref.s + ':' + ref.a + '/ar.muyassar');
+          text = stripTags(j2 && j2.data && j2.data.text); src = 'api.alquran.cloud (Tafsir al-Muyassar, repli)';
+          if(!text) throw e1;
+        }
+        return { text: shorten(text, 700), src: src };
+      });
+      tafSrc = taf.src;
+    }catch(e){ tafErr = srcErrorDetail(e); }
+    const v = renderVerses(verse, '');
+    let inner = v.inner, text = v.text;
+    if(taf){
+      inner += '<div class="src-card"><div class="src-title">Tafsir court — al-Muyassar (arabe)</div><div class="dua-ar" lang="ar" dir="rtl">' + escapeHtml(taf.text) + '</div>' +
+        '<div class="src-ref">📚 Source : ' + srcLink('https://quran.com/' + ref.s + ':' + ref.a + '/tafsirs/ar-tafsir-muyassar', 'tafsir du verset ' + ref.s + ':' + ref.a + ' — quran.com') + ' · ' + escapeHtml(tafSrc) + '</div><div class="add-actions" style="margin:6px 0 0;">' + copyBtn(taf.text + '\n(Tafsir al-Muyassar, Coran ' + ref.s + ':' + ref.a + ')') + '</div></div>';
+      text += '\n\n' + taf.text;
+    } else {
+      inner += '<p class="src-err">⚠️ Tafsir indisponible : ' + escapeHtml(tafErr) + '. Le verset ci-dessus reste disponible ; réessayez plus tard.</p>';
+    }
+    return srcAnswer(inner, text, 'api.quran.com et api.alquran.cloud', ctx);
+  }
+
+  /* ---------- Hadiths (dépôt public sur cdn.jsdelivr.net) ---------- */
+  const HADITH_COLLECTIONS = {
+    bukhari:  { label: 'Sahih al-Boukhari', re: /bou?kh?ari/ },
+    muslim:   { label: 'Sahih Muslim', re: /\bmuslim\b/ },
+    abudawud: { label: 'Sunan Abi Dawud', re: /abou? ?daou?d|abu ?dawu?d/ },
+    tirmidhi: { label: 'Jami at-Tirmidhi', re: /tirmid?hi|tirmizi/ },
+    nasai:    { label: "Sunan an-Nasa'i", re: /nasa[iy]/ },
+    ibnmajah: { label: 'Sunan Ibn Majah', re: /ibn ma(dj|j)a/ }
+  };
+  function pickHadith(j){
+    const h = (j && j.hadiths && j.hadiths[0]) || j;
+    if(!h || !h.text) throw new Error('hadith introuvable');
+    return { num: h.hadithnumber, text: String(h.text), grades: Array.isArray(h.grades) ? h.grades.slice(0, 2) : [] };
+  }
+  async function srcHadith(q, ctx){
+    const n = srcNorm(q);
+    let col = null; Object.keys(HADITH_COLLECTIONS).forEach(function(k){ if(!col && HADITH_COLLECTIONS[k].re.test(n)) col = k; });
+    const mnum = n.replace(/\d{1,3}\s*:\s*\d{1,3}/g, ' ').match(/\b(\d{1,5})\b/);
+    if(col && mnum){
+      const num = parseInt(mnum[1], 10), info = HADITH_COLLECTIONS[col];
+      const rec = await srcCached('hadith:' + col + ':' + num, ctx, async function(){
+        const one = function(ed){ return srcFetch(HADITH_BASE + ed + '-' + col + '/' + num + '.json').then(pickHadith); };
+        const both = await Promise.all([one('ara'), one('fra').catch(function(){ return null; })]);
+        let tr = both[1], lang = 'fr';
+        if(!tr){ try{ tr = await one('eng'); lang = 'en'; }catch(e){ tr = null; lang = ''; } }
+        return { ar: both[0].text, tr: tr ? tr.text : '', lang: lang, grades: (tr && tr.grades.length ? tr.grades : both[0].grades) };
+      });
+      const grade = rec.grades.length ? '<div class="muted">Authenticité : ' + rec.grades.map(function(g){ return escapeHtml((g.grade || '') + (g.name ? ' (' + g.name + ')' : '')); }).join(' ; ') + '</div>' : '';
+      const url = 'https://sunnah.com/' + col + ':' + num;
+      const text = rec.ar + '\n' + rec.tr + '\n(' + info.label + ', hadith n°' + num + ')';
+      const inner = '<div class="src-card"><div class="src-title">' + escapeHtml(info.label) + ' — hadith n°' + num + '</div>' +
+        '<div class="dua-ar" lang="ar" dir="rtl">' + escapeHtml(rec.ar) + '</div>' +
+        (rec.tr ? '<div class="dua-fr">' + escapeHtml(rec.tr) + '</div>' + (rec.lang === 'en' ? '<div class="muted">Traduction anglaise (pas de traduction française disponible pour ce hadith).</div>' : '') : '<div class="muted">Pas de traduction disponible pour ce hadith.</div>') + grade +
+        '<div class="src-ref">📜 Source : ' + srcLink(url, info.label + ' ' + num + ' — sunnah.com') + ' · texte : dépôt public hadith-api (cdn.jsdelivr.net)</div>' +
+        '<div class="add-actions" style="margin:6px 0 0;">' + copyBtn(text) + '</div></div>';
+      return srcAnswer(inner, text, 'le dépôt public de hadiths (cdn.jsdelivr.net) — ' + info.label, ctx);
+    }
+    // Sans collection et numéro : uniquement la bibliothèque locale de Rakeb (hors ligne)
+    const kws = topicWords(q).map(function(w){ return w.slice(0, Math.max(4, w.length - 2)); });
+    const local = INSPIRATIONS.filter(function(it){
+      return /boukhari|bukhari|muslim|tirmidhi|abu dawud|abou daoud|nasa|ibn majah/i.test(it.ref) &&
+        kws.some(function(w){ const hay = srcNorm((it.fr || '') + ' ' + (it.tr || '') + ' ' + (it.ref || '')); return hay.indexOf(w) >= 0; });
+    }).slice(0, 3);
+    let inner = '<p>Pour un hadith précis, indiquez la <strong>collection et le numéro</strong> (ex. : « Boukhari 1 », « Muslim 2564 »).</p>', text = 'Indiquez la collection et le numéro du hadith.';
+    if(local.length){
+      inner += '<p>Hadiths correspondants dans la bibliothèque de Rakeb :</p>';
+      local.forEach(function(it){
+        const t = it.ar + '\n' + it.fr + '\n(' + it.ref + ')';
+        inner += '<div class="src-card"><div class="dua-ar" lang="ar" dir="rtl">' + escapeHtml(it.ar) + '</div><div class="dua-fr">' + escapeHtml(it.fr) + '</div><div class="src-ref">📜 Source : ' + escapeHtml(it.ref) + '</div><div class="add-actions" style="margin:6px 0 0;">' + copyBtn(t) + '</div></div>';
+        text += '\n\n' + t;
+      });
+    }
+    return srcAnswer(inner, text, local.length ? 'la bibliothèque de Rakeb (hors ligne)' : 'Rakeb', ctx);
+  }
+
+  /* ---------- Horaires : calcul local de Rakeb + recoupement api.aladhan.com ---------- */
+  const ALADHAN_METHODS = { MWL: 3, ISNA: 2, Egypt: 5, Makkah: 4, Karachi: 1, Tehran: 7, Jafari: 0, UOIF: 12, Gulf: 8, Kuwait: 9, Qatar: 10, Singapore: 11, Turkey: 13, Dubai: 16 };
+  const PRAYER_KEYS5 = [['fajr', 'Fajr', 'Fajr'], ['dhuhr', 'Dhuhr', 'Dhuhr'], ['asr', 'Asr', 'Asr'], ['maghrib', 'Maghrib', 'Maghrib'], ['isha', 'Isha', 'Isha']];
+  async function srcPrayer(q, ctx){
+    if(state.lat === null || state.lon === null || !state.times){
+      return srcAnswer('<p>Définissez d\'abord votre position (onglet <strong>Qibla &amp; position</strong>) pour obtenir les horaires de prière.</p>', 'Définissez votre position pour obtenir les horaires.', 'calcul local de Rakeb', ctx);
+    }
+    const n = nowInTz(state.tz);
+    const lat2 = Math.round(state.lat * 100) / 100, lon2 = Math.round(state.lon * 100) / 100; // position arrondie
+    const dd = pad(n.d) + '-' + pad(n.m + 1) + '-' + n.y;
+    let ala = null, alaErr = '';
+    try{
+      ala = await srcCached('prayer:' + dd + ':' + lat2 + ',' + lon2 + ':' + state.method + ':' + state.madhab, ctx, async function(){
+        const url = 'https://api.aladhan.com/v1/timings/' + dd + '?latitude=' + lat2 + '&longitude=' + lon2 +
+          '&method=' + (ALADHAN_METHODS[state.method] != null ? ALADHAN_METHODS[state.method] : 3) + '&school=' + (state.madhab === '2' ? 1 : 0) +
+          (state.tz ? '&timezonestring=' + encodeURIComponent(state.tz) : '');
+        const j = await srcFetch(url);
+        const t = j && j.data && j.data.timings; if(!t) throw new Error('format inattendu');
+        const o = {}; PRAYER_KEYS5.forEach(function(p){ o[p[2]] = t[p[2]]; }); return o;
+      });
+    }catch(e){ alaErr = srcErrorDetail(e); }
+    const asked = srcNorm(q);
+    const which = [['fajr', /fa?djr|subh|sube/], ['dhuhr', /dhuhr|zuhr|dohr|tisbaar/], ['asr', /\basr\b|takusaan/], ['maghrib', /maghrib|iftar|timis/], ['isha', /\bisha\b|\bicha\b|gaawu/]].filter(function(w){ return w[1].test(asked); }).map(function(w){ return w[0]; });
+    let rows = '', text = 'Horaires de prière (' + (state.cityName || 'votre position') + ', ' + dd + ')\n';
+    PRAYER_KEYS5.forEach(function(p){
+      const t = state.times[p[0]]; if(!t) return;
+      const local = pad(t.h) + ':' + pad(t.m);
+      let other = '—', diff = '';
+      const mm = ala && String(ala[p[2]] || '').match(/(\d{1,2}):(\d{2})/);
+      if(mm){
+        other = pad(parseInt(mm[1], 10)) + ':' + mm[2];
+        const d = (t.h * 60 + t.m) - (parseInt(mm[1], 10) * 60 + parseInt(mm[2], 10));
+        diff = d === 0 ? '✓' : (d > 0 ? '+' : '') + d + ' min';
+      }
+      rows += '<tr' + (which.indexOf(p[0]) >= 0 ? ' class="hl"' : '') + '><td>' + p[1] + '</td><td><strong>' + local + '</strong></td><td>' + other + '</td><td>' + diff + '</td></tr>';
+      text += p[1] + ' : ' + local + (mm ? ' (Aladhan ' + other + ')' : '') + '\n';
+    });
+    let inner = '<div class="src-card"><div class="src-title">Horaires de prière — ' + escapeHtml(state.cityName || 'votre position') + '</div>' +
+      '<div style="overflow-x:auto;"><table class="src-table"><thead><tr><th>Prière</th><th>Rakeb (local)</th><th>Aladhan</th><th>Écart</th></tr></thead><tbody>' + rows + '</tbody></table></div>' +
+      '<div class="muted">Le calcul de Rakeb se fait sur votre appareil (avec vos ajustements éventuels). Le recoupement utilise api.aladhan.com : seule votre position arrondie à 2 décimales est envoyée.</div>' +
+      (alaErr ? '<p class="src-err">⚠️ Recoupement indisponible : ' + escapeHtml(alaErr) + '. Les horaires locaux ci-dessus restent valables.</p>' : '') +
+      '<div class="add-actions" style="margin:6px 0 0;">' + copyBtn(text.trim()) + '</div></div>';
+    return srcAnswer(inner, text.trim(), ala ? 'calcul local de Rakeb, recoupé avec api.aladhan.com' : 'calcul local de Rakeb (hors ligne)', ctx);
+  }
+
+  /* ---------- Duas (bibliothèque de Rakeb, hors ligne) ---------- */
+  function allDuaItems(){
+    const out = [];
+    DUA_CATS.forEach(function(c){ (DUAS[c[0]] || []).forEach(function(d){ out.push(Object.assign({}, d, { cat: c[0], catLabel: c[1] })); }); });
+    customDuas().forEach(function(d){ out.push(Object.assign({ catLabel: 'Mes ajouts' }, d)); });
+    return out;
+  }
+  function duaMatches(items, query){
+    const words = srcNorm(query).replace(/[^a-z0-9\u0600-\u06FF ]/g, ' ').split(/\s+/).filter(function(w){ return w.length >= 2; });
+    if(!words.length) return items;
+    return items.filter(function(d){
+      const hay = srcNorm([d.ar, d.tr, d.fr, d.ref, d.catLabel].join(' '));
+      return words.every(function(w){ return hay.indexOf(w) >= 0; });
+    });
+  }
+  async function srcDua(q, ctx){
+    const kws = srcNorm(q).replace(/[^a-z0-9\u0600-\u06FF ]/g, ' ').split(/\s+/).filter(function(w){ return w.length >= 3 && STOP.indexOf(w) < 0 && ['dire', 'dit', 'duaa', 'azkar', 'adhkar', 'dhikr', 'faire', 'fait', 'supplication'].indexOf(w) < 0; });
+    const items = allDuaItems();
+    let scored = items.map(function(d){
+      const hay = srcNorm([d.ar, d.tr, d.fr, d.ref, d.catLabel].join(' '));
+      return { d: d, s: kws.filter(function(w){ return hay.indexOf(w) >= 0 || (w.length > 5 && hay.indexOf(w.slice(0, w.length - 2)) >= 0); }).length };
+    }).filter(function(x){ return x.s > 0; }).sort(function(a, b){ return b.s - a.s; }).slice(0, 3);
+    if(!scored.length) return srcAnswer('<p>Aucune doua correspondante dans la bibliothèque. Ouvrez <a href="#" data-goto="duas">Duas &amp; Azkar</a> pour parcourir les 16 catégories.</p>', 'Aucune doua trouvée.', 'la bibliothèque de duas de Rakeb (hors ligne)', ctx);
+    let inner = '<p>Duas de la bibliothèque de Rakeb :</p>', text = '';
+    scored.forEach(function(x){
+      const d = x.d, t = [d.ar, d.tr, d.fr, d.ref ? '(' + d.ref + ')' : ''].filter(Boolean).join('\n');
+      inner += '<div class="src-card"><div class="src-title">' + escapeHtml(d.catLabel || '') + '</div>' +
+        (d.ar ? '<div class="dua-ar" lang="ar" dir="rtl">' + escapeHtml(d.ar) + '</div>' : '') + (d.tr ? '<div class="dua-translit">' + escapeHtml(d.tr) + '</div>' : '') +
+        (d.fr ? '<div class="dua-fr">' + escapeHtml(d.fr) + '</div>' : '') + (d.ref ? '<div class="src-ref">📜 Source : ' + escapeHtml(d.ref) + '</div>' : '') +
+        '<div class="add-actions" style="margin:6px 0 0;">' + copyBtn(t) + '</div></div>';
+      text += t + '\n\n';
+    });
+    return srcAnswer(inner, text.trim(), 'la bibliothèque de duas de Rakeb (hors ligne)', ctx);
+  }
+
+  function srcGeneral(ctx){
+    return srcAnswer('<p>Sans clé API, Muslim IA répond uniquement avec des <strong>sources vérifiées</strong>. Essayez par exemple :</p><ul>' +
+      '<li>un verset : « 2:255 », « sourate Al-Ikhlas », « versets sur la patience » ;</li>' +
+      '<li>un hadith : « Boukhari 1 », « Muslim 2564 » ;</li>' +
+      '<li>un tafsir : « tafsir 112:1 » ;</li>' +
+      '<li>les horaires : « horaires de prière aujourd\'hui » ;</li>' +
+      '<li>une doua : « dua avant de manger ».</li></ul>' +
+      '<p>Pour les autres questions, une clé API facultative permet un dialogue plus libre (Réglages › Muslim IA).</p>', 'Sans clé, seules les questions sur un verset, un hadith, un tafsir, les horaires ou une doua reçoivent une réponse.', 'Rakeb', ctx);
+  }
+
+  async function askSources(question){
+    const intent = detectIntent(question);
+    if(intent === 'fiqh') return { intent: intent, kind: 'refusal', html: FIQH_HTML, text: FIQH_TEXT };
+    const ctx = { hits: 0, miss: 0 };
+    try{
+      let r;
+      if(intent === 'quran') r = await srcQuran(question, ctx);
+      else if(intent === 'tafsir') r = await srcTafsir(question, ctx);
+      else if(intent === 'hadith') r = await srcHadith(question, ctx);
+      else if(intent === 'prayer_time') r = await srcPrayer(question, ctx);
+      else if(intent === 'dua') r = await srcDua(question, ctx);
+      else r = srcGeneral(ctx);
+      r.intent = intent; r.kind = r.kind || 'ok'; r.cached = ctx.miss === 0 && ctx.hits > 0;
+      return r;
+    }catch(e){
+      const detail = srcErrorDetail(e);
+      const html = '<div class="src-answer"><p class="src-err">⚠️ Source indisponible : ' + escapeHtml(detail) + '.</p><p class="muted">Vérifiez votre connexion et réessayez. Les réponses déjà obtenues restent disponibles hors ligne.</p>' +
+        '<div class="src-banner" role="note">Consultez une personne qualifiée pour une question religieuse.</div></div>';
+      return { intent: intent, kind: 'error', html: html, text: 'Source indisponible : ' + detail, error: detail };
+    }
+  }
+  function aiHasCitation(t){ return /\b\d{1,3}\s*:\s*\d{1,3}\b|sourate|coran|qur'?an|boukhari|bukhari|muslim|tirmidhi|abu dawud|abou daoud|nasa|ibn majah|hadith n/i.test(String(t || '')); }
+  function aiFooterHtml(t){
+    return (aiHasCitation(t) ? '' : '<div class="src-warn">⚠️ Cette réponse ne cite pas de source précise (sourate:verset, collection et numéro de hadith) : vérifiez-la auprès d\'une source fiable.</div>') +
+      '<div class="src-banner" role="note">⚠️ Réponse générée par une IA : elle peut comporter des erreurs. Consultez une personne qualifiée pour une question religieuse.</div>';
+  }
+
+  /* Accès pour les tests automatiques */
+  window.RakebTest = Object.assign(window.RakebTest || {}, {
+    detectIntent: detectIntent, askSources: askSources, parseQuranRef: parseQuranRef, srcNorm: srcNorm,
+    setSrcTimeout: function(ms){ SRC_TIMEOUT = ms; }, srcCache: srcCache,
+    surahCount: function(){ return SURAH_NAMES.length; }, surahKeyCount: function(){ return Object.keys(SURAH_KEYS).length; },
+    ayahTotal: function(){ return AYAH_COUNTS.reduce(function(a, b){ return a + b; }, 0); },
+    allowedHosts: SRC_ALLOWED_HOSTS, aiHasCitation: aiHasCitation, srcFetch: srcFetch
+  });
+
+  /* ===== ramadanblock.js ===== */
+  /* =========================================================
+     CALENDRIER HÉGIRIEN (ajustement ±1 jour) + MODE RAMADAN
+     Tout est calculé sur l'appareil (aucun réseau).
+  ========================================================= */
+  const HIJRI_ADJ_KEY = 'rakeb-hijri-adj';
+  function setHijriAdj(v){
+    v = parseInt(v, 10); if(isNaN(v)) v = 0;
+    store.set(HIJRI_ADJ_KEY, Math.max(-1, Math.min(1, v)));
+    refreshHijriUI();
+  }
+  function hijriToday(){
+    const n = nowInTz(state.tz);
+    return gregorianToHijri(new Date(Date.UTC(n.y, n.m, n.d, 12)));
+  }
+  function hijriText(h){ return h.day + ' ' + (HIJRI_MONTHS[h.month - 1] || '') + ' ' + h.year + ' AH'; }
+  function refreshHijriUI(){
+    const adj = hijriAdjDays();
+    $$('.hijri-adj-val').forEach(function(el){ el.textContent = (adj > 0 ? '+' : '') + adj + ' j'; });
+    $$('.hijri-adj-today').forEach(function(el){ el.textContent = hijriText(hijriToday()); });
+    try{ renderHijriHeader(); }catch(e){}
+    try{ renderTomorrow(); }catch(e){}
+    try{ if($('#cal-grid')){ renderCalGrid(); renderUpcoming(); if(calSelected) renderCalDetail(calSelected); } }catch(e){}
+    try{ renderRamadan(); renderRamadanHome(); }catch(e){}
+  }
+  $$('.hijri-adj-minus').forEach(function(b){ b.addEventListener('click', function(){ setHijriAdj(hijriAdjDays() - 1); }); });
+  $$('.hijri-adj-plus').forEach(function(b){ b.addEventListener('click', function(){ setHijriAdj(hijriAdjDays() + 1); }); });
+  $$('.hijri-adj-reset').forEach(function(b){ b.addEventListener('click', function(){ setHijriAdj(0); toast('Ajustement hégirien remis à zéro.'); }); });
+
+  /* ---------- Mode Ramadan : imsak / iftar d'après le calcul de prières existant ---------- */
+  const RAM_FAST_KEY = 'rakeb-fasting';
+  function imsakMinutes(){ const v = parseInt(store.get('rakeb-imsak-min', 10), 10); return isNaN(v) ? 10 : Math.max(0, Math.min(30, v)); }
+  function iftarReminderOn(){ const v = store.get('rakeb-iftar-reminder', null); return v === null ? !!store.get('rakeb-notif', false) : !!v; }
+  function hm(dec){ const t = Math.round(((dec % 24) + 24) % 24 * 60) % 1440; return pad(Math.floor(t / 60)) + ':' + pad(t % 60); }
+  function hms(sec){ sec = Math.max(0, Math.round(sec)); return pad(Math.floor(sec / 3600)) + ':' + pad(Math.floor((sec % 3600) / 60)) + ':' + pad(sec % 60); }
+  // Phase du jeûne : avant l'imsak, jeûne en cours (jusqu'à l'iftar = Maghrib), nuit (jusqu'à l'imsak du lendemain)
+  function ramadanStatus(t, tm, nowDec, imsakMin){
+    if(!t || !t.fajr || !t.maghrib) return null;
+    const imsak = t.fajr.decimal - imsakMin / 60, iftar = t.maghrib.decimal;
+    if(nowDec < imsak) return { phase: 'suhoor', label: 'Imsak dans', seconds: (imsak - nowDec) * 3600, imsak: imsak, iftar: iftar, progress: 0 };
+    if(nowDec < iftar) return { phase: 'fasting', label: 'Iftar dans', seconds: (iftar - nowDec) * 3600, imsak: imsak, iftar: iftar, progress: Math.max(0, Math.min(1, (nowDec - imsak) / (iftar - imsak))) };
+    const next = (tm && tm.fajr ? tm.fajr.decimal : t.fajr.decimal) - imsakMin / 60 + 24;
+    return { phase: 'night', label: 'Prochain imsak dans', seconds: (next - nowDec) * 3600, imsak: imsak, iftar: iftar, progress: 1 };
+  }
+  function ramYear(){ const h = hijriToday(); return h.month <= 9 ? h.year : h.year + 1; }
+  function fastedDays(y){ const all = store.get(RAM_FAST_KEY, {}); const a = all && all[y]; return Array.isArray(a) ? a : []; }
+  function toggleFast(y, d){
+    const all = store.get(RAM_FAST_KEY, {}); const o = (all && typeof all === 'object' && !Array.isArray(all)) ? all : {};
+    let a = Array.isArray(o[y]) ? o[y].slice() : [];
+    const i = a.indexOf(d); if(i >= 0) a.splice(i, 1); else a.push(d);
+    o[y] = a.sort(function(x, z){ return x - z; }); store.set(RAM_FAST_KEY, o);
+  }
+  function iftarDua(){
+    let found = null;
+    DUA_CATS.forEach(function(c){ (DUAS[c[0]] || []).forEach(function(d){ if(!found && /rupture du j/i.test(String(d.fr || ''))) found = d; }); });
+    return found;
+  }
+  function renderRamadanFasts(){
+    const y = ramYear(), done = fastedDays(y), h = hijriToday();
+    const cnt = $('#ram-fast-count'); if(!cnt) return;
+    cnt.textContent = done.length + ' jour' + (done.length > 1 ? 's' : '') + ' jeûné' + (done.length > 1 ? 's' : '') + ' sur 30 (Ramadan ' + y + ' AH)';
+    $('#ram-fast-bar').style.width = Math.min(100, done.length / 30 * 100) + '%';
+    let g = ''; for(let d = 1; d <= 30; d++){ const on = done.indexOf(d) >= 0; g += '<button type="button" class="chip fast-chip' + (on ? ' active' : '') + '" data-fast="' + d + '" aria-pressed="' + on + '" aria-label="Jour ' + d + ' du Ramadan ' + (on ? 'jeûné' : 'non jeûné') + '">' + d + '</button>'; }
+    $('#ram-fast-grid').innerHTML = g;
+    const tb = $('#ram-fast-today');
+    if(h.month === 9 && h.day <= 30){
+      const on = done.indexOf(h.day) >= 0;
+      tb.style.display = ''; tb.textContent = on ? '✅ Jour ' + h.day + ' jeûné (toucher pour annuler)' : '☐ J\'ai jeûné aujourd\'hui (jour ' + h.day + ')';
+      tb.setAttribute('aria-pressed', on ? 'true' : 'false');
+    } else tb.style.display = 'none';
+  }
+  function renderRamadan(){
+    if(!$('#ram-hijri')) return;
+    const h = hijriToday();
+    $('#ram-hijri').textContent = hijriText(h);
+    $('#ram-day').textContent = h.month === 9 ? 'Jour ' + h.day + ' du Ramadan — que votre jeûne soit accepté.' : 'Hors du mois de Ramadan : le décompte ci-dessous s\'applique aussi aux jours de jeûne volontaire (lundi, jeudi, jours blancs…).';
+    const n = nowInTz(state.tz);
+    const st = state.times ? ramadanStatus(state.times, state.timesTomorrow, n.dec, imsakMinutes()) : null;
+    if(st){
+      $('#ram-label').textContent = st.label; $('#ram-countdown').textContent = hms(st.seconds);
+      $('#ram-progress').style.width = Math.round(st.progress * 100) + '%';
+      $('#ram-imsak').textContent = hm(st.imsak); $('#ram-fajr').textContent = hm(state.times.fajr.decimal); $('#ram-iftar').textContent = hm(st.iftar);
+    } else {
+      $('#ram-label').textContent = 'Position requise'; $('#ram-countdown').textContent = '—:—:—'; $('#ram-progress').style.width = '0%';
+      $('#ram-imsak').textContent = $('#ram-fajr').textContent = $('#ram-iftar').textContent = '--:--';
+    }
+    const d = iftarDua(), box = $('#ram-dua');
+    if(d && box){
+      box.innerHTML = '<div class="dua-ar" lang="ar" dir="rtl">' + escapeHtml(d.ar) + '</div><div class="dua-translit">' + escapeHtml(d.tr || '') + '</div><div class="dua-fr">' + escapeHtml(d.fr || '') + '</div><div class="dua-ref">' + escapeHtml(d.ref || '') + '</div>';
+      $('#ram-dua-copy').dataset.copy = [d.ar, d.tr, d.fr, d.ref ? '(' + d.ref + ')' : ''].filter(Boolean).join('\n');
+    }
+    $('#ram-imsak-min').value = String(imsakMinutes());
+    $('#ram-reminder').checked = iftarReminderOn();
+    renderRamadanFasts();
+  }
+  function renderRamadanHome(){
+    const card = $('#ramadan-home-card'); if(!card) return;
+    const h = hijriToday();
+    if(h.month !== 9 || !state.times){ card.style.display = 'none'; return; }
+    const st = ramadanStatus(state.times, state.timesTomorrow, nowInTz(state.tz).dec, imsakMinutes());
+    card.style.display = '';
+    $('#ramadan-home-day').textContent = '🌙 Ramadan — jour ' + h.day;
+    $('#ramadan-home-label').textContent = st ? st.label + ' ' + hms(st.seconds) : '';
+  }
+  $('#ram-imsak-min').addEventListener('change', function(e){ store.set('rakeb-imsak-min', parseInt(e.target.value, 10) || 0); renderRamadan(); });
+  $('#ram-reminder').addEventListener('change', function(e){
+    store.set('rakeb-iftar-reminder', !!e.target.checked);
+    toast(e.target.checked ? 'Rappel activé : 10 minutes avant l\'iftar.' : 'Rappel de l\'iftar désactivé.');
+  });
+  $('#ram-fast-grid').addEventListener('click', function(e){ const b = e.target.closest('[data-fast]'); if(!b) return; toggleFast(ramYear(), parseInt(b.dataset.fast, 10)); renderRamadanFasts(); });
+  $('#ram-fast-today').addEventListener('click', function(){ toggleFast(ramYear(), hijriToday().day); renderRamadanFasts(); });
+  PANEL_HOOKS.ramadan = renderRamadan;
+
+  // Le compte à rebours bat chaque seconde sur l'écran Ramadan, et toutes les 30 s sur l'accueil
+  let ramTick = 0;
+  setInterval(function(){
+    ramTick++;
+    const p = $('#panel-ramadan');
+    if(p && p.classList.contains('active')) renderRamadan();
+    else if(ramTick % 30 === 0) renderRamadanHome();
+  }, 1000);
+
+  // Rappel 10 min avant l'iftar : toast + notification silencieuse sur PC (Android : voir RakebBridge.upcoming + pont natif)
+  let lastIftarRemDay = null;
+  setInterval(function(){
+    if(!state.times || !state.times.maghrib || hijriToday().month !== 9 || !iftarReminderOn()) return;
+    const n = nowInTz(state.tz), target = state.times.maghrib.decimal - 10 / 60;
+    if(target >= 0 && Math.abs(n.dec - target) < (1 / 120) && lastIftarRemDay !== n.key){
+      lastIftarRemDay = n.key;
+      toast('🌙 Iftar dans 10 minutes (' + pad(state.times.maghrib.h) + ':' + pad(state.times.maghrib.m) + ').');
+      if(typeof Notification !== 'undefined' && Notification.permission === 'granted'){
+        try{ new Notification('Iftar dans 10 minutes', { body: 'Maghrib à ' + pad(state.times.maghrib.h) + ':' + pad(state.times.maghrib.m), silent: true }); }catch(e){}
+      }
+    }
+  }, 15000);
+
+  window.RakebTest = Object.assign(window.RakebTest || {}, {
+    gregorianToHijri: gregorianToHijri, ramadanStatus: ramadanStatus, setHijriAdj: setHijriAdj, hijriToday: hijriToday,
+    toggleFast: toggleFast, fastedDays: fastedDays, ramYear: ramYear, hm: hm
+  });
+  refreshHijriUI();
+
+  /* ===== qiblamapblock.js ===== */
+  /* =========================================================
+     QIBLA PAR CARTE — secours pour les appareils sans boussole.
+     Canevas en JavaScript pur + tuiles OpenStreetMap, SEULEMENT
+     après un clic de l'utilisateur (aucune requête au chargement).
+     La ligne tracée est le grand cercle vers La Mecque.
+  ========================================================= */
+  const MAP_W = 640, MAP_H = 420;
+  function mercatorPx(lat, lon, z){
+    const size = 256 * Math.pow(2, z);
+    const s = Math.sin(Math.max(-85, Math.min(85, lat)) * Math.PI / 180);
+    return { x: (lon + 180) / 360 * size, y: (0.5 - Math.log((1 + s) / (1 - s)) / (4 * Math.PI)) * size };
+  }
+  function greatCirclePoints(lat1, lon1, lat2, lon2, steps){
+    const r = Math.PI / 180, p1 = lat1 * r, l1 = lon1 * r, p2 = lat2 * r, l2 = lon2 * r;
+    const d = 2 * Math.asin(Math.sqrt(Math.pow(Math.sin((p2 - p1) / 2), 2) + Math.cos(p1) * Math.cos(p2) * Math.pow(Math.sin((l2 - l1) / 2), 2)));
+    const out = []; let prevLon = null;
+    for(let i = 0; i <= steps; i++){
+      const f = i / steps;
+      let la, lo;
+      if(d < 1e-9){ la = lat1; lo = lon1; }
+      else {
+        const a = Math.sin((1 - f) * d) / Math.sin(d), b = Math.sin(f * d) / Math.sin(d);
+        const x = a * Math.cos(p1) * Math.cos(l1) + b * Math.cos(p2) * Math.cos(l2);
+        const y = a * Math.cos(p1) * Math.sin(l1) + b * Math.cos(p2) * Math.sin(l2);
+        const z = a * Math.sin(p1) + b * Math.sin(p2);
+        la = Math.atan2(z, Math.sqrt(x * x + y * y)) / r; lo = Math.atan2(y, x) / r;
+      }
+      if(prevLon !== null){ while(lo - prevLon > 180) lo -= 360; while(lo - prevLon < -180) lo += 360; }
+      prevLon = lo; out.push({ lat: la, lon: lo });
+    }
+    return out;
+  }
+  // Calcule le zoom, les tuiles à charger et les points à tracer (fonction pure, testée sans réseau)
+  function qiblaMapPlan(lat, lon){
+    const pts = greatCirclePoints(lat, lon, KAABA.lat, KAABA.lon, 48);
+    let best = 1, bounds = null;
+    for(let z = 8; z >= 1; z--){
+      const px = pts.map(function(p){ return mercatorPx(p.lat, p.lon, z); });
+      const xs = px.map(function(p){ return p.x; }), ys = px.map(function(p){ return p.y; });
+      const b = { minx: Math.min.apply(null, xs), maxx: Math.max.apply(null, xs), miny: Math.min.apply(null, ys), maxy: Math.max.apply(null, ys) };
+      if(b.maxx - b.minx <= MAP_W - 90 && b.maxy - b.miny <= MAP_H - 90){ best = z; bounds = b; break; }
+      if(z === 1) bounds = b;
+    }
+    const z = best, size = Math.pow(2, z), px = pts.map(function(p){ return mercatorPx(p.lat, p.lon, z); });
+    const ox = (bounds.minx + bounds.maxx) / 2 - MAP_W / 2, oy = (bounds.miny + bounds.maxy) / 2 - MAP_H / 2;
+    const tiles = [];
+    for(let tx = Math.floor(ox / 256); tx <= Math.floor((ox + MAP_W) / 256); tx++){
+      for(let ty = Math.floor(oy / 256); ty <= Math.floor((oy + MAP_H) / 256); ty++){
+        if(ty < 0 || ty >= size) continue;
+        tiles.push({ url: 'https://tile.openstreetmap.org/' + z + '/' + (((tx % size) + size) % size) + '/' + ty + '.png', dx: tx * 256 - ox, dy: ty * 256 - oy });
+      }
+    }
+    const rel = px.map(function(p){ return { x: p.x - ox, y: p.y - oy }; });
+    return { z: z, tiles: tiles, line: rel, you: rel[0], kaaba: rel[rel.length - 1], bearing: qiblaBearing(lat, lon) };
+  }
+  function drawQiblaOverlay(plan, name){
+    const c = $('#qibla-map-overlay'); const ctx = c && c.getContext && c.getContext('2d'); if(!ctx) return;
+    ctx.clearRect(0, 0, MAP_W, MAP_H);
+    ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+    ctx.strokeStyle = 'rgba(0,0,0,.55)'; ctx.lineWidth = 7; ctx.beginPath();
+    plan.line.forEach(function(p, i){ if(i) ctx.lineTo(p.x, p.y); else ctx.moveTo(p.x, p.y); }); ctx.stroke();
+    ctx.strokeStyle = '#e3c766'; ctx.lineWidth = 4; ctx.beginPath();
+    plan.line.forEach(function(p, i){ if(i) ctx.lineTo(p.x, p.y); else ctx.moveTo(p.x, p.y); }); ctx.stroke();
+    const n = plan.line.length, a = plan.line[n - 1], b = plan.line[n - 4] || plan.line[0], ang = Math.atan2(a.y - b.y, a.x - b.x);
+    ctx.fillStyle = '#e3c766'; ctx.beginPath(); ctx.moveTo(a.x, a.y);
+    ctx.lineTo(a.x - 16 * Math.cos(ang - 0.4), a.y - 16 * Math.sin(ang - 0.4)); ctx.lineTo(a.x - 16 * Math.cos(ang + 0.4), a.y - 16 * Math.sin(ang + 0.4)); ctx.closePath(); ctx.fill();
+    const dot = function(p, color, label){
+      ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(p.x, p.y, 9, 0, 6.2832); ctx.fill();
+      ctx.fillStyle = color; ctx.beginPath(); ctx.arc(p.x, p.y, 6, 0, 6.2832); ctx.fill();
+      ctx.font = 'bold 14px sans-serif'; ctx.textAlign = 'center';
+      const w = ctx.measureText(label).width + 10, ty = p.y > 40 ? p.y - 16 : p.y + 28;
+      ctx.fillStyle = 'rgba(0,0,0,.7)'; ctx.fillRect(p.x - w / 2, ty - 14, w, 19);
+      ctx.fillStyle = '#fff'; ctx.fillText(label, p.x, ty);
+    };
+    dot(plan.you, '#2e7a63', name || 'Vous'); dot(plan.kaaba, '#a6791c', 'La Mecque');
+  }
+  function showQiblaMap(){
+    const status = $('#qibla-map-status');
+    if(state.lat === null || state.lon === null){ status.textContent = 'Définissez d\'abord votre position (Géolocalisation ci-dessous).'; return; }
+    const km = (function(){ const r = Math.PI / 180, dLat = (KAABA.lat - state.lat) * r, dLon = (KAABA.lon - state.lon) * r; const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(state.lat * r) * Math.cos(KAABA.lat * r) * Math.sin(dLon / 2) * Math.sin(dLon / 2); return 6371 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)); })();
+    if(km < 1){ status.textContent = 'Vous êtes à La Mecque.'; return; }
+    const plan = qiblaMapPlan(state.lat, state.lon);
+    $('#qibla-map-wrap').style.display = 'block'; $('#qibla-map-hide').style.display = '';
+    const base = $('#qibla-map-base'), ctx = base.getContext && base.getContext('2d');
+    if(ctx){ ctx.fillStyle = '#0b1f1c'; ctx.fillRect(0, 0, MAP_W, MAP_H); }
+    drawQiblaOverlay(plan, state.cityName ? String(state.cityName).split(',')[0] : 'Vous');
+    let ok = 0, ko = 0;
+    const done = function(){
+      if(ok + ko < plan.tiles.length) return;
+      status.textContent = ko === plan.tiles.length
+        ? 'Les tuiles de la carte n\'ont pas pu être chargées (hors ligne ?). La ligne de direction reste valable : Qibla à ' + Math.round(plan.bearing) + '° par rapport au nord.'
+        : 'Direction de La Mecque : ' + Math.round(plan.bearing) + '° par rapport au nord (ligne dorée = chemin le plus court, d\'où sa courbure sur la carte).';
+    };
+    status.textContent = 'Chargement de la carte OpenStreetMap…';
+    plan.tiles.forEach(function(t){
+      const img = new Image();
+      img.onload = function(){ ok++; if(ctx) ctx.drawImage(img, t.dx, t.dy); done(); };
+      img.onerror = function(){ ko++; done(); };
+      img.src = t.url;
+    });
+    return plan;
+  }
+  $('#qibla-map-btn').addEventListener('click', showQiblaMap);
+  $('#qibla-map-hide').addEventListener('click', function(){ $('#qibla-map-wrap').style.display = 'none'; $('#qibla-map-hide').style.display = 'none'; $('#qibla-map-status').textContent = ''; });
+  $('#qibla-map-link').addEventListener('click', function(){ const c = $('#qibla-map-card'); c.scrollIntoView({ behavior: 'smooth', block: 'start' }); $('#qibla-map-btn').focus(); });
+  window.RakebTest = Object.assign(window.RakebTest || {}, { qiblaMapPlan: qiblaMapPlan });
+
+  /* ===== extrasblock.js ===== */
+  /* =========================================================
+     FINITIONS : copier (dua, aya, hadith, réponses), historique
+     de recherche Coran, profils d'horaires par mosquée.
+  ========================================================= */
+  function fallbackCopy(text, done){
+    try{
+      const ta = document.createElement('textarea'); ta.value = text; ta.setAttribute('readonly', ''); ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); done();
+    }catch(e){ toast('Copie impossible sur cet appareil.'); }
+  }
+  function copyText(text, okMsg){
+    const done = function(){ toast(okMsg || 'Copié.'); };
+    if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, function(){ fallbackCopy(text, done); });
+    else fallbackCopy(text, done);
+  }
+  document.addEventListener('click', function(e){
+    let b = e.target.closest('[data-src-copy]');
+    if(b){ copyText(b.getAttribute('data-src-copy'), 'Réponse copiée.'); return; }
+    b = e.target.closest('[data-dua-copy]');
+    if(b){ const d = lastDuaItems[parseInt(b.dataset.duaCopy, 10)]; if(d) copyText([d.ar, d.tr, d.fr, d.ref ? '(' + d.ref + ')' : ''].filter(Boolean).join('\n'), 'Doua copiée.'); return; }
+    b = e.target.closest('[data-copy-hadith]');
+    if(b){ const h = store.get('rakeb-hadith-cache', null); if(h) copyText([h.ar, h.fr, '(' + h.ref + ')'].filter(Boolean).join('\n'), 'Hadith copié.'); return; }
+    b = e.target.closest('[data-copy-ayah]');
+    if(b){
+      const row = b.closest('.ayah-row'); if(!row) return;
+      const ar = row.querySelector('.dua-ar'), fr = row.querySelector('.dua-fr');
+      copyText([ar ? ar.textContent.trim() : '', fr ? fr.textContent.trim() : '', '(Coran ' + b.dataset.copyAyah + ')'].filter(Boolean).join('\n'), 'Verset copié.'); return;
+    }
+    b = e.target.closest('#ram-dua-copy');
+    if(b && b.dataset.copy){ copyText(b.dataset.copy, 'Doua copiée.'); }
+  });
+
+  /* ---------- Historique de recherche Coran ---------- */
+  const QSH_KEY = 'rakeb-quran-search-hist';
+  function renderQuranHist(){
+    const box = $('#surah-hist'); if(!box) return;
+    const h = store.get(QSH_KEY, []); const list = Array.isArray(h) ? h : [];
+    box.innerHTML = list.length
+      ? '<span class="muted" style="align-self:center;">Récent :</span>' + list.map(function(t){ return '<button type="button" class="chip" data-qsh="' + escapeHtml(t) + '">' + escapeHtml(t) + '</button>'; }).join('') +
+        '<button type="button" class="chip" id="surah-hist-clear" aria-label="Effacer l\'historique de recherche">🗑 Effacer</button>'
+      : '';
+  }
+  function saveQuranSearch(term){
+    term = String(term || '').trim().slice(0, 40); if(term.length < 2) return;
+    let h = store.get(QSH_KEY, []); if(!Array.isArray(h)) h = [];
+    h = [term].concat(h.filter(function(x){ return x.toLowerCase() !== term.toLowerCase(); })).slice(0, 8);
+    store.set(QSH_KEY, h); renderQuranHist();
+  }
+  (function(){
+    const inp = $('#surah-search'), box = $('#surah-hist'); if(!inp || !box) return;
+    inp.addEventListener('change', function(){ saveQuranSearch(inp.value); });
+    inp.addEventListener('keydown', function(e){ if(e.key === 'Enter') saveQuranSearch(inp.value); });
+    box.addEventListener('click', function(e){
+      if(e.target.closest('#surah-hist-clear')){ store.set(QSH_KEY, []); renderQuranHist(); return; }
+      const c = e.target.closest('[data-qsh]'); if(!c) return;
+      inp.value = c.dataset.qsh; inp.dispatchEvent(new Event('input', { bubbles: true }));
+    });
+    renderQuranHist();
+  })();
+
+  /* ---------- Profils d'ajustement d'horaires par mosquée ---------- */
+  const MP_KEY = 'rakeb-mosque-profiles', MP_ACTIVE = 'rakeb-mosque-active';
+  const clampAdj = function(v){ v = parseInt(v, 10); if(isNaN(v)) v = 0; return Math.max(-30, Math.min(30, v)); };
+  function mosqueProfiles(){ const p = store.get(MP_KEY, []); return Array.isArray(p) ? p : []; }
+  function renderMosqueProfiles(){
+    const sel = $('#mp-select'); if(!sel) return;
+    const act = store.get(MP_ACTIVE, '');
+    sel.innerHTML = '';
+    const none = document.createElement('option'); none.value = ''; none.textContent = '— Réglage manuel —'; sel.appendChild(none);
+    mosqueProfiles().forEach(function(p){
+      const o = document.createElement('option'); o.value = p.id; o.textContent = p.name + ' (' + ADJ_KEYS.map(function(k){ return (p.adj[k] > 0 ? '+' : '') + (p.adj[k] || 0); }).join(' ') + ')'; sel.appendChild(o);
+    });
+    sel.value = mosqueProfiles().some(function(p){ return p.id === act; }) ? act : '';
+  }
+  function applyMosqueProfile(id){
+    const p = mosqueProfiles().filter(function(x){ return x.id === id; })[0];
+    store.set(MP_ACTIVE, p ? p.id : '');
+    if(!p){ renderMosqueProfiles(); return false; }
+    const a = {}; ADJ_KEYS.forEach(function(k){ a[k] = clampAdj(p.adj[k]); });
+    store.set('rakeb-time-adjust', a); loadAdjInputs(); refreshTimes(); renderMosqueProfiles();
+    return true;
+  }
+  function saveMosqueProfile(name){
+    name = String(name || '').trim().slice(0, 40);
+    if(!name) return null;
+    const a = {}; ADJ_KEYS.forEach(function(k){ a[k] = clampAdj(($('#adj-' + k) || {}).value); });
+    const list = mosqueProfiles(); let p = list.filter(function(x){ return x.name.toLowerCase() === name.toLowerCase(); })[0];
+    if(p){ p.adj = a; p.name = name; } else { p = { id: 'm' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5), name: name, adj: a }; list.push(p); }
+    store.set(MP_KEY, list.slice(0, 30)); store.set(MP_ACTIVE, p.id); renderMosqueProfiles();
+    return p;
+  }
+  (function(){
+    if(!$('#mp-select')) return;
+    renderMosqueProfiles();
+    $('#mp-select').addEventListener('change', function(e){ applyMosqueProfile(e.target.value); });
+    $('#mp-save').addEventListener('click', function(){
+      const p = saveMosqueProfile($('#mp-name').value);
+      $('#mp-status').textContent = p ? 'Profil « ' + p.name + ' » enregistré sur cet appareil.' : 'Saisissez le nom de la mosquée.';
+      if(p) $('#mp-name').value = '';
+    });
+    $('#mp-delete').addEventListener('click', function(){
+      const id = $('#mp-select').value; if(!id){ $('#mp-status').textContent = 'Choisissez d\'abord un profil à supprimer.'; return; }
+      if(!confirm('Supprimer ce profil de mosquée ?')) return;
+      store.set(MP_KEY, mosqueProfiles().filter(function(p){ return p.id !== id; })); store.set(MP_ACTIVE, ''); renderMosqueProfiles();
+      $('#mp-status').textContent = 'Profil supprimé (vos ajustements actuels sont conservés).';
+    });
+    const reset = $('#adj-reset'); if(reset) reset.addEventListener('click', function(){ store.set(MP_ACTIVE, ''); renderMosqueProfiles(); });
+  })();
+
+  window.RakebTest = Object.assign(window.RakebTest || {}, { saveMosqueProfile: saveMosqueProfile, applyMosqueProfile: applyMosqueProfile, mosqueProfiles: mosqueProfiles, allDuaItems: allDuaItems, duaMatches: duaMatches });
+
+
   /* ===== initblock.js ===== */
   /* ---------- date / clock display ---------- */
   function renderGregorian(){
@@ -5313,6 +6295,8 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
     const label = h.day + ' ' + (HIJRI_MONTHS[h.month-1]||'') + ' ' + h.year + ' AH';
     $('#hijri-date-small').textContent = label;
     const full = $('#hijri-full'); if(full) full.textContent = label;
+    const td = $('#today-dates');
+    if(td){ const gd = new Date(n.y, n.m, n.d); td.textContent = FR_DAYS[gd.getDay()] + ' ' + gd.getDate() + ' ' + FR_MONTHS[gd.getMonth()] + ' ' + gd.getFullYear() + ' · ' + label; }
     const ramStatus = $('#ramadan-status');
     if(ramStatus){
       if(h.month === 9){
@@ -5335,7 +6319,7 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
       const dump = {};
       for(let i=0;i<localStorage.length;i++){
         const k = localStorage.key(i);
-        if(k === 'rakeb-ai-key') continue; // never export the API key
+        if(k === 'rakeb-ai-key' || k === 'rakeb-src-cache') continue; // never export the API key
         dump[k] = localStorage.getItem(k);
       }
       const blob = new Blob([JSON.stringify(dump,null,2)], {type:'application/json'});

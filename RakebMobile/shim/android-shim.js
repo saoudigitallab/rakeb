@@ -272,8 +272,8 @@
         var notifs = toLN.slice(0, 60).map(function (x, i) {
           var n = {
             id: 100000 + i,
-            title: x.reminder ? 'Bientôt ' + x.name : 'Heure de ' + x.name,
-            body: x.reminder ? 'Dans ' + x.reminder + ' minutes (' + x.hhmm + ')' : x.hhmm,
+            title: x.title || (x.reminder ? 'Bientôt ' + x.name : 'Heure de ' + x.name),
+            body: x.body || (x.reminder ? 'Dans ' + x.reminder + ' minutes (' + x.hhmm + ')' : x.hhmm),
             channelId: x.reminder ? 'rappel' : CH_ADHAN,
             schedule: { at: new Date(x.ts), allowWhileIdle: true }
           };

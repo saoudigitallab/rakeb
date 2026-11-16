@@ -41,7 +41,8 @@ try { new Function(fs.readFileSync(path.join(__dirname, '..', 'RakebMobile', 'sh
 catch (e) { check('syntaxe du pont Android', false, e.message); }
 
 // ---------- 2. Application dans un navigateur simulé ----------
-async function loadApp(storage, netHandler) {
+async function loadApp(storage, netHandler, opts) {
+  opts = opts || {};
   const errors = [];
   const vc = new VirtualConsole();
   vc.on('jsdomError', (e) => { if (!/Not implemented/.test(e.message)) errors.push(e.message.slice(0, 160)); });
@@ -54,6 +55,15 @@ async function loadApp(storage, netHandler) {
       w.matchMedia = w.matchMedia || (() => ({ matches: false, addListener() {}, addEventListener() {} }));
       w.Element.prototype.scrollIntoView = function () {};
       w.rakebNet = { request: async (o) => (netHandler ? netHandler(o) : { status: 500, text: '{}' }) };
+      if (opts.fakeNow) {
+        const RD = w.Date, off = opts.fakeNow - RD.now();
+        w.Date = class extends RD { constructor(...a) { if (a.length === 0) super(RD.now() + off); else super(...a); } static now() { return RD.now() + off; } };
+      }
+      if (opts.recordImages) {
+        w.__imgs = [];
+        w.Image = function () { const im = w.document.createElement('img'); let src = ''; Object.defineProperty(im, 'src', { get() { return src; }, set(v) { src = v; w.__imgs.push(v); } }); return im; };
+      }
+      if (opts.clipboard) { Object.defineProperty(w.navigator, 'clipboard', { value: { writeText: async (t) => { w.__copied = t; } } }); }
     }
   });
   await wait(900);
@@ -141,6 +151,222 @@ const mins = (hhmm) => { const [h, m] = hhmm.split(':').map(Number); return h * 
   release = { status: 404 }; d.getElementById('update-check').click(); await wait(300);
   check('aucune publication : message clair', /aucune publication/.test(text(d, '#update-status')));
   check('lien « Signaler un problème » prêt', /^https:\/\/wa\.me\/\d+/.test(d.getElementById('report-problem').href));
+
+
+  // =====================================================================
+  // v1.2 — Muslim IA « sources vérifiées », Ramadan, Qibla carte, hégirien, finitions
+  // =====================================================================
+  console.log('Muslim IA : détection d\'intention (20 phrases et plus)');
+  const T = w.RakebTest;
+  const PHRASES = [
+    ['Quel est le verset 2:255 ?', 'quran'], ['Donne-moi la sourate Al-Ikhlas verset 1', 'quran'], ['Ayat al-Kursi', 'quran'], ['آية الكرسي', 'quran'],
+    ['Explique le verset 2:255', 'tafsir'], ['Tafsir de la sourate Al-Baqara verset 255', 'tafsir'], ['تفسير سورة الإخلاص', 'tafsir'],
+    ['Hadith Boukhari 1', 'hadith'], ['Un hadith sur la patience', 'hadith'], ['حديث إنما الأعمال بالنيات', 'hadith'],
+    ['Quelle est l\'heure du Fajr à Dakar ?', 'prayer_time'], ['Horaires de prière aujourd\'hui', 'prayer_time'], ['مواقيت الصلاة', 'prayer_time'], ['Waxtu tisbaar', 'prayer_time'],
+    ['Dua avant de manger', 'dua'], ['Que dire en entrant à la mosquée ?', 'dua'], ['دعاء السفر', 'dua'], ['Ñaan bu baax', 'dua'],
+    ['Est-ce que la musique est haram ?', 'fiqh'], ['Mon divorce est-il valide ?', 'fiqh'], ['Comment partager l\'héritage de mon père ?', 'fiqh'], ['فتوى في الطلاق', 'fiqh'], ['Ndax halaal la ?', 'fiqh'], ['Quelle est la fatwa sur ce sujet ?', 'fiqh'],
+    ['Qui était Omar ibn al-Khattab ?', 'general'], ['C\'est quoi le Ramadan ?', 'general']
+  ];
+  PHRASES.forEach(([q, want]) => { const got = T.detectIntent(q); check('intention « ' + q + ' » → ' + want, got === want, got === want ? '' : 'obtenu : ' + got); });
+  check('114 sourates, 114 clés distinctes, 6236 versets', T.surahCount() === 114 && T.surahKeyCount() === 114 && T.ayahTotal() === 6236, T.surahCount() + '/' + T.surahKeyCount() + '/' + T.ayahTotal());
+
+  // ----- Mode sources : mock des 4 API (succès, délai dépassé, erreur HTTP) -----
+  console.log('Muslim IA : mode sources (sans clé)');
+  const calls = []; const mock = { mode: 'ok' };
+  const AR_V = 'اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ';
+  const ed = (id, text, n) => ({ text, numberInSurah: n, surah: { number: 2, englishName: 'Al-Baqara', name: 'سورة البقرة' }, edition: { identifier: id } });
+  const net2 = (o) => {
+    calls.push(o.url);
+    if (/anthropic/.test(o.url)) return { status: 200, text: JSON.stringify({ content: [{ type: 'text', text: mock.aiText || 'Réponse.' }] }) };
+    if (/api\.github\.com/.test(o.url)) return { status: 404, text: '{}' };
+    if (!/alquran\.cloud|quran\.com|jsdelivr|aladhan/.test(o.url)) return { status: 500, text: '{}' };
+    if (mock.mode === 'timeout') return new Promise(() => {});
+    if (mock.mode === 'http403') return { status: 403, text: '{}' };
+    let m;
+    if ((m = o.url.match(/ayah\/(\d+):(\d+)\/editions/))) return { status: 200, text: JSON.stringify({ data: [ed('quran-uthmani', AR_V, +m[2]), ed('fr.hamidullah', 'Allah ! Pas de divinité à part Lui, le Vivant.', +m[2]), ed('en.transliteration', 'Allahu la ilaha illa huwa', +m[2])] }) };
+    if ((m = o.url.match(/surah\/112\/editions/))) { const ay = (t) => [1, 2, 3, 4].map((n) => ({ numberInSurah: n, text: t + n })); return { status: 200, text: JSON.stringify({ data: [{ edition: { identifier: 'quran-uthmani' }, ayahs: ay('ar'), surah: { number: 112, englishName: 'Al-Ikhlas', name: 'الإخلاص' } }, { edition: { identifier: 'fr.hamidullah' }, ayahs: ay('fr') }, { edition: { identifier: 'en.transliteration' }, ayahs: ay('tr') }] }) }; }
+    if (/search\/patience/.test(o.url)) return { status: 200, text: JSON.stringify({ data: { matches: [{ surah: { number: 2 }, numberInSurah: 153 }, { surah: { number: 3 }, numberInSurah: 200 }] } }) };
+    if (/quran\.com\/api\/v4\/quran\/tafsirs\/16/.test(o.url)) return { status: 200, text: JSON.stringify({ tafsirs: [{ text: '<p>تفسير الآية الكريمة</p>' }] }) };
+    if (/aladhan/.test(o.url)) return { status: 200, text: JSON.stringify({ data: { timings: { Fajr: '05:41', Dhuhr: '13:30', Asr: '16:50', Maghrib: '19:10', Isha: '20:20' } } }) };
+    if ((m = o.url.match(/editions\/(ara|fra|eng)-bukhari\/(\d+)\.json/))) return { status: 200, text: JSON.stringify({ hadithnumber: +m[2], text: m[1] === 'ara' ? 'إنما الأعمال بالنيات' : 'Les actes ne valent que par les intentions.', grades: [{ name: 'Al-Albani', grade: 'Sahih' }] }) };
+    return { status: 404, text: '{}' };
+  };
+  const app2 = await loadApp({ 'rakeb-state': STATE, 'rakeb-notif': 'true' }, net2, { clipboard: true, recordImages: true });
+  const T2 = app2.w.RakebTest, d2 = app2.d, w2 = app2.w;
+  const BANNER = /Réponse issue de .+\. Activez la clé API dans Réglages › Muslim IA pour des réponses personnalisées\./;
+  let r = await T2.askSources('Verset 2:255');
+  check('verset sans clé : arabe, translittération, traduction, source cliquable', r.kind === 'ok' && r.html.includes('اللَّهُ لَا') && r.html.includes('Allahu la ilaha') && r.html.includes('Pas de divinité') && r.html.includes('href="https://quran.com/2:255"'));
+  check('bandeau permanent « Réponse issue de [source] … clé API »', BANNER.test(r.html.replace(/<[^>]+>/g, '')));
+  r = await T2.askSources('Sourate Al-Ikhlas');
+  check('sourate nommée : versets 1 à 4', r.html.includes('﴿4﴾') && r.html.includes('Al-Ikhlas'));
+  r = await T2.askSources('Hadith Boukhari 1');
+  check('hadith sans clé : texte, authenticité, lien sunnah.com', r.html.includes('إنما الأعمال') && r.html.includes('Sahih') && r.html.includes('https://sunnah.com/bukhari:1'));
+  r = await T2.askSources('Tafsir 2:255');
+  check('tafsir sans clé : verset + tafsir court', r.html.includes('Tafsir court') && r.html.includes('تفسير الآية') && r.html.includes('Al-Baqara'));
+  r = await T2.askSources('Versets sur la patience');
+  check('thème : versets trouvés par mot-clé', r.kind === 'ok' && (r.html.match(/src-card/g) || []).length >= 2);
+  const before = calls.length;
+  r = await T2.askSources('Horaires de prière aujourd\'hui');
+  const aladhanUrl = calls.filter((u) => /aladhan/.test(u)).pop() || '';
+  check('horaires sans clé : calcul local recoupé avec Aladhan', r.kind === 'ok' && r.html.includes('Aladhan') && r.html.includes('05:41') && /<td>Fajr<\/td>/.test(r.html));
+  check('horaires : position arrondie à 2 décimales seulement', /latitude=14\.69&longitude=-17\.44&/.test(aladhanUrl), aladhanUrl.slice(-120));
+  const callsBeforeDua = calls.length;
+  r = await T2.askSources('Dua avant de manger');
+  check('doua : réponse hors ligne (aucune requête réseau)', r.kind === 'ok' && calls.length === callsBeforeDua && r.html.includes('dua-ar'));
+  r = await T2.askSources('Est-ce que la musique est haram ?');
+  const callsBeforeFiqh = calls.length;
+  check('fiqh : refus (aucune fatwa générée)', r.kind === 'refusal' && /ni fatwa ni avis juridique/.test(r.html) && !BANNER.test(r.html.replace(/<[^>]+>/g, '')));
+  // la même chose depuis l'interface, avec une clé API présente : toujours refusé, jamais envoyé à Anthropic
+  d2.getElementById('ai-api-key').value = 'sk-ant-test'; d2.getElementById('ai-key-save').click();
+  d2.getElementById('ai-question-input').value = 'Mon divorce est-il valide ?'; d2.getElementById('ai-ask-btn').click(); await wait(200);
+  check('fiqh via l\'interface avec clé API : refus et aucun envoi à Anthropic', /ne génère/.test(text(d2, '#ai-chat-log .bubble.bot:last-child')) && !calls.some((u) => /anthropic/.test(u)));
+  // avec clé : toute réponse religieuse doit citer ses sources + avertissement
+  mock.aiText = 'La prière est un pilier de l\'islam.';
+  d2.getElementById('ai-question-input').value = 'Pourquoi prie-t-on ?'; d2.getElementById('ai-ask-btn').click(); await wait(250);
+  let last = text(d2, '#ai-chat-log .bubble.bot:last-child');
+  check('avec clé : avertissement « consultez une personne qualifiée » + alerte si aucune source citée', /consultez une personne qualifiée/i.test(last) && /ne cite pas de source/.test(last), last.slice(0, 80));
+  mock.aiText = 'Voir le verset 2:255 (Ayat al-Kursi).';
+  d2.getElementById('ai-question-input').value = 'Quel verset protège ?'; d2.getElementById('ai-ask-btn').click(); await wait(250);
+  last = text(d2, '#ai-chat-log .bubble.bot:last-child');
+  check('avec clé : réponse sourcée sans alerte, avertissement rappelé', !/ne cite pas de source/.test(last) && /consultez une personne qualifiée/i.test(last));
+  d2.getElementById('ai-api-key').value = ''; d2.getElementById('ai-key-save').click();
+
+  // ----- cache local, liste blanche, délai, erreur HTTP -----
+  const n1 = calls.length; r = await T2.askSources('Verset 1:2'); const n2 = calls.length;
+  r = await T2.askSources('Verset 1:2'); const n3 = calls.length;
+  check('cache : 1er appel = réseau, 2e appel identique = aucune requête', n2 > n1 && n3 === n2 && r.cached === true, (n2 - n1) + ' requête(s) puis ' + (n3 - n2));
+  let blocked = ''; try { await T2.srcFetch('https://exemple-non-autorise.test/x'); } catch (e) { blocked = e.message; }
+  check('liste blanche : domaine hors liste refusé sans requête', /Domaine non autorisé/.test(blocked) && !calls.some((u) => /exemple-non-autorise/.test(u)));
+  T2.setSrcTimeout(150); mock.mode = 'timeout';
+  r = await T2.askSources('Verset 3:18');
+  check('délai dépassé : message clair', r.kind === 'error' && /Délai dépassé/.test(r.error) && /Source indisponible/.test(r.html), r.error);
+  mock.mode = 'http403';
+  r = await T2.askSources('Verset 4:19');
+  check('erreur HTTP : détail « HTTP 403 » affiché', r.kind === 'error' && r.error === 'HTTP 403' && r.html.includes('HTTP 403'), r.error);
+  mock.mode = 'ok'; T2.setSrcTimeout(5000);
+  r = await T2.askSources('Verset 5:3');
+  check('reprise après erreur : la source répond de nouveau', r.kind === 'ok');
+  r = await T2.askSources('Verset 2:999');
+  check('référence invalide : message explicite sans réseau', /compte 286 versets/.test(r.html));
+  // sources hors liste blanche : vérification par analyse du code
+  const urlHosts = [...new Set([...main.matchAll(/(?:netFetch|srcFetch|fetch)\(\s*['"`](https?:\/\/[^'"`$\/?#]+)/g)].map((m) => m[1].replace(/^https?:\/\//, '')))];
+  const priv = text(d2, '#panel-confidentialite');
+  const unlisted = urlHosts.filter((h) => !priv.includes(h.replace(/^www\./, '')));
+  check('aucune requête réseau hors de l\'écran Confidentialité (analyse du code)', unlisted.length === 0, unlisted.join(', ') || urlHosts.length + ' hôtes vérifiés');
+  const srcHostsInCode = (main.match(/SRC_ALLOWED_HOSTS\s*=\s*\[([^\]]+)\]/) || [, ''])[1].replace(/['"\s]/g, '').split(',');
+  check('liste blanche de Muslim IA = les 4 domaines prévus', srcHostsInCode.sort().join() === ['api.alquran.cloud', 'api.aladhan.com', 'api.quran.com', 'cdn.jsdelivr.net'].sort().join(), srcHostsInCode.join(' '));
+
+  // ----- Confidentialité -----
+  check('Confidentialité : api.alquran.cloud, api.quran.com, sunnah.com, api.aladhan.com listés', ['api.alquran.cloud', 'api.quran.com', 'sunnah.com', 'api.aladhan.com'].every((h) => priv.includes(h)));
+  check('Confidentialité : carte OpenStreetMap listée et date mise à jour', priv.includes('tile.openstreetmap.org') && priv.includes('16 novembre 2026'));
+
+  // ----- Calendrier hégirien -----
+  console.log('Calendrier hégirien');
+  const hj = (y, m, dd) => { const h = T2.gregorianToHijri(new w2.Date(w2.Date.UTC(y, m - 1, dd, 12))); return h.day + '/' + h.month + '/' + h.year; };
+  check('hégirien : 11 mars 2024 = 1 Ramadan 1445', hj(2024, 3, 11) === '1/9/1445', hj(2024, 3, 11));
+  check('hégirien : 1er mars 2025 = 1 Ramadan 1446', hj(2025, 3, 1) === '1/9/1446', hj(2025, 3, 1));
+  check('hégirien : 1er janvier 2000 = 24 Ramadan 1420', hj(2000, 1, 1) === '24/9/1420', hj(2000, 1, 1));
+  check('hégirien : 23 mars 2023 = 1 Ramadan 1444', hj(2023, 3, 23) === '1/9/1444', hj(2023, 3, 23));
+  T2.setHijriAdj(1);
+  check('hégirien : ajustement +1 jour', hj(2024, 3, 11) === '2/9/1445', hj(2024, 3, 11));
+  T2.setHijriAdj(-1);
+  check('hégirien : ajustement −1 jour (retour au 29 Chaabane)', hj(2024, 3, 11) === '29/8/1445', hj(2024, 3, 11));
+  T2.setHijriAdj(9);
+  check('hégirien : ajustement limité à ±1 jour', hj(2024, 3, 11) === '2/9/1445');
+  d2.querySelector('#hijri-adj-card .hijri-adj-reset').click();
+  check('hégirien : remise à zéro et affichage dans l\'entête', hj(2024, 3, 11) === '1/9/1445' && /AH/.test(text(d2, '#hijri-date-small')) && /AH/.test(text(d2, '#today-dates')));
+
+  // ----- Ajustements par mosquée -----
+  console.log('Profils d\'horaires par mosquée');
+  const setAdj = (k, v) => { const el = d2.getElementById('adj-' + k); el.value = v; el.dispatchEvent(new w2.Event('change', { bubbles: true })); };
+  const fajrTxt = () => text(d2, '#prayer-list');
+  const base0 = fajrTxt();
+  setAdj('fajr', 3); setAdj('isha', -2);
+  const adjusted = fajrTxt();
+  const p1 = T2.saveMosqueProfile('Mosquée Test');
+  d2.getElementById('adj-reset').click();
+  check('mosquée : profil enregistré (nom + 5 ajustements)', p1 && p1.name === 'Mosquée Test' && p1.adj.fajr === 3 && p1.adj.isha === -2 && Object.keys(p1.adj).length === 5 && T2.mosqueProfiles().length === 1);
+  check('mosquée : remise à zéro des ajustements', d2.getElementById('adj-fajr').value === '0' && fajrTxt() === base0);
+  d2.getElementById('mp-select').value = p1.id; d2.getElementById('mp-select').dispatchEvent(new w2.Event('change', { bubbles: true }));
+  check('mosquée : sélection dans Horaires applique les ajustements', d2.getElementById('adj-fajr').value === '3' && d2.getElementById('adj-isha').value === '-2' && fajrTxt() === adjusted);
+  check('mosquée : profil conservé localement (localStorage)', /Mosquée Test/.test(w2.localStorage.getItem('rakeb-mosque-profiles') || ''));
+  check('mosquée : valeurs limitées à −30/+30', (() => { setAdj('asr', 45); return d2.getElementById('adj-asr').value === '30'; })());
+  d2.getElementById('adj-reset').click();
+
+  // ----- Duas : recherche locale, copier -----
+  console.log('Duas, Coran, À propos, accessibilité');
+  click(d2, '.tab-btn[data-panel="duas"]');
+  const search = (q) => { const el = d2.getElementById('dua-search'); el.value = q; el.dispatchEvent(new w2.Event('input', { bubbles: true })); return d2.querySelectorAll('#dua-list .dua-item'); };
+  check('recherche duas : mot-clé « rupture » (toutes catégories)', search('rupture').length >= 1 && d2.getElementById('dua-list').textContent.includes('ذَهَبَ'));
+  check('recherche duas : arabe sans voyelles et sans accents', search('ذهب الظمأ').length >= 1 && search('jeune').length >= 1);
+  d2.querySelector('#dua-chips .chip[data-cat="voyage"]').click(); const nVoy = d2.querySelectorAll('#dua-list .dua-item').length;
+  check('recherche duas : par thème (« voyage »)', search('voyage').length >= nVoy && nVoy > 0 && /Voyage/.test(d2.getElementById('dua-list').textContent), nVoy + ' dans la catégorie');
+  search('Muslim');
+  check('recherche duas : par source (« Muslim »)', d2.querySelectorAll('#dua-list .dua-item').length >= 1);
+  search('');
+  check('bouton « Copier » sur chaque doua', d2.querySelectorAll('#dua-list [data-dua-copy]').length === d2.querySelectorAll('#dua-list .dua-item').length && d2.querySelectorAll('#dua-list [data-dua-copy]').length > 0);
+  d2.querySelector('#dua-list [data-dua-copy]').click(); await wait(50);
+  check('copie d\'une doua : texte arabe copié', /[\u0600-\u06FF]/.test(w2.__copied || ''));
+  const sr = d2.getElementById('surah-search'); sr.value = 'baqara'; sr.dispatchEvent(new w2.Event('change', { bubbles: true }));
+  check('historique de recherche Coran', d2.querySelectorAll('#surah-hist [data-qsh]').length === 1 && d2.querySelector('#surah-hist [data-qsh]').dataset.qsh === 'baqara');
+  d2.getElementById('surah-hist-clear').click();
+  check('historique de recherche Coran : effacement', d2.querySelectorAll('#surah-hist [data-qsh]').length === 0);
+  check('numéro de version visible dans À propos', text(d2, '#app-version-about') === text(d2, '#app-version') && /^\d+\.\d+\.\d+$/.test(text(d2, '#app-version-about')));
+  const nameless = [...d2.querySelectorAll('button')].filter((b) => !(b.getAttribute('aria-label') || b.title || /[A-Za-zÀ-ÿ0-9\u0600-\u06FF]/.test(b.textContent)));
+  check('accessibilité : tous les boutons ont un nom (texte ou aria-label)', nameless.length === 0, nameless.slice(0, 4).map((b) => b.outerHTML.slice(0, 60)).join(' | '));
+  const unlabeled = [...d2.querySelectorAll('input:not([type=hidden]):not([type=file]), select, textarea')].filter((el) => !(el.getAttribute('aria-label') || el.title || (el.id && d2.querySelector('label[for="' + el.id + '"]')) || el.closest('label') || el.placeholder));
+  check('accessibilité : champs et listes étiquetés', unlabeled.length === 0, unlabeled.slice(0, 4).map((b) => b.outerHTML.slice(0, 60)).join(' | '));
+  // contrastes (WCAG AA : 4,5 pour le texte)
+  const lum = (hex) => { const c = hex.replace('#', ''); const v = [0, 2, 4].map((i) => parseInt(c.substr(i, 2), 16) / 255).map((x) => (x <= 0.03928 ? x / 12.92 : Math.pow((x + 0.055) / 1.055, 2.4))); return 0.2126 * v[0] + 0.7152 * v[1] + 0.0722 * v[2]; };
+  const ratio = (a, b) => { const x = lum(a), y = lum(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); };
+  const hex6 = (h) => (h.length === 4 ? '#' + h.slice(1).split('').map((c) => c + c).join('') : h);
+  const vars = (css) => { const o = {}; for (const m of css.matchAll(/--([a-z-]+)\s*:\s*(#[0-9A-Fa-f]{6}|#[0-9A-Fa-f]{3})\b/g)) o[m[1]] = hex6(m[2]); return o; };
+  const css = [...html.matchAll(/<style>([\s\S]*?)<\/style>/g)].map((m) => m[1]).join('\n');
+  const rootDark = vars(css.match(/:root\s*\{([^}]*)\}/)[1]);
+  const lightBlock = vars(css.match(/:root\[data-theme=["']?light["']?\]\s*\{([^}]*)\}/)[1]);
+  const pal = (n) => Object.assign({}, rootDark, vars(css.match(new RegExp(':root\\[data-palette=["\']?' + n + '["\']?\\]\\s*\\{([^}]*)\\}'))[1]));
+  const themes = { sombre: rootDark, clair: Object.assign({}, rootDark, lightBlock), nuit: pal('nuit'), sable: pal('sable'), emeraude: pal('emeraude') };
+  const weak = [];
+  Object.keys(themes).forEach((t) => { const v = themes[t];
+    [['text', 'bg'], ['text', 'surface'], ['text-dim', 'bg'], ['text-dim', 'surface'], ['text-dim', 'surface-2'], ['gold-soft', 'surface'], ['gold-soft', 'bg'], ['jade', 'surface'], ['jade', 'surface-2'], ['danger-text', 'surface'], ['danger-text', 'surface-2']].forEach(([a, b]) => { if (v[a] && v[b] && ratio(v[a], v[b]) < 4.5) weak.push(t + ' ' + a + '/' + b + ' ' + ratio(v[a], v[b]).toFixed(1)); }); });
+  check('contrastes : texte ≥ 4,5:1 dans les 5 thèmes', weak.length === 0, weak.join(' ; '));
+
+  // ----- Qibla par carte -----
+  console.log('Qibla par carte');
+  const plan = T2.qiblaMapPlan(14.6937, -17.4441);
+  check('carte Qibla : direction de Dakar vers La Mecque ≈ 74°', plan.bearing > 72 && plan.bearing < 76, plan.bearing.toFixed(1) + '°');
+  check('carte Qibla : tuiles OpenStreetMap seulement (≤ 12 tuiles)', plan.tiles.length >= 1 && plan.tiles.length <= 12 && plan.tiles.every((t) => /^https:\/\/tile\.openstreetmap\.org\/\d+\/\d+\/\d+\.png$/.test(t.url)), plan.tiles.length + ' tuiles, zoom ' + plan.z);
+  check('carte Qibla : aucune requête silencieuse avant le clic', w2.__imgs.length === 0 && d2.getElementById('qibla-map-wrap').style.display === 'none');
+  check('carte Qibla : lien depuis le message « pas de capteur »', !!d2.getElementById('qibla-map-link') && !!d2.getElementById('qibla-map-card'));
+  click(d2, '#qibla-map-btn');
+  check('carte Qibla : tuiles demandées seulement après activation', w2.__imgs.length >= 1 && w2.__imgs.every((u) => u.startsWith('https://tile.openstreetmap.org/')) && d2.getElementById('qibla-map-wrap').style.display === 'block', w2.__imgs.length + ' tuiles');
+
+  // ----- Mode Ramadan (heure simulée : 20 février 2027, 12 h à Dakar) -----
+  console.log('Mode Ramadan');
+  const app3 = await loadApp({ 'rakeb-state': STATE, 'rakeb-notif': 'true' }, net2, { fakeNow: Date.UTC(2027, 1, 20, 12, 0, 0) });
+  const T3 = app3.w.RakebTest, d3 = app3.d, w3 = app3.w;
+  const rs = (now) => T3.ramadanStatus({ fajr: { decimal: 5.5 }, maghrib: { decimal: 18.5 } }, { fajr: { decimal: 5.5 } }, now, 10);
+  check('Ramadan : avant l\'imsak (compte à rebours vers l\'imsak)', rs(4).phase === 'suhoor' && Math.round(rs(4).seconds) === 4800, rs(4).label);
+  check('Ramadan : pendant le jeûne (compte à rebours vers l\'iftar)', rs(12).phase === 'fasting' && rs(12).label === 'Iftar dans' && Math.round(rs(12).seconds) === 23400);
+  check('Ramadan : après l\'iftar (prochain imsak le lendemain)', rs(20).phase === 'night' && Math.round(rs(20).seconds) === Math.round((5.5 - 10 / 60 + 24 - 20) * 3600));
+  check('Ramadan : accueil — carte visible pendant le mois (jour 13)', d3.getElementById('ramadan-home-card').style.display !== 'none' && /jour 13/.test(text(d3, '#ramadan-home-day')), text(d3, '#ramadan-home-day'));
+  click(d3, '#ramadan-home-card [data-goto="ramadan"]');
+  check('Ramadan : écran dédié (date hégirienne, compte à rebours, imsak/iftar)', /Ramadan/.test(text(d3, '#ram-hijri')) && /^\d\d:\d\d:\d\d$/.test(text(d3, '#ram-countdown')) && /^\d\d:\d\d$/.test(text(d3, '#ram-iftar')) && /^\d\d:\d\d$/.test(text(d3, '#ram-imsak')), text(d3, '#ram-hijri') + ' ' + text(d3, '#ram-countdown'));
+  check('Ramadan : dua de rupture du jeûne mise en avant', text(d3, '#ram-dua').includes('ذَهَبَ الظَّمَأُ') && /rupture du jeûne/.test(text(d3, '#ram-dua')));
+  const ev = w3.RakebBridge.upcoming(3);
+  const ift = ev.filter((x) => x.id === 'iftar')[0], mag = ev.filter((x) => x.id === 'maghrib' && x.reminder === 0 && x.ts > ift.ts)[0];
+  check('Ramadan : rappel 10 min avant l\'iftar programmé (alarme Android, canal silencieux)', ift && mag && mag.ts - ift.ts === 600000 && ift.reminder === 10 && /Iftar dans 10 minutes/.test(ift.title), ift ? ift.title : 'aucun');
+  d3.getElementById('ram-reminder').checked = false; d3.getElementById('ram-reminder').dispatchEvent(new w3.Event('change', { bubbles: true }));
+  check('Ramadan : rappel désactivable', !w3.RakebBridge.upcoming(3).some((x) => x.id === 'iftar'));
+  click(d3, '#ram-fast-today');
+  check('Ramadan : compteur de jeûnes (+1)', /^1 jour jeûné sur 30/.test(text(d3, '#ram-fast-count')) && T3.fastedDays(T3.ramYear()).join() === '13', text(d3, '#ram-fast-count'));
+  click(d3, '#ram-fast-grid [data-fast="14"]');
+  check('Ramadan : compteur modifiable jour par jour', /^2 jours jeûnés/.test(text(d3, '#ram-fast-count')));
+  click(d3, '#ram-fast-today');
+  check('Ramadan : calendrier ajustable ±1 jour (jour 13 → 14)', (() => { click(d3, '#panel-ramadan .hijri-adj-plus'); const t = text(d3, '#ram-day'); click(d3, '#panel-ramadan .hijri-adj-reset'); return /Jour 14 du Ramadan/.test(t); })());
+  check('Ramadan : hors du mois, pas de carte ni de rappel (novembre 2026)', d.getElementById('ramadan-home-card').style.display === 'none' && !w.RakebBridge.upcoming(3).some((x) => x.id === 'iftar'));
+  check('alarmes de prière inchangées (5 prières, adhan natif)', w.RakebBridge.upcoming(3).filter((x) => x.reminder === 0).length >= 10);
+  check('aucune erreur JavaScript (mode sources, Ramadan, carte)', app2.errors.length === 0 && app3.errors.length === 0, app2.errors.concat(app3.errors).slice(0, 2).join(' | '));
 
   check('aucune erreur JavaScript pendant les tests', errors.length === 0, errors.slice(0, 2).join(' | '));
 

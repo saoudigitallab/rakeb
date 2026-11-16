@@ -157,3 +157,6 @@ Ajouter les 4 domaines ci-dessus à l'écran Confidentialité + date mise à jou
 - [ ] Rien de cassé sur Tecno KG5P (absence magnétomètre) ni sur Windows 10.
 
 Commence par le **plan en 5 étapes**, puis attends mon accord.
+
+---
+**État au 16 novembre 2026 :** étapes A à E implémentées (voir `LISEZ-MOI.md`, « Évolutions du 16 novembre 2026 »). Écart assumé : hadiths via `cdn.jsdelivr.net` (hadith-api) au lieu de l'API `sunnah.com`, qui exige une clé API.
