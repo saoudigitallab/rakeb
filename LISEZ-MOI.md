@@ -107,3 +107,27 @@ Cahier des charges de référence : `docs/CAHIER-DES-CHARGES-EVOLUTIONS.md`. `AP
   2. *Techniques* : les 4 API n'ont pas pu être interrogées depuis l'environnement de développement (tests sur mocks conformes à leur documentation) : essayer sur un vrai téléphone « 2:255 », « Boukhari 1 », « tafsir 112:1 », « horaires » avec le réseau. `api.quran.com` migre vers `apis.quran.foundation` (identifiants OAuth) : si le tafsir échoue, repli automatique sur `api.alquran.cloud` (`ar.muyassar`). Traduction française des hadiths : repli sur l'anglais si absente.
   3. *Appareils* : rappel d'iftar et canal « Rappel » sur Android ; carte Qibla sans réseau ; Windows 10.
 
+
+## Évolutions v1.3 (11 ajouts)
+
+| # | Évolution | Où |
+|---|-----------|----|
+| 1 | Rappels de sunna (lundi/jeudi, jours blancs, Arafat, Achoura, Al-Kahf, adhkar matin/soir, dernier tiers de la nuit) | Menu › Rappels de sunna |
+| 2 | Planificateur de khatma (N jours, lecture du jour, progression, ouverture au bon verset via le marque-page) | Menu › Planificateur de khatma |
+| 3 | Imsakiya partageable (image PNG des jours du Ramadan : imsak, Fajr, iftar) | Ramadan › Imsakiya à partager |
+| 4 | Recherche plein texte dans le Coran téléchargé (français et arabe), utilisée aussi par Muslim IA | Coran › Recherche hors ligne |
+| 5 | 40 hadiths de Nawawi intégrés (42 textes), recherche par thème, « Nawawi 5 » dans Muslim IA | Menu › 40 hadiths de Nawawi |
+| 6 | Rattrapage des prières et des jours de jeûne, relié au compteur du Ramadan | Menu › Rattrapage |
+| 7 | Suivi du tarawih et de la sadaqa | Ramadan |
+| 8 | Widget Android (prochaine prière, ou iftar pendant le Ramadan) | Écran d'accueil Android |
+| 9 | Wolof (partiel) et mots-clés wolof pour Muslim IA | Réglages › Langue |
+| 10 | Sauvegarde automatique de « Mes données » + envoi en un geste | Réglages › Mes données |
+| 11 | Table Umm al-Qura (1420-1499 AH), désactivable | Réglages › Calendrier hégirien |
+
+Points d'attention :
+- **Alarmes** : aucune alarme existante n'est modifiée. Les rappels de sunna passent par `RakebBridge.upcoming` comme les rappels d'iftar (notifications silencieuses). Le widget lit seulement la liste mémorisée par `AdhanScheduler` ; la seule modification de cette classe est l'appel `RakebWidgetProvider.refresh`. `upcoming` renvoyait `undefined` quand seules les alertes d'iftar étaient actives : corrigé.
+- **Widget** : compilé ici contre android.jar (API 34) avec une classe `R` simulée ; le rendu réel sur téléphone reste à vérifier.
+- **Données** : Nawawi (fawazahmed0/hadith-api) et table Umm al-Qura (hijri-converter) sont embarquées dans l'application. Les titres thématiques des hadiths et les traductions sont à faire relire.
+- **Wolof** : seules ~20 étiquettes sont traduites ; à faire relire par un locuteur avant diffusion.
+- **Sauvegarde automatique** : copie dans le stockage de l'application (IndexedDB), donc perdue si l'on efface les données de l'application. « Envoyer ma sauvegarde » est la vraie protection. La clé API n'est jamais sauvegardée.
+- Khatma : répartition par nombre de versets (pas par pages du mushaf).

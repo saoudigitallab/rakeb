@@ -259,6 +259,7 @@
     var prayers = list.filter(function (x) { return !x.reminder; });
     var reminders = list.filter(function (x) { return x.reminder; });
     var toLN = AD ? reminders : list; // avec le module natif, seuls les rappels « Bientôt » passent par les notifications
+    toLN = toLN.slice().sort(function (a, b) { return a.ts - b.ts; }); // les plus proches d'abord (limite de 60 notifications)
     var nativeStep = AD
       ? AD.schedule({ events: prayers.slice(0, 40).map(function (x, i) { return { id: 200000 + i, ts: x.ts, title: 'Heure de ' + x.name, body: x.hhmm }; }) })
       : Promise.resolve();

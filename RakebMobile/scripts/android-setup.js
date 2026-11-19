@@ -120,6 +120,27 @@ edit(path.join(app, 'src/main/AndroidManifest.xml'), (t) => {
 `;
   return t.replace('</application>', comps + '    </application>');
 });
+// Widget de l'écran d'accueil (prochaine prière / iftar) : ressources + récepteur du manifeste
+const widgetRes = path.join(root, 'android-widget', 'res');
+(function copyDir(src, dst) {
+  fs.mkdirSync(dst, { recursive: true });
+  fs.readdirSync(src, { withFileTypes: true }).forEach((e) => {
+    if (e.isDirectory()) copyDir(path.join(src, e.name), path.join(dst, e.name));
+    else fs.copyFileSync(path.join(src, e.name), path.join(dst, e.name));
+  });
+})(widgetRes, path.join(app, 'src/main/res'));
+edit(path.join(app, 'src/main/AndroidManifest.xml'), (t) => {
+  if (t.includes('.RakebWidgetProvider')) return t;
+  const w = `
+        <receiver android:name=".RakebWidgetProvider" android:exported="true" android:label="Rakeb">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/rakeb_widget_info" />
+        </receiver>
+`;
+  return t.replace('</application>', w + '    </application>');
+});
 console.log('Plugins natifs installés (boussole, réglages système, adhan)');
 
 // Adhan facultatif pour les notifications (res/raw/adhan.*)

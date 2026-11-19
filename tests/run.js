@@ -34,7 +34,7 @@ if (process.env.RAKEB_TRANSPILED) {
   check('Android : pas de décomposition d\'objet étalé ({...x})', !/\{\s*\.\.\./.test(main));
   check('Android : compléments et pont chargés avant l\'application', html.indexOf('polyfills.js') > -1 && html.indexOf('polyfills.js') < html.indexOf('android-shim.js') && html.indexOf('android-shim.js') < html.indexOf(main.slice(0, 40)));
 }
-['AdhanPlugin', 'AdhanService', 'AdhanReceiver', 'AdhanScheduler', 'BootReceiver', 'CompassPlugin', 'SystemPlugin'].forEach((c) => {
+['RakebWidgetProvider', 'AdhanPlugin', 'AdhanService', 'AdhanReceiver', 'AdhanScheduler', 'BootReceiver', 'CompassPlugin', 'SystemPlugin'].forEach((c) => {
   check('classe Java ' + c + ' présente', fs.existsSync(path.join(__dirname, '..', 'RakebMobile', 'android-native', c + '.java')));
 });
 try { new Function(fs.readFileSync(path.join(__dirname, '..', 'RakebMobile', 'shim', 'android-shim.js'), 'utf8')); check('syntaxe du pont Android', true); }
@@ -258,7 +258,7 @@ const mins = (hhmm) => { const [h, m] = hhmm.split(':').map(Number); return h * 
 
   // ----- Confidentialité -----
   check('Confidentialité : api.alquran.cloud, api.quran.com, sunnah.com, api.aladhan.com listés', ['api.alquran.cloud', 'api.quran.com', 'sunnah.com', 'api.aladhan.com'].every((h) => priv.includes(h)));
-  check('Confidentialité : carte OpenStreetMap listée et date mise à jour', priv.includes('tile.openstreetmap.org') && priv.includes('16 novembre 2026'));
+  check('Confidentialité : carte OpenStreetMap listée et date mise à jour', priv.includes('tile.openstreetmap.org') && priv.includes('18 novembre 2026'));
 
   // ----- Calendrier hégirien -----
   console.log('Calendrier hégirien');
@@ -367,6 +367,81 @@ const mins = (hhmm) => { const [h, m] = hhmm.split(':').map(Number); return h * 
   check('Ramadan : hors du mois, pas de carte ni de rappel (novembre 2026)', d.getElementById('ramadan-home-card').style.display === 'none' && !w.RakebBridge.upcoming(3).some((x) => x.id === 'iftar'));
   check('alarmes de prière inchangées (5 prières, adhan natif)', w.RakebBridge.upcoming(3).filter((x) => x.reminder === 0).length >= 10);
   check('aucune erreur JavaScript (mode sources, Ramadan, carte)', app2.errors.length === 0 && app3.errors.length === 0, app2.errors.concat(app3.errors).slice(0, 2).join(' | '));
+
+
+  // ----- Évolutions v1.3 -----
+  console.log('Évolutions (sunna, khatma, Nawawi, rattrapage, sauvegarde, Umm al-Qura, widget)');
+  const SUNNA = JSON.stringify({ monthu: true, white: true, kahf: true, am: true, pm: true, night: true, arafat: true, ashura: true });
+  const app4 = await loadApp({ 'rakeb-state': STATE, 'rakeb-sunna': SUNNA }, net2, { fakeNow: Date.UTC(2026, 10, 18, 8, 0, 0) });
+  const T4 = app4.w.RakebTest, d4 = app4.d, w4 = app4.w;
+  const v13_sev = T4.sunnaEvents(7), v13_cnt = (id) => v13_sev.filter((e) => e.id === 'sunna-' + id).length;
+  check('sunna : jeûne lundi/jeudi la veille (mercredi soir, lundi soir)', v13_cnt('monthu') === 2, v13_cnt('monthu') + ' rappels');
+  check('sunna : jours blancs (13, 14, 15)', v13_cnt('white') === 3, v13_cnt('white') + ' rappels');
+  check('sunna : Al-Kahf le vendredi seulement', v13_cnt('kahf') === 1);
+  check('sunna : adhkar du matin, du soir, dernier tiers de la nuit', v13_cnt('am') >= 6 && v13_cnt('pm') === 7 && v13_cnt('night') >= 6);
+  check('sunna : chaque rappel a un titre, un texte et le drapeau « rappel »', v13_sev.every((e) => e.title && e.body && e.reminder && e.ts > w4.Date.now()));
+  const upV = w4.RakebBridge.upcoming(7);
+  check('sunna : pont Android (seuls les rappels de sunna activés, sans alertes de prière)', Array.isArray(upV) && upV.length > 10 && upV.every((e) => /^sunna-/.test(e.id)));
+  click(d4, '#panel-menu [data-goto="sunna"]');
+  click(d4, '#sunna-list [data-sunna="am"]');
+  check('sunna : désactivation d\'un rappel depuis l\'écran', JSON.parse(w4.localStorage.getItem('rakeb-sunna')).am === false && T4.sunnaEvents(7).filter((e) => e.id === 'sunna-am').length === 0);
+  const v13_tot = T4.khTotal(), v13_r1 = T4.khRange(1, 30), v13_r30 = T4.khRange(30, 30);
+  let v13_sum = 0; for (let k = 1; k <= 30; k++) v13_sum += T4.khRange(k, 30).count;
+  check('khatma : 6236 versets, début 1:1, fin 114:6, aucun verset oublié', v13_tot === 6236 && v13_r1.from.s === 1 && v13_r1.from.a === 1 && v13_r30.to.s === 114 && v13_r30.to.a === 6 && v13_sum === 6236);
+  click(d4, '#panel-menu [data-goto="khatma"]'); click(d4, '#kh-start');
+  check('khatma : plan de 30 jours créé, jour 1', JSON.parse(w4.localStorage.getItem('rakeb-khatma')).days === 30 && /Jour 1 sur 30/.test(text(d4, '#kh-body')));
+  click(d4, '#kh-body button[data-kh-done="1"]');
+  check('khatma : jour marqué comme lu, progression', /1 jour\(s\) lus/.test(text(d4, '#kh-body')));
+  const app5 = await loadApp({ 'rakeb-state': STATE }, net2, { fakeNow: Date.UTC(2027, 1, 20, 12, 0, 0) });
+  const v13_im = app5.w.RakebTest.imsakiyaRows(), v13_mm = (s) => mins(s);
+  check('imsakiya : Ramadan 1448, 29 ou 30 jours, 1er jour = 8 février 2027', v13_im && v13_im.year === 1448 && v13_im.rows.length >= 29 && v13_im.rows[0].day === 1 && /8 févr/.test(v13_im.rows[0].label), v13_im ? v13_im.rows.length + ' jours, ' + v13_im.rows[0].label : 'aucun');
+  check('imsakiya : imsak = Fajr − 10 min, iftar après le Fajr', v13_mm(v13_im.rows[0].fajr) - v13_mm(v13_im.rows[0].imsak) === 10 && v13_mm(v13_im.rows[0].iftar) > v13_mm(v13_im.rows[0].fajr));
+  click(app5.d, '#panel-menu [data-goto="ramadan"]');
+  check('Ramadan : bouton imsakiya et suivi tarawih / sadaqa présents', !!app5.d.getElementById('ram-imsakiya') && app5.d.querySelectorAll('#ram-tar-grid .chip').length === 30);
+  click(app5.d, '#ram-extra-today [data-rx^="t:"]');
+  check('tarawih : soirée du jour cochée (jour 13)', app5.w.RakebTest.rxGet(1448).t.join() === '13' && /^1 \/ 30/.test(text(app5.d, '#ram-tar-count')));
+  app5.w.RakebTest.rxToggle(1448, 's', 4); app5.w.RakebTest.rxToggle(1448, 's', 4);
+  check('sadaqa : bascule cocher / décocher', app5.w.RakebTest.rxGet(1448).s.length === 0);
+  check('Nawawi : 42 hadiths intégrés, arabe et français', T4.nawawiCount() === 42);
+  const v13_nwRows = d4.querySelectorAll('#nw-list .nw-item'); click(d4, '#panel-menu [data-goto="nawawi"]');
+  check('Nawawi : écran avec les 42 hadiths', d4.querySelectorAll('#nw-list .nw-item').length === 42 && /[\u0600-\u06FF]/.test(text(d4, '#nw-list')));
+  check('Nawawi : recherche par thème hors ligne (intention, colère, voisin)', T4.nwFind('intention')[0] === 0 && T4.nwFind('colère').indexOf(15) >= 0 && T4.nwFind('voisin').indexOf(14) >= 0);
+  let rrN = await T2.askSources('Nawawi 5');
+  check('Muslim IA : « Nawawi 5 » répond sans réseau', rrN.kind === 'ok' && /n°5/.test(rrN.html) && /Nawawi/.test(rrN.html));
+  rrN = await T2.askSources('Hadith sur la colère');
+  check('Muslim IA : hadith par thème (colère) depuis Nawawi hors ligne', rrN.kind === 'ok' && /Ne te mets pas en colère/.test(rrN.html));
+  rrN = await T2.askSources('Est-ce halal de manger cela ?');
+  check('Muslim IA : le fiqh reste refusé', rrN.kind === 'refusal');
+  check('Muslim IA : mots-clés wolof (Alxuraan, hadiis, waxtuy julli)', T2.detectIntent('Alxuraan') === 'quran' && T2.detectIntent('hadiis ci sabar') === 'hadith' && T2.detectIntent('waxtuy julli tey') === 'prayer_time');
+  let qd = T4.qadaChange('p:fajr', 3); qd = T4.qadaChange('p:fajr', -1); T4.qadaChange('p:asr', -1); T4.qadaChange('f', 2); qd = T4.qadaChange('f', -1);
+  check('rattrapage : manqué +3, rattrapé −1, jamais négatif, jeûne', qd.p.fajr === 2 && qd.dp.fajr === 1 && qd.p.asr === 0 && qd.f === 1 && qd.df === 1);
+  click(d4, '#panel-menu [data-goto="qada"]'); d4.getElementById('qd-bulk').value = '10'; click(d4, '#qd-bulk-btn');
+  check('rattrapage : ajout groupé des 5 prières', T4.qadaGet().p.isha === 10 && T4.qadaGet().p.fajr === 12);
+  w4.localStorage.setItem('rakeb-ai-key', '"secret"');
+  const v13_dump = T4.bkDump();
+  check('sauvegarde : contient les réglages et plans, jamais la clé API', 'rakeb-state' in v13_dump && 'rakeb-khatma' in v13_dump && 'rakeb-qada' in v13_dump && !('rakeb-ai-key' in v13_dump) && !('rakeb-src-cache' in v13_dump));
+  check('sauvegarde : options automatique / restaurer / envoyer présentes', !!d4.getElementById('bk-auto') && !!d4.getElementById('bk-restore') && !!d4.getElementById('bk-send'));
+  const v13_hj = (y, m, d) => T4.uqHijri(new w4.Date(Date.UTC(y, m - 1, d, 12)));
+  const v13_eq = (a, y, m, d) => a && a.year === y && a.month === m && a.day === d;
+  check('Umm al-Qura : 1 Ramadan 1445 / 1446 / 1447 / 1448', v13_eq(v13_hj(2024, 3, 11), 1445, 9, 1) && v13_eq(v13_hj(2025, 3, 1), 1446, 9, 1) && v13_eq(v13_hj(2026, 2, 18), 1447, 9, 1) && v13_eq(v13_hj(2027, 2, 8), 1448, 9, 1));
+  check('Umm al-Qura : hors table (2080) → calcul tabulaire de secours', v13_hj(2080, 1, 1) === null && T4.gregorianToHijri(new w4.Date(Date.UTC(2080, 0, 1, 12))).year > 1500);
+  const diffDays = (flag) => { w4.localStorage.setItem('rakeb-hijri-uq', flag); const r = []; for (let i = 0; i < 1500; i += 7) { const h = T4.gregorianToHijri(new w4.Date(Date.UTC(2024, 0, 1 + i, 12))); r.push(h.month * 100 + h.day); } return r.join(); };
+  const v13_a = diffDays('false'), v13_b = diffDays('true'), v13_c = diffDays('true');
+  check('Umm al-Qura : réglage désactivable (le calcul tabulaire diffère, retour stable)', v13_a !== v13_b && v13_b === v13_c);
+  check('recherche Coran : normalisation (accents, voyelles arabes, alif)', T4.qsNorm('Éléphant') === 'elephant' && T4.qsNorm('أَلْحَمْدُ') === 'الحمد');
+  d4.getElementById('qs-input').value = 'patience'; click(d4, '#qs-btn'); await wait(150);
+  check('recherche Coran : invite à télécharger le Coran s\'il est absent', /Téléchargez d'abord/.test(text(d4, '#qs-status')));
+  d4.getElementById('lang-select').value = 'wo'; d4.getElementById('lang-select').dispatchEvent(new w4.Event('change', { bubbles: true }));
+  check('wolof : interface partiellement traduite', [...d4.querySelectorAll('[data-i18n="nav.horaires"]')].some((e) => e.textContent === 'Waxtuy julli'));
+  d4.getElementById('lang-select').value = 'fr'; d4.getElementById('lang-select').dispatchEvent(new w4.Event('change', { bubbles: true }));
+  const v13_javaW = fs.readFileSync(path.join(__dirname, '..', 'RakebMobile', 'android-native', 'RakebWidgetProvider.java'), 'utf8');
+  const v13_setupJs = fs.readFileSync(path.join(__dirname, '..', 'RakebMobile', 'scripts', 'android-setup.js'), 'utf8');
+  const v13_schedJ = fs.readFileSync(path.join(__dirname, '..', 'RakebMobile', 'android-native', 'AdhanScheduler.java'), 'utf8');
+  check('widget Android : lecture seule des alarmes mémorisées, enregistré au manifeste', /AdhanScheduler\.prefs/.test(v13_javaW) && !/setExact|setAlarmClock/.test(v13_javaW) && /RakebWidgetProvider/.test(v13_setupJs) && /rakeb_widget_info/.test(v13_setupJs) && /RakebWidgetProvider\.refresh/.test(v13_schedJ));
+  check('widget Android : ressources présentes', ['layout/rakeb_widget.xml', 'xml/rakeb_widget_info.xml', 'drawable/rakeb_widget_bg.xml'].every((f) => fs.existsSync(path.join(__dirname, '..', 'RakebMobile', 'android-widget', 'res', f))));
+  check('pont Android : rappels triés par date avant la limite de 60 notifications', /toLN\.slice\(\)\.sort/.test(fs.readFileSync(path.join(__dirname, '..', 'RakebMobile', 'shim', 'android-shim.js'), 'utf8')));
+  check('Confidentialité : sauvegarde automatique locale mentionnée', /sauvegarde automatique/.test(text(d4, '#panel-confidentialite')));
+  check('aucune erreur JavaScript (évolutions v1.3)', app4.errors.length === 0 && app5.errors.length === 0, app4.errors.concat(app5.errors).slice(0, 2).join(' | '));
 
   check('aucune erreur JavaScript pendant les tests', errors.length === 0, errors.slice(0, 2).join(' | '));
 

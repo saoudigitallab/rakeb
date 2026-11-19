@@ -83,6 +83,7 @@ final class AdhanScheduler {
             kept.put(e);
         }
         prefs(c).edit().putString(KEY_EVENTS, kept.toString()).apply();
+        try { RakebWidgetProvider.refresh(c); } catch (Throwable ignored) { } // widget : lecture seule de la liste mémorisée
         return kept.length();
     }
 

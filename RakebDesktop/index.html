@@ -537,6 +537,18 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
 .add-form textarea.btn, .add-form input.btn, .add-form select.btn{ width:100%; text-align:left; }
 .add-form textarea.ar{ direction:rtl; text-align:right; font-size:1.25rem; line-height:1.8; }
 .dua-del{ margin-top:8px; }
+
+.sunna-row{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--line);cursor:pointer;}
+.sunna-row input{margin-top:4px;}.sunna-ico{font-size:1.3rem;}
+.sunna-next{padding:4px 0;}
+.kh-list{max-height:360px;overflow-y:auto;margin-top:10px;border-top:1px solid var(--line);}
+.kh-row{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 4px;border-bottom:1px solid var(--line);font-size:.92rem;}
+.kh-row label{cursor:pointer;flex:1;}.kh-cur{background:var(--surface-2);}
+#kh-body .src-card,.nw-item .src-card{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin:8px 0;background:var(--surface-2);}
+.qd-grid{display:grid;gap:8px;}
+.qd-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}.qd-name{min-width:78px;font-weight:600;}
+.nw-item{border-bottom:1px solid var(--line);padding:6px 0;}.nw-item summary{cursor:pointer;}
+#qs-results .src-card{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin:8px 0;background:var(--surface-2);}
 </style>
 </head>
 <body>
@@ -917,6 +929,12 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
       </div>
     </div>
 
+    <div class="card span2" id="quran-search-card">
+      <h2 class="small">🔎 Recherche dans le Coran (hors ligne)</h2>
+      <div class="row-btns"><input class="btn" id="qs-input" type="search" placeholder="Mot en français ou en arabe…" aria-label="Rechercher dans le Coran" style="flex:1;min-width:160px;"><button class="btn primary" id="qs-btn" type="button">Rechercher</button></div>
+      <div class="muted" id="qs-status" style="margin-top:6px;">Fonctionne sans réseau une fois le Coran téléchargé (bouton « Télécharger tout le Coran » plus bas).</div>
+      <div id="qs-results"></div>
+    </div>
     <div class="card span2" id="reader-card">
       <div class="card-head">
         <h2 class="small">Lecture du texte (arabe + français)</h2>
@@ -992,6 +1010,10 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
       <button class="menu-tile" data-goto="zakat"><span class="ico">🧮</span><span class="t">Zakat</span><span class="s">Calculez votre zakat al-mal avec le nisab</span></button>
       <button class="menu-tile" data-goto="inspiration"><span class="ico">✨</span><span class="t">Inspiration Islamique</span><span class="s">Versets, hadiths et invocations à méditer</span></button>
       <button class="menu-tile" data-goto="ramadan"><span class="ico">🌙</span><span class="t">Ramadan</span><span class="s">Compte à rebours imsak / iftar, jeûnes, dua de rupture</span></button>
+      <button class="menu-tile" data-goto="sunna"><span class="ico">🔔</span><span class="t">Rappels de sunna</span><span class="s">Jeûnes du lundi et du jeudi, jours blancs, Al-Kahf, adhkar, dernier tiers de la nuit</span></button>
+      <button class="menu-tile" data-goto="khatma"><span class="ico">📖</span><span class="t">Planificateur de khatma</span><span class="s">Finir le Coran en N jours, lecture du jour et progression</span></button>
+      <button class="menu-tile" data-goto="nawawi"><span class="ico">📚</span><span class="t">40 hadiths de Nawawi</span><span class="s">Texte arabe et français, recherche par thème, sans réseau</span></button>
+      <button class="menu-tile" data-goto="qada"><span class="ico">🔁</span><span class="t">Rattrapage</span><span class="s">Prières manquées et jours de jeûne à rattraper</span></button>
       <button class="menu-tile" data-goto="calendrier"><span class="ico">📅</span><span class="t">Calendrier</span><span class="s">Calendrier hégirien, fêtes et jours blancs</span></button>
       <button class="menu-tile" data-goto="noms99"><span class="ico">🌙</span><span class="t">Les 99 Noms d'Allah</span><span class="s">Lecture, audio et suivi de mémorisation</span></button>
       <button class="menu-tile" data-goto="coran365"><span class="ico">📗</span><span class="t">Maîtriser le Coran (365j)</span><span class="s">Alphabet, voyelles, tajwid puis lecture guidée — un programme sur un an</span></button>
@@ -1199,6 +1221,19 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
       <div class="row-btns" style="margin-top:10px;"><button class="btn primary" id="ram-fast-today" type="button" aria-pressed="false" aria-label="Marquer aujourd'hui comme jour jeûné">—</button></div>
       <div class="fast-grid" id="ram-fast-grid" role="group" aria-label="Jours de Ramadan jeûnés"></div>
     </div>
+    <div class="card">
+      <h2 class="small">📤 Imsakiya à partager</h2>
+      <p class="muted">Le calendrier des jours du Ramadan (imsak, Fajr, iftar) en une image à envoyer sur WhatsApp.</p>
+      <div class="row-btns"><button class="btn primary" id="ram-imsakiya" type="button">📤 Créer l'imsakiya</button></div>
+    </div>
+    <div class="card span2" id="ram-extra-card">
+      <h2 class="small">Tarawih et sadaqa</h2>
+      <div id="ram-extra-today" class="row-btns" style="display:none;"></div>
+      <div class="muted" id="ram-tar-count">—</div>
+      <div class="fast-grid" id="ram-tar-grid" role="group" aria-label="Soirées de tarawih"></div>
+      <div class="muted" id="ram-sad-count" style="margin-top:10px;">—</div>
+      <div class="fast-grid" id="ram-sad-grid" role="group" aria-label="Jours de sadaqa"></div>
+    </div>
     <div class="card span2">
       <h2 class="small">Réglages du mode Ramadan</h2>
       <div class="row-btns">
@@ -1214,6 +1249,35 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
       </div>
       <p class="muted" style="margin-top:8px;">Le calcul est fait sur votre appareil, sans réseau. Le début du Ramadan dépend de l'observation du croissant dans votre pays : ajustez d'un jour si l'annonce officielle diffère, et confirmez auprès des autorités religieuses locales. Le rappel de l'iftar demande que les notifications soient autorisées.</p>
     </div>
+  </section>
+
+  <section class="panel grid" id="panel-sunna">
+    <div class="subhead"><button class="btn mini" data-goto="menu">← Menu</button><h2>🔔 Rappels de sunna</h2></div>
+    <div class="card span2">
+      <p class="muted">Choisissez les rappels à recevoir. Ils utilisent vos heures de prière et le calendrier hégirien, calculés sur l'appareil, sans réseau. Sur Android, ce sont des notifications silencieuses programmées par le système ; sur PC, un message et une notification tant que Rakeb est actif.</p>
+      <div id="sunna-list"></div>
+    </div>
+    <div class="card span2"><h2 class="small">Prochains rappels</h2><div id="sunna-upcoming"></div></div>
+  </section>
+
+  <section class="panel grid" id="panel-khatma">
+    <div class="subhead"><button class="btn mini" data-goto="menu">← Menu</button><h2>📖 Planificateur de khatma</h2></div>
+    <div class="card span2"><div id="kh-body"></div></div>
+  </section>
+
+  <section class="panel grid" id="panel-nawawi">
+    <div class="subhead"><button class="btn mini" data-goto="menu">← Menu</button><h2>📚 Les 40 hadiths de Nawawi</h2></div>
+    <div class="card span2">
+      <p class="muted">Textes intégrés à Rakeb (arabe et traduction française) : ils s'ouvrent sans réseau. Recherchez un thème : intention, colère, voisin, pardon…</p>
+      <input class="btn" id="nw-search" type="search" placeholder="Thème ou mot…" aria-label="Rechercher dans les hadiths de Nawawi" style="width:100%;margin:6px 0 10px;">
+      <div id="nw-list"></div>
+      <p class="muted" style="margin-top:8px;">Le recueil compte 42 hadiths (les 40 de Nawawi et 2 ajoutés par Ibn Rajab). Textes à faire relire par une personne qualifiée avant une large diffusion.</p>
+    </div>
+  </section>
+
+  <section class="panel grid" id="panel-qada">
+    <div class="subhead"><button class="btn mini" data-goto="menu">← Menu</button><h2>🔁 Rattrapage</h2></div>
+    <div class="card span2"><div id="qd-body"></div></div>
   </section>
 
   <!-- ==================== CALENDRIER ==================== -->
@@ -1396,6 +1460,7 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
           <select class="btn" id="lang-select" aria-label="Langue">
             <option value="fr">Français</option>
             <option value="en">English</option>
+            <option value="wo">Wolof (partiel)</option>
           </select>
         </div>
         <div class="field">
@@ -1412,6 +1477,7 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
 
     <div class="card" id="hijri-adj-card">
       <h2 class="small">Calendrier hégirien</h2>
+      <label class="chip" style="cursor:pointer;display:inline-block;margin-bottom:8px;"><input type="checkbox" id="hijri-uq" style="margin-right:6px;">Calendrier Umm al-Qura (Arabie saoudite), plus proche des annonces officielles</label>
       <p class="muted">Aujourd'hui : <strong class="hijri-adj-today">—</strong></p>
       <p class="muted">Calculé sur l'appareil, sans réseau. L'observation du croissant peut différer d'un jour selon les pays : ajustez ici si l'annonce de votre pays est différente. Cela décale toutes les dates hégiriennes (accueil, calendrier, Ramadan).</p>
       <div class="hijri-adj-row">
@@ -1466,6 +1532,12 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
         <label class="btn" style="cursor:pointer;">⬆ Importer<input type="file" id="data-import" accept="application/json" style="display:none;"></label>
         <button class="btn" id="data-reset-track">🗑️ Effacer suivi &amp; série</button>
       </div>
+      <div class="row-btns" style="margin-top:10px;">
+        <label class="chip" style="cursor:pointer;"><input type="checkbox" id="bk-auto" style="margin-right:6px;">Sauvegarde automatique</label>
+        <button class="btn" id="bk-restore" type="button">↩ Restaurer la dernière sauvegarde</button>
+        <button class="btn" id="bk-send" type="button">📤 Envoyer ma sauvegarde</button>
+      </div>
+      <div class="muted" id="bk-status" style="margin-top:6px;"></div>
       <div class="muted" id="data-status" style="margin-top:6px;"></div>
     </div>
 
@@ -1496,7 +1568,7 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
     <div class="subhead"><button class="btn mini" data-goto="parametres">← Réglages</button><h2>🔒 Confidentialité</h2></div>
     <div class="card span2 priv">
       <h2 class="small">Rakeb — Politique de confidentialité</h2>
-      <p class="muted">Dernière mise à jour : 16 novembre 2026</p>
+      <p class="muted">Dernière mise à jour : 18 novembre 2026</p>
       <h3>1. Qui sommes-nous</h3>
       <p>Rakeb est édité par SAOU DIGITAL LAB, pôle numérique de SAOU SYNERGY GROUP, basé à Mbour, région de Thiès, Sénégal. Pour toute question : saoudigitallab@gmail.com ou WhatsApp / appel au +221 76 418 22 00.</p>
       <h3>2. L'essentiel</h3>
@@ -1513,6 +1585,8 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
         <li>la position utilisée pour calculer les horaires de prière et la direction de la Qibla (GPS, ville choisie ou coordonnées saisies) ;</li>
         <li>votre suivi des prières, votre série, votre compteur de tasbih, votre progression dans le programme de 365 jours, les noms d'Allah marqués comme appris et vos inspirations gardées ;</li>
         <li>les montants saisis dans le calculateur de zakat ;</li>
+        <li>vos rappels de sunna, votre plan de khatma, vos compteurs de rattrapage, de tarawih et de sadaqa, et le Coran téléchargé pour la lecture et la recherche hors ligne ;</li>
+        <li>une copie de sauvegarde automatique de ces données (jamais la clé API), conservée sur l'appareil ; le bouton « Envoyer ma sauvegarde » ne la transmet qu'à l'application de partage que vous choisissez ;</li>
         <li>l'historique de vos conversations avec Muslim IA et, si vous l'avez saisie, votre clé API ;</li>
         <li>(PC et web uniquement) un fichier audio d'adhan que vous avez choisi.</li>
       </ul>
@@ -1695,12 +1769,24 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
   const FR_DAYS = ['dimanche','lundi','mardi','mercredi','jeudi','vendredi','samedi'];
   const FR_MONTHS = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
 
-  /* ---------- Hijri (Kuwaiti algorithm, arithmetic approximation) ---------- */
+  /* ---------- Hijri (table Umm al-Qura 1420-1499 AH, sinon algorithme tabulaire koweïtien) ---------- */
   const HIJRI_MONTHS = ['Mouharram','Safar',"Rabi al-Awwal","Rabi ath-Thani","Joumada al-Oula","Joumada ath-Thania",'Rajab',"Cha'ban",'Ramadan','Chawwal',"Dhou al-Qi'da","Dhou al-Hijja"];
   function hijriAdjDays(){ let v = 0; try{ v = parseInt(JSON.parse(localStorage.getItem('rakeb-hijri-adj')), 10); }catch(e){} return isNaN(v) ? 0 : Math.max(-1, Math.min(1, v)); }
+const UQ_START_YEAR = 1420, UQ_BASE_DAY = 10698, UQ_LENS = "010010111101001000111101100100011101101010010101101101001010101101011010010101101101001010110110100100111011010010011011011001010101011010101001011101010100101101101010010101101100101010101101010101010101101100101001101110010010101110101001010111010100101011011010010101011010101010101011010110010101011101001001011101100100101110101010010110110101001010110110101001010110110100101010111010010101011100101010011101010101001101011010100101011101010010011011101001001101110100100110110101010011010110101010101010101101010010110110101001010111010100100111101010010101101101001010101101010101001101101100100110101110010010110110101010010110101101001010110110100101010111010010010111011001001011011100100101101101010010101101011001010101011011010010101101101001001101110100100110110110010011010111001010101011010101001011011010100101011101010010101101101001010101101011001010101101100101001101110010010101110101001010111010100101011011001010101011010101010101010110";
+  const UQ_STARTS = (function(){ const a = [UQ_BASE_DAY]; for(let i = 0; i < UQ_LENS.length; i++) a.push(a[i] + 29 + (UQ_LENS.charAt(i) === '1' ? 1 : 0)); return a; })();
+  function hijriUqOn(){ try{ return localStorage.getItem('rakeb-hijri-uq') !== 'false'; }catch(e){ return true; } }
+  // Date hégirienne d'après la table Umm al-Qura (1420-1499 AH, jour grégorien en UTC) ; null hors de la table
+  function uqHijri(date){
+    const day = Math.floor(date.getTime() / 86400000);
+    if(day < UQ_STARTS[0] || day >= UQ_STARTS[UQ_STARTS.length - 1]) return null;
+    let lo = 0, hi = UQ_STARTS.length - 2;
+    while(lo < hi){ const mid = (lo + hi + 1) >> 1; if(UQ_STARTS[mid] <= day) lo = mid; else hi = mid - 1; }
+    return { year: UQ_START_YEAR + Math.floor(lo / 12), month: (lo % 12) + 1, day: day - UQ_STARTS[lo] + 1 };
+  }
   function gregorianToHijri(date, noAdj){
     const adj = noAdj ? 0 : hijriAdjDays();
     if(adj) date = new Date(date.getTime() + adj*86400000);
+    if(hijriUqOn()){ const u = uqHijri(date); if(u) return u; }
     const jd = Math.floor(julianDate(date)) + 1;
     let l = jd - 1948440 + 10632;
     let n = Math.floor((l-1)/10631);
@@ -1789,7 +1875,7 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
   };
 
   /* ---------- navigation: tabs + Menu sub-menu ---------- */
-  const SUB_PANELS = ['serie','suivi','tasbih','zakat','inspiration','calendrier','noms99','coran365','ramadan'];
+  const SUB_PANELS = ['serie','suivi','tasbih','zakat','inspiration','calendrier','noms99','coran365','ramadan','sunna','khatma','nawawi','qada'];
   const PANEL_HOOKS = {};
   function showPanel(id){
     const panel = $('#panel-'+id);
@@ -4910,7 +4996,8 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
     upcoming(days){
       const out = [];
       const notifOn = !!store.get('rakeb-notif', false), iftarOn = iftarReminderOn();
-      if(state.lat === null || state.lon === null || (!notifOn && !iftarOn)) return out;
+      const sunnaOn = sunnaAnyOn();
+      if(state.lat === null || state.lon === null || (!notifOn && !iftarOn && !sunnaOn)) return out;
       const mutes = store.get('rakeb-prayer-mutes', {});
       const rem = parseInt(store.get('rakeb-reminder-min', 0), 10) || 0;
       const n = nowInTz(state.tz), now = Date.now();
@@ -4925,7 +5012,7 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
           const ifts = midnight + (t.maghrib.h*60 + t.maghrib.m - 10)*60000;
           if(ifts > now) out.push({ id:'iftar', name:'iftar', ts: ifts, reminder: 10, hhmm: pad(t.maghrib.h) + ':' + pad(t.maghrib.m), title:'Iftar dans 10 minutes', body:'Maghrib à ' + pad(t.maghrib.h) + ':' + pad(t.maghrib.m) + ' — préparez la rupture du jeûne.' });
         }
-        if(!notifOn) return;
+        if(!notifOn) continue;
         PRAYER_LABELS.forEach(([key, name])=>{
           if(key === 'sunrise' || !t[key]) return;
           let mins = t[key].h*60 + t[key].m;
@@ -4938,6 +5025,7 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
           if(ts > now) out.push({ id:key, name, ts, reminder: 0, hhmm });
         });
       }
+      if(sunnaOn) sunnaEvents(days || 7).forEach(function(e){ out.push(e); }); // rappels de sunna : notifications silencieuses
       return out;
     }
   };
@@ -5249,6 +5337,14 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
       'card.horaires':'Prayer times','card.qibla':'Qibla direction','card.duas':'Duas & Azkar','card.methode':'Calculation method',
       'card.notif':'Prayer call notifications','btn.locate':'📍 Use my location','btn.city':'🏙️ Choose a city','btn.manual':'Enter manually',
       'tab.matin':'Morning','tab.soir':'Evening','tab.quotidien':'Daily'
+    },
+    // Wolof : traduction partielle, à faire relire par un locuteur avant diffusion
+    wo: {
+      'nav.ia':'Muslim IA','nav.horaires':'Waxtuy julli','nav.qibla':'Qibla ak barab','nav.coran':'Alxuraan','nav.duas':'Ñaan yi','nav.menu':'Menu',
+      'menu.zakat':'Asaka','menu.calendrier':'Kalandriye','menu.noms99':'Tur yu Yàlla yi (99)',
+      'card.horaires':'Waxtuy julli','card.qibla':'Qibla','card.duas':'Ñaan yi',
+      'btn.locate':'📍 Jëfandikoo sama barab','btn.city':'🏙️ Tànn dëkk','btn.manual':'Bind ko ak loxo',
+      'tab.matin':'Suba','tab.soir':'Ngoon','tab.quotidien':'Bés bu nekk'
     }
   };
   function applyLang(lang){
@@ -5475,12 +5571,12 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
   /* ---------- A1. Détection d'intention (local, sans réseau) ---------- */
   const FIQH_RE = /\bhal+a+l\b|\bhar+a+m\b|\bfatwa|\bfatawa|\btalaq\b|\btaccu\b|divorc|repudi|herit|\bmirath\b|succession|\blicite|illicite|est[- ]il permis|est[- ]ce permis|est[- ]ce autorise|est[- ]ce licite|a[- ]t[- ]on le droit|ai[- ]je le droit|\bribaa?\b|\busure\b|avortement|contraception|polygam|\bnikah\b|\bkhul|\bzihar\b|testament|\bmahr\b|\bjaiz\b|(est[- ]il|est[- ]elle|sont[- ]ils) (valide|nul|annule|invalide)/;
   const FIQH_AR = ['حلال', 'حرام', 'فتوي', 'فتوى', 'طلاق', 'ميراث', 'يجوز', 'ما حكم'];
-  const HADITH_RE = /hadith|\bhadis\b|\bsunna|boukhari|bukhari|\bsahih\b|\bnawawi|tirmid|abou? ?daou?d|nasa[iy]|ibn ma(dj|j)a|(selon|dans|rapporte par) muslim|muslim n/;
+  const HADITH_RE = /hadiis|hadith|\bhadis\b|\bsunna|boukhari|bukhari|\bsahih\b|\bnawawi|tirmid|abou? ?daou?d|nasa[iy]|ibn ma(dj|j)a|(selon|dans|rapporte par) muslim|muslim n/;
   const TAFSIR_RE = /tafsir|tafseer|exegese|commentaire/;
   const EXPLAIN_RE = /expliqu|explication|signification|que signifie|interpret/;
-  const QURAN_RE = /verset|sourate|\bsourat|coran|quran|qur'?an|\bayah?\b|\bayat\b|\baaya|\bsura\b|surah|kursi|fatiha/;
+  const QURAN_RE = /alxuraan|alkuraan|verset|sourate|\bsourat|coran|quran|qur'?an|\bayah?\b|\bayat\b|\baaya|\bsura\b|surah|kursi|fatiha/;
   const DUA_RE = /\bdou?a+s?\b|\bdu'?a\b|invocation|supplication|azkar|adhkar|\bdhikr|\bzikr|que dire|que dit[- ]on|quoi dire/;
-  const PRAYER_RE = /horaire|heure (de|du|des|d')|a quelle heure|mawaqit|\bfa?djr\b|\bsubh\b|\bdhuhr\b|\bzuhr\b|\bdohr\b|\bmaghrib\b|\bisha\b|\bicha\b|\badhan\b|\bazan\b|iftar|imsak|prochaine priere|quand (est|commence)|waxtu|\bsube\b|tisbaar|takusaan|\btimis\b|gaawu/;
+  const PRAYER_RE = /waxtuy? julli|ban waxtu|horaire|heure (de|du|des|d')|a quelle heure|mawaqit|\bfa?djr\b|\bsubh\b|\bdhuhr\b|\bzuhr\b|\bdohr\b|\bmaghrib\b|\bisha\b|\bicha\b|\badhan\b|\bazan\b|iftar|imsak|prochaine priere|quand (est|commence)|waxtu|\bsube\b|tisbaar|takusaan|\btimis\b|gaawu/;
 
   function detectIntent(question){
     const raw = String(question == null ? '' : question).toLowerCase();
@@ -5494,7 +5590,7 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
     const quranWord = has(QURAN_RE) || hasAr(['اية', 'ايه', 'سوره', 'سورة', 'قران']);
     if(has(TAFSIR_RE) || hasAr(['تفسير', 'شرح اية']) || (has(EXPLAIN_RE) && (quranWord || /\d{1,3}\s*:\s*\d{1,3}/.test(n)))) return 'tafsir';
     if(quranWord) return 'quran';
-    if(has(DUA_RE) || /ñaan/.test(raw) || hasAr(['دعاء', 'دعا ', 'اذكار', 'ذكر'])) return 'dua';
+    if(has(DUA_RE) || /ñaan|ñaanal|ñaanu/.test(raw) || hasAr(['دعاء', 'دعا ', 'اذكار', 'ذكر'])) return 'dua';
     if(has(PRAYER_RE) || hasAr(['مواقيت', 'وقت الصلاة', 'وقت الصلاه', 'اذان'])) return 'prayer_time';
     if(/\b\d{1,3}\s*:\s*\d{1,3}\b/.test(n)) return 'quran';
     return 'general';
@@ -5663,6 +5759,7 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
     // recherche par thème : mot-clé dans la traduction française
     const kws = topicWords(q);
     if(!kws.length) return srcAnswer('<p>Indiquez une référence (ex. : <strong>2:255</strong>, « sourate Al-Ikhlas verset 1 ») ou un thème (ex. : « versets sur la patience »).</p>', 'Indiquez une référence ou un thème.', 'Rakeb', ctx);
+    const offAns = await qsOfflineAnswer(q, kws, ctx); if(offAns) return offAns; // Coran téléchargé : sans réseau
     let found = null, usedKw = '';
     for(let i = 0; i < kws.length && !found; i++){
       const tries = [kws[i]]; if(kws[i].length > 6) tries.push(kws[i].slice(0, kws[i].length - 2));
@@ -5767,6 +5864,7 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
         '<div class="add-actions" style="margin:6px 0 0;">' + copyBtn(text) + '</div></div>';
       return srcAnswer(inner, text, 'le dépôt public de hadiths (cdn.jsdelivr.net) — ' + info.label, ctx);
     }
+    const nwr = nwAnswerFor(q, n, ctx); if(nwr) return nwr; // 40 hadiths de Nawawi intégrés (hors ligne)
     // Sans collection et numéro : uniquement la bibliothèque locale de Rakeb (hors ligne)
     const kws = topicWords(q).map(function(w){ return w.slice(0, Math.max(4, w.length - 2)); });
     const local = INSPIRATIONS.filter(function(it){
@@ -6348,6 +6446,544 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
       $('#data-status').textContent = 'Suivi et série effacés.';
     });
   }
+
+
+  /* ===== evolutionsblock.js ===== */
+  /* =========================================================
+     ÉVOLUTIONS (v1.3) : rappels de sunna, khatma, imsakiya,
+     recherche plein texte du Coran, 40 hadiths de Nawawi,
+     rattrapage, tarawih / sadaqa, sauvegarde automatique.
+     Tout est local : aucun nouveau service réseau.
+  ========================================================= */
+  function fmtTsFr(ts){
+    const off = tzOffsetHours(state.tz, new Date(ts)), d = new Date(ts + off*3600000);
+    return FR_DAYS[d.getUTCDay()].slice(0, 3) + '. ' + d.getUTCDate() + ' ' + FR_MONTHS[d.getUTCMonth()].slice(0, 4) + '. ' + pad(d.getUTCHours()) + ':' + pad(d.getUTCMinutes());
+  }
+  function minToHm(m){ m = ((Math.round(m) % 1440) + 1440) % 1440; return pad(Math.floor(m / 60)) + ':' + pad(m % 60); }
+
+  /* ---------- 1. Rappels de sunna ---------- */
+  const SUNNA_KEY = 'rakeb-sunna', SUNNA_FIRED_KEY = 'rakeb-sunna-fired';
+  const SUNNA_DEFS = [
+    ['monthu', '📅', 'Jeûne du lundi et du jeudi', 'Rappel la veille au soir, à l\'heure de l\'Isha'],
+    ['white', '🌕', 'Jours blancs (13, 14 et 15 du mois)', 'Rappel la veille au soir, chaque mois hégirien'],
+    ['arafat', '⛰️', 'Jour d\'Arafat (9 Dhou al-Hijja)', 'Rappel la veille au soir'],
+    ['ashura', '🌙', 'Achoura (10 Mouharram)', 'Rappel la veille au soir ; le 9 ou le 11 peuvent s\'y ajouter'],
+    ['kahf', '📗', 'Sourate Al-Kahf le vendredi', 'Rappel le vendredi matin, 25 min après le Fajr'],
+    ['am', '🌅', 'Adhkar du matin', 'Rappel 20 min après le Fajr'],
+    ['pm', '🌇', 'Adhkar du soir', 'Rappel 15 min après l\'Asr'],
+    ['night', '🌌', 'Début du dernier tiers de la nuit', 'Calculé entre le Maghrib et le Fajr suivant']
+  ];
+  function sunnaPrefs(){ const v = store.get(SUNNA_KEY, {}); return (v && typeof v === 'object' && !Array.isArray(v)) ? v : {}; }
+  function sunnaAnyOn(){ const p = sunnaPrefs(); return SUNNA_DEFS.some(function(d){ return !!p[d[0]]; }); }
+  // Prochains rappels de sunna : [{id, name, ts, reminder:1, hhmm, title, body}] (includePast : garde les 2 dernières minutes, pour le PC)
+  function sunnaEvents(days, includePast){
+    const out = [], p = sunnaPrefs();
+    if(state.lat === null || state.lon === null || !sunnaAnyOn()) return out;
+    const n = nowInTz(state.tz), now = Date.now(), limit = includePast ? now - 120000 : now;
+    const comp = function(i){
+      const date = new Date(n.y, n.m, n.d + i, 12);
+      return { t: computeTimes(date, state.lat, state.lon, state.method, state.madhab, state.tz), mid: Date.UTC(n.y, n.m, n.d + i) - tzOffsetHours(state.tz, date) * 3600000 };
+    };
+    const mn = function(x){ return x.h * 60 + x.m; };
+    let cur = comp(0);
+    for(let i = 0; i < (days || 7); i++){
+      const nxt = comp(i + 1);
+      const wd = new Date(Date.UTC(n.y, n.m, n.d + i, 12)).getUTCDay(), wdN = (wd + 1) % 7;
+      const hN = gregorianToHijri(new Date(Date.UTC(n.y, n.m, n.d + i + 1, 12)));
+      const push = function(key, minute, title, body){
+        const ts = cur.mid + minute * 60000;
+        if(ts > limit) out.push({ id: 'sunna-' + key, name: title, ts: ts, reminder: 1, hhmm: minToHm(minute), title: title, body: body });
+      };
+      if(cur.t.isha){
+        const eve = mn(cur.t.isha);
+        if(p.monthu && (wdN === 1 || wdN === 4)) push('monthu', eve, 'Jeûne de demain (' + FR_DAYS[wdN] + ')', 'Le lundi et le jeudi sont des jours de jeûne surérogatoire recommandé.');
+        if(p.white && hN.day >= 13 && hN.day <= 15) push('white', eve, 'Jeûne de demain : jour blanc', 'Demain est le ' + hN.day + ' du mois hégirien (jours blancs : 13, 14 et 15).');
+        if(p.arafat && hN.month === 12 && hN.day === 9) push('arafat', eve, 'Demain : jour d\'Arafat', 'Jeûne recommandé pour qui ne fait pas le pèlerinage.');
+        if(p.ashura && hN.month === 1 && hN.day === 10) push('ashura', eve, 'Demain : Achoura', 'Jeûne du 10 Mouharram (le 9 ou le 11 peuvent s\'y ajouter).');
+      }
+      if(cur.t.fajr){
+        if(p.kahf && wd === 5) push('kahf', mn(cur.t.fajr) + 25, 'Vendredi : sourate Al-Kahf', 'Pensez à lire la sourate Al-Kahf aujourd\'hui.');
+        if(p.am) push('am', mn(cur.t.fajr) + 20, 'Adhkar du matin', 'Prenez un moment pour les adhkar du matin.');
+      }
+      if(p.pm && cur.t.asr) push('pm', mn(cur.t.asr) + 15, 'Adhkar du soir', 'Prenez un moment pour les adhkar du soir.');
+      if(p.night && cur.t.maghrib && nxt.t.fajr){
+        const mg = mn(cur.t.maghrib), fj = mn(nxt.t.fajr) + 1440;
+        push('night', mg + Math.round((fj - mg) * 2 / 3), 'Dernier tiers de la nuit', 'Moment propice à l\'invocation et à la prière de nuit.');
+      }
+      cur = nxt;
+    }
+    return out;
+  }
+  function renderSunna(){
+    const box = $('#sunna-list'); if(!box) return;
+    const p = sunnaPrefs();
+    box.innerHTML = SUNNA_DEFS.map(function(d){
+      return '<label class="sunna-row"><input type="checkbox" data-sunna="' + d[0] + '"' + (p[d[0]] ? ' checked' : '') + ' aria-label="' + escapeHtml(d[2]) + '"><span class="sunna-ico" aria-hidden="true">' + d[1] + '</span><span><strong>' + escapeHtml(d[2]) + '</strong><br><span class="muted">' + escapeHtml(d[3]) + '</span></span></label>';
+    }).join('');
+    const up = $('#sunna-upcoming'); if(!up) return;
+    if(state.lat === null){ up.innerHTML = '<div class="muted">Choisissez d\'abord votre position (onglet Horaires ou Qibla) : les rappels dépendent des heures de prière.</div>'; return; }
+    const evs = sunnaEvents(14).sort(function(a, b){ return a.ts - b.ts; }).slice(0, 8);
+    up.innerHTML = evs.length ? evs.map(function(e){ return '<div class="sunna-next"><span class="muted">' + escapeHtml(fmtTsFr(e.ts)) + '</span> — ' + escapeHtml(e.title) + '</div>'; }).join('') : '<div class="muted">Aucun rappel activé pour le moment.</div>';
+  }
+  (function(){
+    const box = $('#sunna-list'); if(!box) return;
+    box.addEventListener('change', function(e){
+      const c = e.target.closest('[data-sunna]'); if(!c) return;
+      const p = sunnaPrefs(); p[c.dataset.sunna] = !!c.checked; store.set(SUNNA_KEY, p);
+      renderSunna();
+      toast(c.checked ? 'Rappel activé.' : 'Rappel désactivé.');
+    });
+    PANEL_HOOKS.sunna = renderSunna;
+  })();
+  // PC : toast + notification silencieuse (Android : alarmes programmées par RakebBridge.upcoming et le pont natif)
+  setInterval(function(){
+    if(window.RakebNative || !sunnaAnyOn() || state.lat === null) return;
+    const fired = store.get(SUNNA_FIRED_KEY, {}), now = Date.now(); let ch = false;
+    sunnaEvents(2, true).forEach(function(e){
+      if(e.ts > now || now - e.ts > 120000) return;
+      const k = e.id + '@' + e.ts; if(fired[k]) return;
+      fired[k] = now; ch = true;
+      toast('🔔 ' + e.title + ' — ' + e.body);
+      if(typeof Notification !== 'undefined' && Notification.permission === 'granted'){ try{ new Notification(e.title, { body: e.body, silent: true }); }catch(err){} }
+    });
+    if(ch){ Object.keys(fired).forEach(function(k){ if(now - fired[k] > 3 * 86400000) delete fired[k]; }); store.set(SUNNA_FIRED_KEY, fired); }
+  }, 20000);
+
+  /* ---------- 2. Planificateur de khatma ---------- */
+  const KH_KEY = 'rakeb-khatma';
+  function khTotal(){ return AYAH_COUNTS.reduce(function(a, b){ return a + b; }, 0); }
+  function khLoc(idx){ let s = 0; while(s < 113 && idx >= AYAH_COUNTS[s]){ idx -= AYAH_COUNTS[s]; s++; } return { s: s + 1, a: idx + 1 }; }
+  // Partie du jour k (1..N) : répartition équilibrée des 6236 versets
+  function khRange(k, N){
+    const T = khTotal(), a0 = Math.floor((k - 1) * T / N), a1 = Math.max(a0, Math.floor(k * T / N) - 1);
+    return { from: khLoc(a0), to: khLoc(a1), count: a1 - a0 + 1 };
+  }
+  function khPlan(){ const v = store.get(KH_KEY, null); return (v && v.days > 0 && /^\d{4}-\d{2}-\d{2}$/.test(v.start || '')) ? v : null; }
+  function khDayNumber(plan){
+    const n = nowInTz(state.tz), p = plan.start.split('-').map(Number);
+    return Math.round((Date.UTC(n.y, n.m, n.d) - Date.UTC(p[0], p[1] - 1, p[2])) / 86400000) + 1;
+  }
+  function khLabel(r){ return SURAH_NAMES[r.from.s - 1] + ' ' + r.from.s + ':' + r.from.a + ' → ' + SURAH_NAMES[r.to.s - 1] + ' ' + r.to.s + ':' + r.to.a; }
+  function khOpen(s, a){
+    store.set('rakeb-quran-mark', { n: s, a: a });
+    showPanel('coran'); openReaderSurah(s);
+    try{ updateResumeButton(); }catch(e){}
+  }
+  function renderKhatma(){
+    const box = $('#kh-body'); if(!box) return;
+    const plan = khPlan();
+    if(!plan){
+      box.innerHTML = '<p class="muted">Terminer le Coran en un nombre de jours choisi : une partie par jour, avec la progression.</p>' +
+        '<div class="row-btns"><div class="field"><label for="kh-days">Nombre de jours</label><select class="btn" id="kh-days">' + [7, 10, 15, 20, 30, 40, 60, 90].map(function(d){ return '<option value="' + d + '"' + (d === 30 ? ' selected' : '') + '>' + d + ' jours</option>'; }).join('') + '</select></div>' +
+        '<button class="btn primary" id="kh-start" type="button" style="align-self:flex-end;">▶ Commencer aujourd\'hui</button></div>';
+      return;
+    }
+    const N = plan.days, done = plan.done || [], day = khDayNumber(plan), cur = Math.max(1, Math.min(N, day)), r = khRange(cur, N);
+    let ayDone = 0; done.forEach(function(k){ if(k >= 1 && k <= N) ayDone += khRange(k, N).count; });
+    const pct = Math.round(ayDone / khTotal() * 100), behind = Math.max(0, Math.min(N, day) - 1 - done.filter(function(k){ return k < Math.min(N, day); }).length);
+    let h = '<div class="muted">Jour ' + Math.min(day, N) + ' sur ' + N + (day > N ? ' (plan terminé : rattrapez les jours restants)' : (day < 1 ? ' (commence bientôt)' : '')) + ' — ' + done.length + ' jour(s) lus, ' + pct + ' % du Coran</div>' +
+      '<div class="ramadan-bar" style="margin:8px 0;"><div class="ramadan-fill" style="width:' + pct + '%"></div></div>' +
+      (behind ? '<div class="muted">⏳ ' + behind + ' jour(s) en retard : rattrapez-les quand vous pouvez.</div>' : '') +
+      '<div class="src-card"><div class="src-title">Lecture du jour (jour ' + cur + ')</div><div>' + escapeHtml(khLabel(r)) + ' · ' + r.count + ' versets</div>' +
+      '<div class="row-btns" style="margin-top:8px;"><button class="btn primary" type="button" data-kh-open="' + r.from.s + ':' + r.from.a + '">📖 Lire la partie du jour</button>' +
+      '<button class="btn" type="button" data-kh-done="' + cur + '">' + (done.indexOf(cur) >= 0 ? '✅ Lu (toucher pour annuler)' : '☐ Marquer comme lu') + '</button></div></div>' +
+      '<div class="kh-list" role="list">';
+    for(let k = 1; k <= N; k++){
+      const rr = khRange(k, N), on = done.indexOf(k) >= 0;
+      h += '<div class="kh-row' + (k === cur ? ' kh-cur' : '') + '" role="listitem"><label><input type="checkbox" data-kh-done="' + k + '"' + (on ? ' checked' : '') + ' aria-label="Jour ' + k + ' lu"> <strong>J' + k + '</strong> ' + escapeHtml(khLabel(rr)) + '</label><button class="btn mini" type="button" data-kh-open="' + rr.from.s + ':' + rr.from.a + '" aria-label="Lire la partie du jour ' + k + '">📖</button></div>';
+    }
+    h += '</div><div class="row-btns" style="margin-top:10px;"><button class="btn mini" id="kh-reset" type="button">↺ Recommencer un autre plan</button></div>';
+    box.innerHTML = h;
+  }
+  (function(){
+    const box = $('#kh-body'); if(!box) return;
+    box.addEventListener('click', function(e){
+      const b = e.target.closest('button, input'); if(!b) return;
+      if(b.id === 'kh-start'){
+        const n = nowInTz(state.tz);
+        store.set(KH_KEY, { days: parseInt($('#kh-days').value, 10) || 30, start: n.key, done: [] }); renderKhatma(); return;
+      }
+      if(b.id === 'kh-reset'){ if(confirm('Abandonner ce plan et en recommencer un autre ?')){ store.set(KH_KEY, null); renderKhatma(); } return; }
+      if(b.dataset.khOpen){ const p = b.dataset.khOpen.split(':'); khOpen(parseInt(p[0], 10), parseInt(p[1], 10)); return; }
+      if(b.dataset.khDone){
+        const plan = khPlan(); if(!plan) return;
+        const k = parseInt(b.dataset.khDone, 10), a = (plan.done || []).slice(), i = a.indexOf(k);
+        if(i >= 0) a.splice(i, 1); else a.push(k);
+        plan.done = a.sort(function(x, y){ return x - y; }); store.set(KH_KEY, plan); renderKhatma();
+      }
+    });
+    PANEL_HOOKS.khatma = renderKhatma;
+  })();
+
+  /* ---------- 3. Imsakiya partageable (image) ---------- */
+  function imStartOffset(){
+    const n = nowInTz(state.tz);
+    for(let i = -29; i <= 420; i++){
+      const h = gregorianToHijri(new Date(Date.UTC(n.y, n.m, n.d + i, 12)));
+      if(h.month === 9 && h.day === 1) return i;
+    }
+    return null;
+  }
+  // Calendrier du Ramadan en cours (ou du prochain) : [{day, label, imsak, fajr, iftar}]
+  function imsakiyaRows(){
+    if(state.lat === null || state.lon === null) return null;
+    const off = imStartOffset(); if(off === null) return null;
+    const n = nowInTz(state.tz), rows = [], ims = imsakMinutes();
+    let year = 0;
+    for(let k = 0; k < 31; k++){
+      const hd = gregorianToHijri(new Date(Date.UTC(n.y, n.m, n.d + off + k, 12)));
+      if(hd.month !== 9) break;
+      year = hd.year;
+      const date = new Date(n.y, n.m, n.d + off + k, 12), t = computeTimes(date, state.lat, state.lon, state.method, state.madhab, state.tz);
+      if(!t.fajr || !t.maghrib) return null;
+      const g = new Date(Date.UTC(n.y, n.m, n.d + off + k, 12));
+      rows.push({ day: hd.day, label: FR_DAYS[g.getUTCDay()].slice(0, 3) + '. ' + g.getUTCDate() + ' ' + FR_MONTHS[g.getUTCMonth()].slice(0, 4) + '.', imsak: hm(t.fajr.decimal - ims / 60), fajr: hm(t.fajr.decimal), iftar: hm(t.maghrib.decimal) });
+    }
+    return rows.length ? { year: year, rows: rows } : null;
+  }
+  async function imBuildBlob(im){
+    const W = 1080, RH = 50, top = 300, H = top + im.rows.length * RH + 130;
+    const FONT = 'system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif';
+    const c = document.createElement('canvas'); c.width = W; c.height = H;
+    const x = c.getContext('2d');
+    const g = x.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#0b1f1c'); g.addColorStop(1, '#17403a');
+    x.fillStyle = g; x.fillRect(0, 0, W, H);
+    x.strokeStyle = '#c9a227'; x.lineWidth = 4; x.strokeRect(28, 28, W - 56, H - 56);
+    const img = await new Promise(function(r){ const i = new Image(); i.onload = function(){ r(i); }; i.onerror = function(){ r(null); }; i.src = 'icon.png'; });
+    if(img) x.drawImage(img, W / 2 - 40, 56, 80, 80);
+    x.textAlign = 'center'; x.fillStyle = '#e3c766'; x.font = 'bold 52px ' + FONT; x.fillText('Imsakiya — Ramadan ' + im.year, W / 2, 190);
+    x.fillStyle = '#a3bcb5'; x.font = '28px ' + FONT; x.fillText((state.cityName || 'Ma position') + ' · imsak = Fajr − ' + imsakMinutes() + ' min', W / 2, 236);
+    const cols = [90, 330, 590, 790, 980];
+    x.fillStyle = '#7fd1a8'; x.font = 'bold 28px ' + FONT;
+    ['Jour', 'Date', 'Imsak', 'Fajr', 'Iftar'].forEach(function(t, i){ x.fillText(t, cols[i], top - 14); });
+    im.rows.forEach(function(r, i){
+      const y = top + i * RH;
+      if(i % 2 === 0){ x.fillStyle = 'rgba(255,255,255,0.06)'; x.fillRect(60, y, W - 120, RH); }
+      x.fillStyle = '#eef3f1'; x.font = '28px ' + FONT;
+      [String(r.day), r.label, r.imsak, r.fajr, r.iftar].forEach(function(t, k){ x.fillStyle = k === 4 ? '#e3c766' : '#eef3f1'; x.fillText(t, cols[k], y + 35); });
+    });
+    x.fillStyle = '#a3bcb5'; x.font = '22px ' + FONT;
+    x.fillText('Horaires calculés sur l\'appareil : vérifiez auprès de votre mosquée.', W / 2, H - 78);
+    x.fillText('Rakeb · SAOU DIGITAL LAB', W / 2, H - 48);
+    return new Promise(function(res){ c.toBlob(res, 'image/png'); });
+  }
+  async function imShare(){
+    if(state.lat === null){ toast('Choisissez d\'abord votre position.'); return; }
+    const im = imsakiyaRows(); if(!im){ toast('Calendrier du Ramadan indisponible.'); return; }
+    try{
+      toast('Création de l\'imsakiya…');
+      const blob = await imBuildBlob(im), url = URL.createObjectURL(blob), a = document.createElement('a');
+      a.href = url; a.download = 'rakeb-imsakiya-' + im.year + '.png';
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(function(){ URL.revokeObjectURL(url); }, 60000);
+    }catch(e){ toast('Impossible de créer l\'image.'); }
+  }
+  (function(){ const b = $('#ram-imsakiya'); if(b) b.addEventListener('click', imShare); })();
+
+  /* ---------- 4. Recherche plein texte du Coran (hors ligne) ---------- */
+  let qsIndex = null, qsIndexN = -1;
+  function qsNorm(s){ return srcNorm(s).replace(/[ٱأإآ]/g, 'ا').replace(/ى/g, 'ي').replace(/ة/g, 'ه').replace(/ؤ/g, 'و').replace(/ئ/g, 'ي'); }
+  async function qsBuild(){
+    const cnt = await qCount();
+    if(qsIndex && qsIndexN === cnt) return qsIndex;
+    const idx = [];
+    for(let s = 1; s <= 114; s++){
+      const rec = await qGet(s); if(!rec) continue;
+      (rec.ar || []).forEach(function(v, i){ const fr = (rec.fr && rec.fr[i]) || ''; idx.push({ s: s, a: v.n, ar: v.t, fr: fr, n: qsNorm(fr + ' ' + v.t) }); });
+    }
+    qsIndex = idx; qsIndexN = cnt; return idx;
+  }
+  async function qsSearch(q, max){
+    const words = qsNorm(q).split(' ').filter(function(w){ return w.length >= 2; });
+    if(!words.length) return { items: [], total: 0 };
+    const idx = await qsBuild(), hits = idx.filter(function(e){ return words.every(function(w){ return e.n.indexOf(w) >= 0; }); });
+    return { items: hits.slice(0, max || 40), total: hits.length, size: idx.length };
+  }
+  function qsCard(e){
+    const ref = e.s + ':' + e.a, text = e.ar + '\n' + e.fr + '\n(Coran ' + ref + ')';
+    return '<div class="src-card"><div class="src-title">Sourate ' + escapeHtml(SURAH_NAMES[e.s - 1]) + ' (' + ref + ')</div>' +
+      '<div class="dua-ar" lang="ar" dir="rtl">' + escapeHtml(e.ar) + ' <span class="ayah-no">﴿' + e.a + '﴾</span></div>' +
+      (e.fr ? '<div class="dua-fr">' + escapeHtml(e.fr) + '</div>' : '') +
+      '<div class="add-actions" style="margin:6px 0 0;"><button class="btn mini" type="button" data-qs-open="' + ref + '" aria-label="Lire la sourate ' + e.s + ' au verset ' + e.a + '">📖 Lire</button>' + copyBtn(text) + '</div></div>';
+  }
+  async function qsRun(){
+    const q = ($('#qs-input').value || '').trim(), st = $('#qs-status'), out = $('#qs-results');
+    if(q.length < 2){ st.textContent = 'Saisissez au moins 2 lettres.'; return; }
+    const cnt = await qCount();
+    if(!cnt){ st.textContent = 'Téléchargez d\'abord le Coran (bouton « Télécharger tout le Coran » ci-dessous) pour chercher sans réseau.'; out.innerHTML = ''; return; }
+    st.textContent = 'Recherche…';
+    const r = await qsSearch(q, 40);
+    st.textContent = r.total ? (r.total + ' verset' + (r.total > 1 ? 's' : '') + (r.total > r.items.length ? ' (40 premiers affichés)' : '') + (cnt < 114 ? ' — Coran partiel : ' + cnt + ' / 114 sourates téléchargées' : '')) : 'Aucun verset trouvé' + (cnt < 114 ? ' (Coran partiel : ' + cnt + ' / 114 sourates)' : '') + '.';
+    out.innerHTML = r.items.map(qsCard).join('');
+  }
+  (function(){
+    const b = $('#qs-btn'); if(!b) return;
+    b.addEventListener('click', qsRun);
+    $('#qs-input').addEventListener('keydown', function(e){ if(e.key === 'Enter'){ e.preventDefault(); qsRun(); } });
+    $('#qs-results').addEventListener('click', function(e){
+      const o = e.target.closest('[data-qs-open]'); if(!o) return;
+      const p = o.dataset.qsOpen.split(':'); khOpen(parseInt(p[0], 10), parseInt(p[1], 10));
+    });
+  })();
+  // Muslim IA : recherche par thème dans le Coran téléchargé (sans réseau) ; null si indisponible
+  async function qsOfflineAnswer(q, kws, ctx){
+    try{
+      if(!kws.length || (await qCount()) < 114) return null;
+      const idx = await qsBuild(), words = kws.map(function(w){ return qsNorm(w.length > 6 ? w.slice(0, w.length - 2) : w); });
+      for(let i = 0; i < words.length; i++){
+        const hits = idx.filter(function(e){ return e.n.indexOf(words[i]) >= 0; }).slice(0, 3);
+        if(hits.length){
+          let inner = '<p>Versets dont la traduction contient « ' + escapeHtml(words[i]) + ' » :</p>', text = '';
+          hits.forEach(function(e){ const r = renderVerses({ s: e.s, name: SURAH_NAMES[e.s - 1], ayahs: [{ n: e.a, ar: e.ar, fr: e.fr, tr: '' }] }); inner += r.inner; text += r.text + '\n\n'; });
+          return srcAnswer(inner, text.trim(), 'le Coran téléchargé sur l\'appareil (hors ligne)', ctx);
+        }
+      }
+    }catch(e){}
+    return null;
+  }
+
+  /* ---------- 5. Les 40 hadiths de Nawawi (intégrés, hors ligne) ---------- */
+  const NAWAWI = [[1,"Les actes ne valent que par leurs intentions","intention niyya sincerite actes emigration hijra","عَنْ أَمِيرِ الْمُؤْمِنِينَ أَبِي حَفْصٍ عُمَرَ بْنِ الْخَطَّابِ رَضِيَ اللهُ عَنْهُ قَالَ: سَمِعْتُ رَسُولَ اللَّهِ صلى الله عليه وسلم يَقُولُ: \" إنَّمَا الْأَعْمَالُ بِالنِّيَّاتِ، وَإِنَّمَا لِكُلِّ امْرِئٍ مَا نَوَى، فَمَنْ كَانَتْ هِجْرَتُهُ إلَى اللَّهِ وَرَسُولِهِ فَهِجْرَتُهُ إلَى اللَّهِ وَرَسُولِهِ، وَمَنْ كَانَتْ هِجْرَتُهُ لِدُنْيَا يُصِيبُهَا أَوْ امْرَأَةٍ يَنْكِحُهَا فَهِجْرَتُهُ إلَى مَا هَاجَرَ إلَيْهِ\". رَوَاهُ إِمَامَا الْمُحَدِّثِينَ أَبُو عَبْدِ اللهِ مُحَمَّدُ بنُ إِسْمَاعِيل بن إِبْرَاهِيم بن الْمُغِيرَة بن بَرْدِزبَه الْبُخَارِيُّ الْجُعْفِيُّ [رقم:1]، وَأَبُو الْحُسَيْنِ مُسْلِمٌ بنُ الْحَجَّاج بن مُسْلِم الْقُشَيْرِيُّ النَّيْسَابُورِيُّ [رقم:1907] رَضِيَ اللهُ عَنْهُمَا فِي \"صَحِيحَيْهِمَا\" اللذَينِ هُمَا أَصَحُّ الْكُتُبِ الْمُصَنَّفَةِ","Il est rapporté d’après le chef des croyants, Abou Hafs ‘Omar ibn al-Khattab (qu’Allah l’agrée), qui a dit : J’ai entendu le Messager d’Allah (ﷺ) dire : « Les actions ne valent que par les intentions, et chacun sera récompensé selon ce qu’il a eu comme intention. Ainsi, celui dont l’émigration était pour Allah et Son Messager, son émigration sera pour Allah et Son Messager. Mais celui dont l’émigration visait un intérêt matériel à obtenir, ou une femme à épouser, alors son émigration sera pour ce qui l’a motivé. » [Boukhari & Mouslim]"],[2,"Hadith de Jibril : islam, foi et ihsan","jibril gabriel islam iman ihsan foi piliers heure derniere","عَنْ عُمَرَ رَضِيَ اللهُ عَنْهُ أَيْضًا قَالَ: بَيْنَمَا نَحْنُ جُلُوسٌ عِنْدَ رَسُولِ اللَّهِ صلى الله عليه و سلم ذَاتَ يَوْمٍ، إذْ طَلَعَ عَلَيْنَا رَجُلٌ شَدِيدُ بَيَاضِ الثِّيَابِ، شَدِيدُ سَوَادِ الشَّعْرِ، لَا يُرَى عَلَيْهِ أَثَرُ السَّفَرِ، وَلَا يَعْرِفُهُ مِنَّا أَحَدٌ. حَتَّى جَلَسَ إلَى النَّبِيِّ صلى الله عليه و سلم . فَأَسْنَدَ رُكْبَتَيْهِ إلَى رُكْبَتَيْهِ، وَوَضَعَ كَفَّيْهِ عَلَى فَخِذَيْهِ، وَقَالَ: يَا مُحَمَّدُ أَخْبِرْنِي عَنْ الْإِسْلَامِ. فَقَالَ رَسُولُ اللَّهِ صلى الله عليه و سلم الْإِسْلَامُ أَنْ تَشْهَدَ أَنْ لَا إلَهَ إلَّا اللَّهُ وَأَنَّ مُحَمَّدًا رَسُولُ اللَّهِ، وَتُقِيمَ الصَّلَاةَ، وَتُؤْتِيَ الزَّكَاةَ، وَتَصُومَ رَمَضَانَ، وَتَحُجَّ الْبَيْتَ إنْ اسْتَطَعْت إلَيْهِ سَبِيلًا. قَالَ: صَدَقْت . فَعَجِبْنَا لَهُ يَسْأَلُهُ وَيُصَدِّقُهُ! قَالَ: فَأَخْبِرْنِي عَنْ الْإِيمَانِ. قَالَ: أَنْ تُؤْمِنَ بِاَللَّهِ وَمَلَائِكَتِهِ وَكُتُبِهِ وَرُسُلِهِ وَالْيَوْمِ الْآخِرِ، وَتُؤْمِنَ بِالْقَدَرِ خَيْرِهِ وَشَرِّهِ. قَالَ: صَدَقْت. قَالَ: فَأَخْبِرْنِي عَنْ الْإِحْسَانِ. قَالَ: أَنْ تَعْبُدَ اللَّهَ كَأَنَّك تَرَاهُ، فَإِنْ لَمْ تَكُنْ تَرَاهُ فَإِنَّهُ يَرَاك. قَالَ: فَأَخْبِرْنِي عَنْ السَّاعَةِ. قَالَ: مَا الْمَسْئُولُ عَنْهَا بِأَعْلَمَ مِنْ السَّائِلِ. قَالَ: فَأَخْبِرْنِي عَنْ أَمَارَاتِهَا؟ قَالَ: أَنْ تَلِدَ الْأَمَةُ رَبَّتَهَا، وَأَنْ تَرَى الْحُفَاةَ الْعُرَاةَ الْعَالَةَ رِعَاءَ الشَّاءِ يَتَطَاوَلُونَ فِي الْبُنْيَانِ. ثُمَّ انْطَلَقَ، فَلَبِثْتُ مَلِيًّا، ثُمَّ قَالَ: يَا عُمَرُ أَتَدْرِي مَنْ السَّائِلُ؟. ‫‬قُلْتُ: اللَّهُ وَرَسُولُهُ أَعْلَمُ. قَالَ: فَإِنَّهُ جِبْرِيلُ أَتَاكُمْ يُعَلِّمُكُمْ دِينَكُمْ . [رَوَاهُ مُسْلِمٌ]","Il est aussi rapporté d’après ‘Omar (qu’Allah l’agrée) qui a dit : Un jour que nous étions assis auprès du Messager d’Allah (ﷺ), un homme aux habits d’un blanc éclatant et aux cheveux très noirs est apparu. Aucun signe de voyage ne se voyait sur lui et personne d’entre nous ne le connaissait. Il s’assit près du Prophète (ﷺ), posa ses genoux contre les siens, mit ses mains sur ses cuisses, et dit : « Ô Muhammad, informe-moi sur l’islam. » Le Messager d’Allah (ﷺ) répondit : « L’islam, c’est d’attester qu’il n’y a pas de divinité digne d’adoration en dehors d’Allah et que Muhammad est Son Messager (ﷺ), d’accomplir la prière, de donner la zakat, de jeûner pendant Ramadan et de faire le pèlerinage à la Maison (la Ka’ba à la Mecque) si tu en as la capacité. » Il lui dit : « Tu as dit vrai. » Nous avons été étonnés qu’il l’interroge puis l’approuve. Il reprit : « Informe-moi sur la foi (iman). » Le Prophète répondit : « C’est de croire en Allah, en Ses anges, en Ses Livres, en Ses Messagers, au Jour Dernier, et de croire au destin, qu’il soit favorable ou défavorable. » Il dit : « Tu as dit vrai. » Puis il dit : « Informe-moi sur l’excellence (ihsan). » Le Prophète répondit : « C’est d’adorer Allah comme si tu Le voyais ; et même si tu ne Le vois pas, certes Lui te voit. » Il dit : « Informe-moi sur l’Heure. » Le Prophète dit : « Celui qui est interrogé n’en sait pas plus que celui qui interroge. » Il dit : « Eh bien, informe-moi de ses signes. » Il dit : « Lorsque la servante donnera naissance à sa maîtresse, et que tu verras les pieds-nus, les pauvres bergers rivaliser dans la construction d’immeubles élevés. » Puis l’homme partit. Je restai un moment, puis le Prophète me dit : « Ô ‘Omar, sais-tu qui était le questionneur ? » Je répondis : « Allah et Son Messager savent mieux. » Il dit : « C’était Jibril (l’ange Gabriel), venu vous enseigner votre religion. » [Mouslim]"],[3,"Les cinq piliers de l'islam","piliers temoignage priere zakat jeune ramadan pelerinage hajj","عَنْ أَبِي عَبْدِ الرَّحْمَنِ عَبْدِ اللَّهِ بْنِ عُمَرَ بْنِ الْخَطَّابِ رَضِيَ اللَّهُ عَنْهُمَا قَالَ: سَمِعْت رَسُولَ اللَّهِ صلى الله عليه و سلم يَقُولُ: بُنِيَ الْإِسْلَامُ عَلَى خَمْسٍ: شَهَادَةِ أَنْ لَا إلَهَ إلَّا اللَّهُ وَأَنَّ مُحَمَّدًا رَسُولُ اللَّهِ، وَإِقَامِ الصَّلَاةِ، وَإِيتَاءِ الزَّكَاةِ، وَحَجِّ الْبَيْتِ، وَصَوْمِ رَمَضَانَ . [رَوَاهُ الْبُخَارِيُّ] ، [وَمُسْلِمٌ]","Selon Abdallah, fils de ‘Omar ibn al-Khattab (qu’Allah l’agrée), qui a dit : J’ai entendu le Messager d’Allah (ﷺ) dire : « L’islam est bâti sur cinq [piliers] : l’attestation qu’il n’y a de divinité digne d’adoration qu’Allah et que Muhammad est le Messager d’Allah, l’accomplissement de la prière, le paiement de la zakat, le pèlerinage à la Maison et le jeûne du Ramadan. » [Boukhari & Mouslim]"],[4,"La création de l'homme et le décret divin","creation embryon destin decret qadar paradis enfer","عَنْ أَبِي عَبْدِ الرَّحْمَنِ عَبْدِ اللَّهِ بْنِ مَسْعُودٍ رَضِيَ اللهُ عَنْهُ قَالَ: حَدَّثَنَا رَسُولُ اللَّهِ صلى الله عليه و سلم -وَهُوَ الصَّادِقُ الْمَصْدُوقُ-: إنَّ أَحَدَكُمْ يُجْمَعُ خَلْقُهُ فِي بَطْنِ أُمِّهِ أَرْبَعِينَ يَوْمًا نُطْفَةً، ثُمَّ يَكُونُ عَلَقَةً مِثْلَ ذَلِكَ، ثُمَّ يَكُونُ مُضْغَةً مِثْلَ ذَلِكَ، ثُمَّ يُرْسَلُ إلَيْهِ الْمَلَكُ فَيَنْفُخُ فِيهِ الرُّوحَ، وَيُؤْمَرُ بِأَرْبَعِ كَلِمَاتٍ: بِكَتْبِ رِزْقِهِ، وَأَجَلِهِ، وَعَمَلِهِ، وَشَقِيٍّ أَمْ سَعِيدٍ؛ فَوَاَللَّهِ الَّذِي لَا إلَهَ غَيْرُهُ إنَّ أَحَدَكُمْ لَيَعْمَلُ بِعَمَلِ أَهْلِ الْجَنَّةِ حَتَّى مَا يَكُونُ بَيْنَهُ وَبَيْنَهَا إلَّا ذِرَاعٌ فَيَسْبِقُ عَلَيْهِ الْكِتَابُ فَيَعْمَلُ بِعَمَلِ أَهْلِ النَّارِ فَيَدْخُلُهَا. وَإِنَّ أَحَدَكُمْ لَيَعْمَلُ بِعَمَلِ أَهْلِ النَّارِ حَتَّى مَا يَكُونُ بَيْنَهُ وَبَيْنَهَا إلَّا ذِرَاعٌ فَيَسْبِقُ عَلَيْهِ الْكِتَابُ فَيَعْمَلُ بِعَمَلِ أَهْلِ الْجَنَّةِ فَيَدْخُلُهَا . [رَوَاهُ الْبُخَارِيُّ] ، [وَمُسْلِمٌ]","Selon Abdallah ibn Mas‘oud (qu’Allah l’agrée), qui a dit : Le Messager d’Allah (ﷺ), le véridique, le digne de confiance, nous a raconté : « La création de chacun d’entre vous s’accomplit dans le ventre de sa mère pendant quarante jours sous forme d’une goutte, puis il devient une adhérence pour une période semblable, puis un morceau de chair pour une période semblable. Ensuite, un ange est envoyé, qui insuffle l’âme et reçoit l’ordre d’écrire quatre choses : sa subsistance, la durée de sa vie, ses actions, et s’il sera heureux ou malheureux (c’est-à-dire s’il entrera au Paradis ou en Enfer). Par Celui en dehors de qui il n’y a pas de divinité, il arrive que l’un d’entre vous accomplisse les œuvres des gens du Paradis jusqu’à ce qu’il ne reste entre lui et le Paradis qu’une coudée, mais ce qui a été écrit l’emporte et il accomplit alors les actes des gens de l’Enfer, ce qui le fait entrer en Enfer. Et il arrive que l’un d’entre vous accomplisse les œuvres des gens de l’Enfer jusqu’à ce qu’il ne reste entre lui et l’Enfer qu’une coudée, mais ce qui a été écrit l’emporte et il accomplit alors les actes des gens du Paradis, ce qui le fait entrer au Paradis. » [Boukhari & Mouslim]"],[5,"Rejet des innovations dans la religion","innovation bida religion rejetee","عَنْ أُمِّ الْمُؤْمِنِينَ أُمِّ عَبْدِ اللَّهِ عَائِشَةَ رَضِيَ اللَّهُ عَنْهَا، قَالَتْ: قَالَ: رَسُولُ اللَّهِ صلى الله عليه و سلم مَنْ أَحْدَثَ فِي أَمْرِنَا هَذَا مَا لَيْسَ مِنْهُ فَهُوَ رَدٌّ [رَوَاهُ الْبُخَارِيُّ] ،[وَمُسْلِمٌ] وَفِي رِوَايَةٍ لِمُسْلِمٍ: مَنْ عَمِلَ عَمَلًا لَيْسَ عَلَيْهِ أَمْرُنَا فَهُوَ رَدٌّ","Selon la mère des croyants, ‘Aïcha (qu’Allah l’agrée), qui a dit : Le Messager d’Allah (ﷺ) a dit : « Celui qui introduit dans notre religion quelque chose qui n’en fait pas partie, cela lui sera rejeté. » [Boukhari & Mouslim] Dans une autre version chez Mouslim : « Celui qui accomplit un acte que nous n’avons pas ordonné, cela lui sera rejeté. »"],[6,"Le licite, l'illicite et le douteux","licite illicite douteux scrupule coeur","عَنْ أَبِي عَبْدِ اللَّهِ النُّعْمَانِ بْنِ بَشِيرٍ رَضِيَ اللَّهُ عَنْهُمَا، قَالَ: سَمِعْت رَسُولَ اللَّهِ صلى الله عليه و سلم يَقُولُ: إنَّ الْحَلَالَ بَيِّنٌ، وَإِنَّ الْحَرَامَ بَيِّنٌ، وَبَيْنَهُمَا أُمُورٌ مُشْتَبِهَاتٌ لَا يَعْلَمُهُنَّ كَثِيرٌ مِنْ النَّاسِ، فَمَنْ اتَّقَى الشُّبُهَاتِ فَقْد اسْتَبْرَأَ لِدِينِهِ وَعِرْضِهِ، وَمَنْ وَقَعَ فِي الشُّبُهَاتِ وَقَعَ فِي الْحَرَامِ، كَالرَّاعِي يَرْعَى حَوْلَ الْحِمَى يُوشِكُ أَنْ يَرْتَعَ فِيهِ، أَلَا وَإِنَّ لِكُلِّ مَلِكٍ حِمًى، أَلَا وَإِنَّ حِمَى اللَّهِ مَحَارِمُهُ، أَلَا وَإِنَّ فِي الْجَسَدِ مُضْغَةً إذَا صَلَحَتْ صَلَحَ الْجَسَدُ كُلُّهُ، وَإذَا فَسَدَتْ فَسَدَ الْجَسَدُ كُلُّهُ، أَلَا وَهِيَ الْقَلْبُ .<br>[رَوَاهُ الْبُخَارِيُّ]، [وَمُسْلِمٌ]","Selon an-Nu’man ibn Bachir (qu’Allah l’agrée), qui a dit : J’ai entendu le Messager d’Allah (ﷺ) dire : « Ce qui est licite est clair, et ce qui est illicite est clair, et entre les deux se trouvent des choses douteuses que beaucoup de gens ne connaissent pas. Celui qui évite les choses douteuses préserve sa religion et son honneur. Celui qui tombe dans les choses douteuses finit par tomber dans l’illicite, comme le berger qui fait paître ses moutons près d’un terrain interdit : il risque d’y entrer. En vérité, chaque roi a un terrain réservé, et le terrain réservé d’Allah ce sont Ses interdits. En vérité, il y a dans le corps un morceau de chair qui, s’il est sain, tout le corps est sain, et s’il est corrompu, tout le corps est corrompu : c’est le cœur. » [Boukhari & Mouslim]"],[7,"La religion, c'est le bon conseil","conseil sincerite nasiha religion dirigeants","عَنْ أَبِي رُقَيَّةَ تَمِيمِ بْنِ أَوْسٍ الدَّارِيِّ رَضِيَ اللهُ عَنْهُ أَنَّ النَّبِيَّ صلى الله عليه وسلم قَالَ: \"الدِّينُ النَّصِيحَةُ.\" قُلْنَا: لِمَنْ؟ قَالَ: \"لِلَّهِ، وَلِكِتَابِهِ، وَلِرَسُولِهِ، وَلِأَئِمَّةِ الْمُسْلِمِينَ وَعَامَّتِهِمْ.\" [رَوَاهُ مُسْلِمٌ]","Selon Tameem ibn Aws ad-Dari (qu’Allah l’agrée) : Le Prophète (ﷺ) a dit : « La religion, c’est le conseil/la sincérité. » Nous avons demandé : « Envers qui ? » Il (ﷺ) a répondu : « Envers Allah, Son Livre, Son Messager, les dirigeants des musulmans et leurs gens du commun. » [Mouslim]"],[8,"Le sang et les biens du musulman sont protégés","sang biens protection priere zakat combat","عَنْ ابْنِ عُمَرَ رَضِيَ اللَّهُ عَنْهُمَا، أَنَّ رَسُولَ اللَّهِ صلى الله عليه و سلم قَالَ: أُمِرْتُ أَنْ أُقَاتِلَ النَّاسَ حَتَّى يَشْهَدُوا أَنْ لَا إلَهَ إلَّا اللَّهُ وَأَنَّ مُحَمَّدًا رَسُولُ اللَّهِ، وَيُقِيمُوا الصَّلَاةَ، وَيُؤْتُوا الزَّكَاةَ؛ فَإِذَا فَعَلُوا ذَلِكَ عَصَمُوا مِنِّي دِمَاءَهُمْ وَأَمْوَالَهُمْ إلَّا بِحَقِّ الْإِسْلَامِ، وَحِسَابُهُمْ عَلَى اللَّهِ تَعَالَى .<br>[رَوَاهُ الْبُخَارِيُّ] ،[وَمُسْلِمٌ]","Selon Abdallah ibn ‘Omar (qu’Allah l’agrée) : Le Messager d’Allah (ﷺ) a dit : « Il m’a été ordonné de combattre les gens jusqu’à ce qu’ils attestent qu’il n’y a de divinité digne d’adoration qu’Allah et que Muhammad est le Messager d’Allah, qu’ils accomplissent la prière et qu’ils versent la zakat. S’ils font cela, alors ils préservent de moi leur vie et leurs biens, sauf pour ce que l’islam prévoit, et leur compte revient à Allah. » [Boukhari & Mouslim]"],[9,"Ce que je vous ai interdit, évitez-le","interdit ordre questions nombreuses capacite","عَنْ أَبِي هُرَيْرَةَ عَبْدِ الرَّحْمَنِ بْنِ صَخْرٍ رَضِيَ اللهُ عَنْهُ قَالَ: سَمِعْت رَسُولَ اللَّهِ صلى الله عليه و سلم يَقُولُ: مَا نَهَيْتُكُمْ عَنْهُ فَاجْتَنِبُوهُ، وَمَا أَمَرْتُكُمْ بِهِ فَأْتُوا مِنْهُ مَا اسْتَطَعْتُمْ، فَإِنَّمَا أَهْلَكَ الَّذِينَ مِنْ قَبْلِكُمْ كَثْرَةُ مَسَائِلِهِمْ وَاخْتِلَافُهُمْ عَلَى أَنْبِيَائِهِمْ .<br>[رَوَاهُ الْبُخَارِيُّ] ،[وَمُسْلِمٌ]","Selon Abou Hourayra (qu’Allah l’agrée) : J’ai entendu le Messager d’Allah (ﷺ) dire : « Ce que je vous ai interdit, évitez-le. Ce que je vous ai ordonné, faites-en autant que vous le pouvez. En vérité, c’est l’excès de questions et les désaccords avec leurs prophètes qui ont causé la perte des communautés précédentes. » [Boukhari & Mouslim]"],[10,"Allah est Bon et n'accepte que ce qui est bon","bon pur nourriture licite invocation exaucee halal gain","عَنْ أَبِي هُرَيْرَةَ رَضِيَ اللهُ عَنْهُ قَالَ: قَالَ رَسُولُ اللَّهِ صلى الله عليه و سلم \"إنَّ اللَّهَ طَيِّبٌ لَا يَقْبَلُ إلَّا طَيِّبًا، وَإِنَّ اللَّهَ أَمَرَ الْمُؤْمِنِينَ بِمَا أَمَرَ بِهِ الْمُرْسَلِينَ فَقَالَ تَعَالَى: \"يَا أَيُّهَا الرُّسُلُ كُلُوا مِنْ الطَّيِّبَاتِ وَاعْمَلُوا صَالِحًا\"، وَقَالَ تَعَالَى: \"يَا أَيُّهَا الَّذِينَ آمَنُوا كُلُوا مِنْ طَيِّبَاتِ مَا رَزَقْنَاكُمْ\" ثُمَّ ذَكَرَ الرَّجُلَ يُطِيلُ السَّفَرَ أَشْعَثَ أَغْبَرَ يَمُدُّ يَدَيْهِ إلَى السَّمَاءِ: يَا رَبِّ! يَا رَبِّ! وَمَطْعَمُهُ حَرَامٌ، وَمَشْرَبُهُ حَرَامٌ، وَمَلْبَسُهُ حَرَامٌ، وَغُذِّيَ بِالْحَرَامِ، فَأَنَّى يُسْتَجَابُ لَهُ؟\". [رَوَاهُ مُسْلِمٌ]","Selon Abou Hourayra (qu’Allah l’agrée) : Le Messager d’Allah (ﷺ) a dit : « Allah le Tout-Puissant est Bon et Il n’accepte que ce qui est bon. Et Allah a ordonné aux croyants ce qu’Il a ordonné aux Messagers. Ainsi le Tout-Puissant a dit : “Ô Messagers ! Mangez de ce qui est pur et faites le bien.” [23:51] et Il a dit : “Ô vous qui croyez ! Mangez des choses licites que Nous vous avons accordées.” [2:172] » Puis il (ﷺ) a mentionné le cas d’un homme qui a voyagé longuement, ébouriffé et couvert de poussière, qui lève les mains vers le ciel en disant : “Ô Seigneur ! Ô Seigneur !” mais sa nourriture est illicite, sa boisson est illicite, ses vêtements sont illicites et il a été nourri de l’illicite, alors comment sa prière serait-elle exaucée ? [Mouslim]"],[11,"Abandonne ce qui te laisse dans le doute","doute tranquillite verite mensonge","عَنْ أَبِي مُحَمَّدٍ الْحَسَنِ بْنِ عَلِيِّ بْنِ أَبِي طَالِبٍ سِبْطِ رَسُولِ اللَّهِ صلى الله عليه و سلم وَرَيْحَانَتِهِ رَضِيَ اللَّهُ عَنْهُمَا، قَالَ: حَفِظْت مِنْ رَسُولِ اللَّهِ صلى الله عليه و سلم دَعْ مَا يُرِيبُك إلَى مَا لَا يُرِيبُك . رَوَاهُ التِّرْمِذِيُّ [رقم:2520]، [وَالنَّسَائِيّ] وَقَالَ التِّرْمِذِيُّ: حَدِيثٌ حَسَنٌ صَحِيحٌ","Selon Abou Muhammad al-Hassan ibn ‘Ali ibn Abi Talib (qu’Allah l’agrée), petit-fils du Messager d’Allah (ﷺ) et très cher à lui, qui a dit : J’ai retenu du Messager d’Allah (ﷺ) : « Laisse ce qui te met dans le doute pour ce qui ne te fait pas douter. » [At-Tirmidhi] [An-Nassaï]. At-Tirmidhi a dit que ce hadith est bon et authentique (hasan sahih)"],[12,"Délaisser ce qui ne te concerne pas","utile futile bon islam langage inutile","عَنْ أَبِي هُرَيْرَةَ رَضِيَ اللهُ عَنْهُ قَالَ: قَالَ رَسُولُ اللَّهِ صلى الله عليه و سلم مِنْ حُسْنِ إسْلَامِ الْمَرْءِ تَرْكُهُ مَا لَا يَعْنِيهِ . حَدِيثٌ حَسَنٌ، رَوَاهُ التِّرْمِذِيُّ [رقم: 2318] ، ابن ماجه [رقم:]","Selon Abou Hourayra (qu’Allah l’agrée) : Le Messager d’Allah (ﷺ) a dit : « Le fait de délaisser ce qui ne te regarde pas fait partie de l’excellence de l’islam d’une personne. » Un hadith bon (hasan) rapporté par at-Tirmidhi et d’autres dans ces termes"],[13,"Aimer pour son frère ce que l'on aime pour soi","amour frere foi fraternite","عَنْ أَبِي حَمْزَةَ أَنَسِ بْنِ مَالِكٍ رَضِيَ اللهُ عَنْهُ خَادِمِ رَسُولِ اللَّهِ صلى الله عليه و سلم عَنْ النَّبِيِّ صلى الله عليه و سلم قَالَ: لَا يُؤْمِنُ أَحَدُكُمْ حَتَّى يُحِبَّ لِأَخِيهِ مَا يُحِبُّ لِنَفْسِهِ . رَوَاهُ الْبُخَارِيُّ [رقم:13]، وَمُسْلِمٌ [رقم:45].<br>[رَوَاهُ الْبُخَارِيُّ] ، [وَمُسْلِمٌ]","Selon Abou Hamza Anas ibn Malik (qu’Allah l’agrée) — serviteur du Messager d’Allah (ﷺ) — le Prophète (ﷺ) a dit : Aucun de vous ne croit vraiment tant qu’il n’aime pas pour son frère ce qu’il aime pour lui-même. [Boukhari] [Mouslim]"],[14,"Le sang du musulman est sacré","sang meurtre adultere apostasie","عَنْ ابْنِ مَسْعُودٍ رَضِيَ اللهُ عَنْهُ قَالَ: قَالَ رَسُولُ اللَّهِ صلى الله عليه و سلم لَا يَحِلُّ دَمُ امْرِئٍ مُسْلِمٍ [ يشهد أن لا إله إلا الله، وأني رسول الله] إلَّا بِإِحْدَى ثَلَاثٍ: الثَّيِّبُ الزَّانِي، وَالنَّفْسُ بِالنَّفْسِ، وَالتَّارِكُ لِدِينِهِ الْمُفَارِقُ لِلْجَمَاعَةِ .<br>[رَوَاهُ الْبُخَارِيُّ] ، [وَمُسْلِمٌ]","Selon Ibn Mas’oud (qu’Allah l’agrée), qui a dit : Le Messager d’Allah (ﷺ) a dit : « Il n’est pas permis de verser le sang d’un musulman sauf dans trois cas : la personne mariée qui commet l’adultère, le meurtre (la loi du talion), et celui qui abandonne sa religion et se sépare de la communauté. » [Boukhari] [Mouslim]"],[15,"Dire du bien ou se taire ; honorer voisin et hôte","parole silence voisin hote generosite langue","عَنْ أَبِي هُرَيْرَةَ رَضِيَ اللهُ عَنْهُ أَنَّ رَسُولَ اللَّهِ صلى الله عليه و سلم قَالَ: مَنْ كَانَ يُؤْمِنُ بِاَللَّهِ وَالْيَوْمِ الْآخِرِ فَلْيَقُلْ خَيْرًا أَوْ لِيَصْمُتْ، وَمَنْ كَانَ يُؤْمِنُ بِاَللَّهِ وَالْيَوْمِ الْآخِرِ فَلْيُكْرِمْ جَارَهُ، وَمَنْ كَانَ يُؤْمِنُ بِاَللَّهِ وَالْيَوْمِ الْآخِرِ فَلْيُكْرِمْ ضَيْفَهُ .<br>[رَوَاهُ الْبُخَارِيُّ] ، [وَمُسْلِمٌ]","Selon Abou Hourayra (qu’Allah l’agrée), le Messager d’Allah (ﷺ) a dit : « Que celui qui croit en Allah et au Jour Dernier dise du bien ou se taise ; que celui qui croit en Allah et au Jour Dernier soit généreux envers son voisin ; et que celui qui croit en Allah et au Jour Dernier soit généreux envers son invité. » [Boukhari] [Mouslim]"],[16,"Ne te mets pas en colère","colere conseil maitrise","عَنْ أَبِي هُرَيْرَةَ رَضِيَ اللهُ عَنْهُ أَنَّ رَجُلًا قَالَ لِلنَّبِيِّ صلى الله عليه و سلم أَوْصِنِي. قَالَ: لَا تَغْضَبْ، فَرَدَّدَ مِرَارًا، قَالَ: لَا تَغْضَبْ\" .<br>[رَوَاهُ الْبُخَارِيُّ]","Selon Abou Hourayra (qu’Allah l’agrée) : Un homme a dit au Prophète (ﷺ) : « Donne-moi un conseil. » Le Prophète (ﷺ) lui a dit : « Ne te mets pas en colère. » L’homme a réitéré plusieurs fois sa demande, et à chaque fois il (ﷺ) a répondu : « Ne te mets pas en colère. » [Boukhari]"],[17,"Allah a prescrit l'excellence en toute chose","excellence ihsan bonte sacrifice animal","عَنْ أَبِي يَعْلَى شَدَّادِ بْنِ أَوْسٍ رَضِيَ اللهُ عَنْهُ عَنْ رَسُولِ اللَّهِ صلى الله عليه و سلم قَالَ: إنَّ اللَّهَ كَتَبَ الْإِحْسَانَ عَلَى كُلِّ شَيْءٍ، فَإِذَا قَتَلْتُمْ فَأَحْسِنُوا الْقِتْلَةَ، وَإِذَا ذَبَحْتُمْ فَأَحْسِنُوا الذِّبْحَةَ، وَلْيُحِدَّ أَحَدُكُمْ شَفْرَتَهُ، وَلْيُرِحْ ذَبِيحَتَهُ . [رَوَاهُ مُسْلِمٌ]","Selon Abou Ya’la Chaddad ibn Aws (qu’Allah l’agrée) : Le Messager d’Allah (ﷺ) a dit : « Allah a prescrit la bienfaisance en toute chose. Si vous devez tuer, faites-le de la meilleure façon ; si vous égorgez, égorgez bien. Que chacun de vous aiguise sa lame et épargne la souffrance à l’animal qu’il sacrifie. » [Mouslim]"],[18,"Crains Allah où que tu sois","crainte taqwa mauvaise action bonne action caractere","عَنْ أَبِي ذَرٍّ جُنْدَبِ بْنِ جُنَادَةَ، وَأَبِي عَبْدِ الرَّحْمَنِ مُعَاذِ بْنِ جَبَلٍ رَضِيَ اللَّهُ عَنْهُمَا، عَنْ رَسُولِ اللَّهِ صلى الله عليه و سلم قَالَ: اتَّقِ اللَّهَ حَيْثُمَا كُنْت، وَأَتْبِعْ السَّيِّئَةَ الْحَسَنَةَ تَمْحُهَا، وَخَالِقْ النَّاسَ بِخُلُقٍ حَسَنٍ . رَوَاهُ التِّرْمِذِيُّ [رقم:1987] وَقَالَ: حَدِيثٌ حَسَنٌ، وَفِي بَعْضِ النُّسَخِ: حَسَنٌ صَحِيحٌ","Selon Abou Dharr Joundoub ibn Jounada et Abou Abderrahman Mou’adh ibn Jabal (qu’Allah les agrée), le Messager d’Allah (ﷺ) a dit : « Crains Allah où que tu sois, fais suivre une mauvaise action par une bonne qui l’effacera, et comporte-toi bien envers les gens. » Rapporté par at-Tirmidhi, qui l’a jugé bon (hasan) ; dans certains exemplaires, il est qualifié de bon et authentique (hasan sahih)"],[19,"Veille sur Allah, Il veillera sur toi","protection demander aide tawakkul epreuve destin","عَنْ عَبْدِ اللَّهِ بْنِ عَبَّاسٍ رَضِيَ اللَّهُ عَنْهُمَا قَالَ: \"كُنْت خَلْفَ رَسُولِ اللَّهِ صلى الله عليه و سلم يَوْمًا، فَقَالَ: يَا غُلَامِ! إنِّي أُعَلِّمُك كَلِمَاتٍ: احْفَظْ اللَّهَ يَحْفَظْك، احْفَظْ اللَّهَ تَجِدْهُ تُجَاهَك، إذَا سَأَلْت فَاسْأَلْ اللَّهَ، وَإِذَا اسْتَعَنْت فَاسْتَعِنْ بِاَللَّهِ، وَاعْلَمْ أَنَّ الْأُمَّةَ لَوْ اجْتَمَعَتْ عَلَى أَنْ يَنْفَعُوك بِشَيْءٍ لَمْ يَنْفَعُوك إلَّا بِشَيْءٍ قَدْ كَتَبَهُ اللَّهُ لَك، وَإِنْ اجْتَمَعُوا عَلَى أَنْ يَضُرُّوك بِشَيْءٍ لَمْ يَضُرُّوك إلَّا بِشَيْءٍ قَدْ كَتَبَهُ اللَّهُ عَلَيْك؛ رُفِعَتْ الْأَقْلَامُ، وَجَفَّتْ الصُّحُفُ\" . رَوَاهُ التِّرْمِذِيُّ [رقم:2516] وَقَالَ: حَدِيثٌ حَسَنٌ صَحِيحٌ. وَفِي رِوَايَةِ غَيْرِ التِّرْمِذِيِّ: \"احْفَظْ اللَّهَ تَجِدْهُ أمامك، تَعَرَّفْ إلَى اللَّهِ فِي الرَّخَاءِ يَعْرِفُك فِي الشِّدَّةِ، وَاعْلَمْ أَنَّ مَا أَخْطَأَك لَمْ يَكُنْ لِيُصِيبَك، وَمَا أَصَابَك لَمْ يَكُنْ لِيُخْطِئَك، وَاعْلَمْ أَنَّ النَّصْرَ مَعَ الصَّبْرِ، وَأَنْ الْفَرَجَ مَعَ الْكَرْبِ، وَأَنَّ مَعَ الْعُسْرِ يُسْرًا","Selon Abou ‘Abbas Abdallah ibn ‘Abbas (qu’Allah l’agrée), qui a dit : Un jour, j’étais derrière le Prophète (ﷺ) [sur la même monture] et il m’a dit : « Jeune homme, je vais t’apprendre quelques paroles : Préserve Allah, Il te préservera. Préserve Allah, tu Le trouveras devant toi. Si tu demandes, demande à Allah ; si tu cherches secours, cherche-le auprès d’Allah. Sache que si toute la communauté se réunissait pour t’apporter un bénéfice, elle ne pourrait te bénéficier que de ce qu’Allah a déjà décrété pour toi. Et si elle se réunissait pour te nuire, elle ne pourrait te nuire que par ce qu’Allah a déjà écrit contre toi. Les plumes sont levées et les feuillets sont secs. » Rapporté par at-Tirmidhi, qui l’a qualifié de bon et authentique. Dans une autre version : Préserve Allah, tu Le trouveras devant toi. Reconnais Allah dans l’aisance, Il te reconnaîtra dans la difficulté. Sache que ce qui t’a manqué ne devait pas t’atteindre, et ce qui t’a atteint ne devait pas te manquer. Sache que la victoire vient avec la patience, l’issue avec l’épreuve, et la facilité avec la difficulté"],[20,"La pudeur fait partie de la foi","pudeur honte prophetes","عَنْ أَبِي مَسْعُودٍ عُقْبَةَ بْنِ عَمْرٍو الْأَنْصَارِيِّ الْبَدْرِيِّ رَضِيَ اللهُ عَنْهُ قَالَ: قَالَ رَسُولُ اللَّهِ صلى الله عليه و سلم إنَّ مِمَّا أَدْرَكَ النَّاسُ مِنْ كَلَامِ النُّبُوَّةِ الْأُولَى: إذَا لَمْ تَسْتَحِ فَاصْنَعْ مَا شِئْت .<br>[رَوَاهُ الْبُخَارِيُّ]","Selon Abou Mas’oud ‘Oqba ibn ‘Amr al-Ansari al-Badri (qu’Allah l’agrée), qui a dit : Le Messager d’Allah (ﷺ) a dit : « Parmi ce que les gens ont retenu de la première prophétie : Si tu n’as pas de pudeur, alors fais ce que tu veux. » [Boukhari]"],[21,"Dis : j'ai cru en Allah, puis sois droit","droiture foi istiqama conseil","عَنْ أَبِي عَمْرٍو وَقِيلَ: أَبِي عَمْرَةَ سُفْيَانَ بْنِ عَبْدِ اللَّهِ رَضِيَ اللهُ عَنْهُ قَالَ: قُلْت: يَا رَسُولَ اللَّهِ! قُلْ لِي فِي الْإِسْلَامِ قَوْلًا لَا أَسْأَلُ عَنْهُ أَحَدًا غَيْرَك؛ قَالَ: قُلْ: آمَنْت بِاَللَّهِ ثُمَّ اسْتَقِمْ . [رَوَاهُ مُسْلِمٌ]","Selon Abou ‘Amr — aussi appelé Abou ‘Amra — Soufyan ibn ‘Abdallah ath-Thaqafi (qu’Allah l’agrée), qui a dit : J’ai dit : « Ô Messager d’Allah, dis-moi une parole sur l’islam que je ne demanderai à personne d’autre que toi. » Il (ﷺ) répondit : « Dis : “Je crois en Allah”, puis sois droit. » [Mouslim]"],[22,"L'accomplissement des obligations mène au Paradis","paradis obligations priere jeune licite illicite","عَنْ أَبِي عَبْدِ اللَّهِ جَابِرِ بْنِ عَبْدِ اللَّهِ الْأَنْصَارِيِّ رَضِيَ اللَّهُ عَنْهُمَا: أَنَّ رَجُلًا سَأَلَ رَسُولَ اللَّهِ صلى الله عليه و سلم فَقَالَ: أَرَأَيْت إذَا صَلَّيْت الْمَكْتُوبَاتِ، وَصُمْت رَمَضَانَ، وَأَحْلَلْت الْحَلَالَ، وَحَرَّمْت الْحَرَامَ، وَلَمْ أَزِدْ عَلَى ذَلِكَ شَيْئًا؛ أَأَدْخُلُ الْجَنَّةَ؟ قَالَ: نَعَمْ . [رَوَاهُ مُسْلِمٌ]","Selon Abou Abdallah Jabir ibn Abdallah al-Ansari (qu’Allah l’agrée) : Un homme a interrogé le Messager d’Allah (ﷺ) : « Que penses-tu si j’accomplis les prières obligatoires, je jeûne pendant Ramadan, je considère licite ce qui est licite et illicite ce qui est illicite, et que je ne fais rien de plus, est-ce que j’entrerai au Paradis ? » Il (ﷺ) répondit : « Oui. » [Mouslim]"],[23,"La purification est la moitié de la foi","purification ablution alhamdulillah subhanallah patience aumone coran","عَنْ أَبِي مَالِكٍ الْحَارِثِ بْنِ عَاصِمٍ الْأَشْعَرِيِّ رَضِيَ اللهُ عَنْهُ قَالَ: قَالَ رَسُولُ اللَّهِ صلى الله عليه و سلم الطَّهُورُ شَطْرُ الْإِيمَانِ، وَالْحَمْدُ لِلَّهِ تَمْلَأُ الْمِيزَانَ، وَسُبْحَانَ اللَّهِ وَالْحَمْدُ لِلَّهِ تَمْلَآنِ -أَوْ: تَمْلَأُ- مَا بَيْنَ السَّمَاءِ وَالْأَرْضِ، وَالصَّلَاةُ نُورٌ، وَالصَّدَقَةُ بُرْهَانٌ، وَالصَّبْرُ ضِيَاءٌ، وَالْقُرْآنُ حُجَّةٌ لَك أَوْ عَلَيْك، كُلُّ النَّاسِ يَغْدُو، فَبَائِعٌ نَفْسَهُ فَمُعْتِقُهَا أَوْ مُوبِقُهَا . [رَوَاهُ مُسْلِمٌ]","Selon Abou Malik al-Harith ibn Asim al-Achari (qu’Allah l’agrée), le Messager d’Allah (ﷺ) a dit : « La pureté est la moitié de la foi. “Alhamdoulillah” (louange à Allah) remplit la balance, et “SubhanAllah” (gloire à Allah) et “Alhamdoulillah” remplissent ce qui est entre le ciel et la terre. La prière est une lumière, l’aumône est une preuve, la patience est une illumination, et le Coran est un argument en ta faveur ou contre toi. Chaque personne commence sa journée en marchand de son âme : soit il la libère, soit il la cause à sa perte. » [Mouslim]"],[24,"L'interdiction de l'injustice (hadith qudsi)","injustice oppression guidee nourriture vetement pardon hadith qudsi","عَنْ أَبِي ذَرٍّ الْغِفَارِيِّ رَضِيَ اللهُ عَنْهُ عَنْ النَّبِيِّ صلى الله عليه و سلم فِيمَا يَرْوِيهِ عَنْ رَبِّهِ تَبَارَكَ وَتَعَالَى، أَنَّهُ قَالَ: يَا عِبَادِي: إنِّي حَرَّمْت الظُّلْمَ عَلَى نَفْسِي، وَجَعَلْته بَيْنَكُمْ مُحَرَّمًا؛ فَلَا تَظَالَمُوا. يَا عِبَادِي! كُلُّكُمْ ضَالٌّ إلَّا مَنْ هَدَيْته، فَاسْتَهْدُونِي أَهْدِكُمْ. يَا عِبَادِي! كُلُّكُمْ جَائِعٌ إلَّا مَنْ أَطْعَمْته، فَاسْتَطْعِمُونِي أُطْعِمْكُمْ. يَا عِبَادِي! كُلُّكُمْ عَارٍ إلَّا مَنْ كَسَوْته، فَاسْتَكْسُونِي أَكْسُكُمْ. يَا عِبَادِي! إنَّكُمْ تُخْطِئُونَ بِاللَّيْلِ وَالنَّهَارِ، وَأَنَا أَغْفِرُ الذُّنُوبَ جَمِيعًا؛ فَاسْتَغْفِرُونِي أَغْفِرْ لَكُمْ. يَا عِبَادِي! إنَّكُمْ لَنْ تَبْلُغُوا ضُرِّي فَتَضُرُّونِي، وَلَنْ تَبْلُغُوا نَفْعِي فَتَنْفَعُونِي. يَا عِبَادِي! لَوْ أَنَّ أَوَّلَكُمْ وَآخِرَكُمْ وَإِنْسَكُمْ وَجِنَّكُمْ كَانُوا عَلَى أَتْقَى قَلْبِ رَجُلٍ وَاحِدٍ مِنْكُمْ، مَا زَادَ ذَلِكَ فِي مُلْكِي شَيْئًا. يَا عِبَادِي! لَوْ أَنَّ أَوَّلَكُمْ وَآخِرَكُمْ وَإِنْسَكُمْ وَجِنَّكُمْ كَانُوا عَلَى أَفْجَرِ قَلْبِ رَجُلٍ وَاحِدٍ مِنْكُمْ، مَا نَقَصَ ذَلِكَ مِنْ مُلْكِي شَيْئًا. يَا عِبَادِي! لَوْ أَنَّ أَوَّلَكُمْ وَآخِرَكُمْ وَإِنْسَكُمْ وَجِنَّكُمْ قَامُوا فِي صَعِيدٍ وَاحِدٍ، فَسَأَلُونِي، فَأَعْطَيْت كُلَّ وَاحِدٍ مَسْأَلَته، مَا نَقَصَ ذَلِكَ مِمَّا عِنْدِي إلَّا كَمَا يَنْقُصُ الْمِخْيَطُ إذَا أُدْخِلَ الْبَحْرَ. يَا عِبَادِي! إنَّمَا هِيَ أَعْمَالُكُمْ أُحْصِيهَا لَكُمْ، ثُمَّ أُوَفِّيكُمْ إيَّاهَا؛ فَمَنْ وَجَدَ خَيْرًا فَلْيَحْمَدْ اللَّهَ، وَمَنْ وَجَدَ غَيْرَ ذَلِكَ فَلَا يَلُومَن إلَّا نَفْسَهُ . [رَوَاهُ مُسْلِمٌ]","Selon Abou Dharr al-Ghifari (qu’Allah l’agrée), d’après le Prophète (ﷺ), d’après son Seigneur : « Ô Mes serviteurs ! Je me suis interdit l’injustice et Je l’ai interdite entre vous, ne vous faites donc pas de tort les uns aux autres. Ô Mes serviteurs, vous êtes tous égarés sauf celui que J’ai guidé, demandez-Moi donc la guidée, Je vous guiderai. Ô Mes serviteurs, vous êtes tous affamés sauf celui que J’ai nourri, demandez-Moi donc de la nourriture, Je vous nourrirai. Ô Mes serviteurs, vous êtes tous nus sauf celui que J’ai vêtu, demandez-Moi donc des vêtements, Je vous vêtirai. Ô Mes serviteurs, vous commettez des péchés nuit et jour, et Moi Je pardonne tous les péchés, demandez-Moi pardon, Je vous pardonnerai. Ô Mes serviteurs, vous ne pourrez jamais Me nuire, ni M’être utile. Ô Mes serviteurs, si les premiers et les derniers d’entre vous, humains et djinns, avaient le cœur le plus pieux, cela n’augmenterait rien à Mon Royaume. Si les premiers et les derniers d’entre vous, humains et djinns, avaient le cœur le plus mauvais, cela n’enlèverait rien à Mon Royaume. Si tous se levaient pour Me demander et que Je donnais à chacun ce qu’il demande, cela ne diminuerait Ma Propriété que de ce qu’une aiguille retire de la mer. Ô Mes serviteurs, ce ne sont que vos actes que Je compte pour vous, puis Je vous en rends la rétribution. Celui qui trouve du bien, qu’il loue Allah, et celui qui trouve autre chose, qu’il ne blâme que lui-même. » [Mouslim]"],[25,"Les riches et les bonnes œuvres (aumône)","aumone richesse tasbih sadaqa bonnes oeuvres","عَنْ أَبِي ذَرٍّ رَضِيَ اللهُ عَنْهُ أَيْضًا، أَنَّ نَاسًا مِنْ أَصْحَابِ رَسُولِ اللَّهِ صلى الله عليه و سلم قَالُوا لِلنَّبِيِّ صلى الله عليه و سلم يَا رَسُولَ اللَّهِ ذَهَبَ أَهْلُ الدُّثُورِ بِالْأُجُورِ؛ يُصَلُّونَ كَمَا نُصَلِّي، وَيَصُومُونَ كَمَا نَصُومُ، وَيَتَصَدَّقُونَ بِفُضُولِ أَمْوَالِهِمْ. قَالَ: أَوَلَيْسَ قَدْ جَعَلَ اللَّهُ لَكُمْ مَا تَصَّدَّقُونَ؟ إنَّ بِكُلِّ تَسْبِيحَةٍ صَدَقَةً، وَكُلِّ تَكْبِيرَةٍ صَدَقَةً، وَكُلِّ تَحْمِيدَةٍ صَدَقَةً، وَكُلِّ تَهْلِيلَةٍ صَدَقَةً، وَأَمْرٌ بِمَعْرُوفٍ صَدَقَةٌ، وَنَهْيٌ عَنْ مُنْكَرٍ صَدَقَةٌ، وَفِي بُضْعِ أَحَدِكُمْ صَدَقَةٌ. قَالُوا: يَا رَسُولَ اللَّهِ أَيَأْتِي أَحَدُنَا شَهْوَتَهُ وَيَكُونُ لَهُ فِيهَا أَجْرٌ؟ قَالَ: أَرَأَيْتُمْ لَوْ وَضَعَهَا فِي حَرَامٍ أَكَانَ عَلَيْهِ وِزْرٌ؟ فَكَذَلِكَ إذَا وَضَعَهَا فِي الْحَلَالِ، كَانَ لَهُ أَجْرٌ . [رَوَاهُ مُسْلِمٌ]","Toujours d’après Abou Dharr (qu’Allah l’agrée) : Certains compagnons du Messager d’Allah (ﷺ) dirent au Prophète (ﷺ) : « Ô Messager d’Allah, les riches ont emporté toutes les récompenses ! Ils prient comme nous, jeûnent comme nous, et donnent beaucoup en aumône grâce à leur richesse. » Il (ﷺ) dit : « Allah ne vous a-t-Il pas donné de quoi faire l’aumône ? Chaque “SubhanAllah” est une aumône, chaque “Allahu Akbar” est une aumône, chaque “Alhamdoulillah” est une aumône, chaque “La ilaha illAllah” est une aumône. Ordonner le bien est une aumône, interdire le mal est une aumône, et dans le rapport intime de chacun de vous, il y a une aumône. » Ils dirent : « Ô Messager d’Allah, quand l’un de nous satisfait son désir, il a une récompense ? » Il dit : « Voyez-vous, s’il l’avait fait de façon illicite, il aurait eu un péché ? Ainsi, s’il le fait de façon licite, il a une récompense. » [Mouslim]"],[26,"Chaque articulation doit une aumône","aumone articulation justice aider monture bonne parole","عَنْ أَبِي هُرَيْرَةَ رَضِيَ اللهُ عَنْهُ قَالَ: قَالَ رَسُولُ اللَّهِ صلى الله عليه و سلم كُلُّ سُلَامَى مِنْ النَّاسِ عَلَيْهِ صَدَقَةٌ، كُلَّ يَوْمٍ تَطْلُعُ فِيهِ الشَّمْسُ تَعْدِلُ بَيْنَ اثْنَيْنِ صَدَقَةٌ، وَتُعِينُ الرَّجُلَ فِي دَابَّتِهِ فَتَحْمِلُهُ عَلَيْهَا أَوْ تَرْفَعُ لَهُ عَلَيْهَا مَتَاعَهُ صَدَقَةٌ، وَالْكَلِمَةُ الطَّيِّبَةُ صَدَقَةٌ، وَبِكُلِّ خُطْوَةٍ تَمْشِيهَا إلَى الصَّلَاةِ صَدَقَةٌ، وَتُمِيطُ الْأَذَى عَنْ الطَّرِيقِ صَدَقَةٌ .<br>[رَوَاهُ الْبُخَارِيُّ] ، [وَمُسْلِمٌ]","Selon Abou Hourayra (qu’Allah l’agrée), le Messager d’Allah (ﷺ) a dit : « Chaque articulation d’une personne doit faire une aumône chaque jour où le soleil se lève : faire justice entre deux personnes est une aumône, aider un homme à monter sur sa monture ou à y charger ses affaires est une aumône, dire une bonne parole est une aumône, chaque pas vers la prière est une aumône, et enlever un obstacle de la route est une aumône. » [Boukhari] [Mouslim]"],[27,"La droiture et le péché","droiture peche conscience bon comportement","عَنْ النَّوَّاسِ بْنِ سَمْعَانَ رَضِيَ اللهُ عَنْهُ عَنْ النَّبِيِّ صلى الله عليه و سلم قَالَ: \"الْبِرُّ حُسْنُ الْخُلُقِ، وَالْإِثْمُ مَا حَاكَ فِي صَدْرِك، وَكَرِهْت أَنْ يَطَّلِعَ عَلَيْهِ النَّاسُ\" رَوَاهُ مُسْلِمٌ [رَوَاهُ مُسْلِمٌ]. وَعَنْ وَابِصَةَ بْنِ مَعْبَدٍ رَضِيَ اللهُ عَنْهُ قَالَ: أَتَيْت رَسُولَ اللَّهِ صلى الله عليه و سلم فَقَالَ: \"جِئْتَ تَسْأَلُ عَنْ الْبِرِّ؟ قُلْت: نَعَمْ. فقَالَ: استفت قلبك، الْبِرُّ مَا اطْمَأَنَّتْ إلَيْهِ النَّفْسُ، وَاطْمَأَنَّ إلَيْهِ الْقَلْبُ، وَالْإِثْمُ مَا حَاكَ فِي النَّفْسِ وَتَرَدَّدَ فِي الصَّدْرِ، وَإِنْ أَفْتَاك النَّاسُ وَأَفْتَوْك\" . حَدِيثٌ حَسَنٌ، رَوَيْنَاهُ في مُسْنَدَي الْإِمَامَيْنِ أَحْمَدَ بْنِ حَنْبَلٍ [رقم:4/227]، وَالدَّارِمِيّ [2/246] بِإِسْنَادٍ حَسَنٍ","Selon an-Nawwas ibn Sam’an (qu’Allah l’agrée), le Prophète (ﷺ) a dit : « La droiture, c’est le bon comportement, et le péché est ce qui fait hésiter ton âme et ce que tu n’aimes pas que les gens découvrent. » [Mouslim]. Et selon Wabisah ibn Ma’bad (qu’Allah l’agrée) : Je suis venu voir le Messager d’Allah (ﷺ) qui m’a dit : « Tu es venu demander ce qu’est la droiture ? » J’ai répondu : « Oui. » Il dit : « Consulte ton cœur. La droiture est ce qui met l’âme à l’aise et le cœur en paix. Le péché est ce qui fait hésiter l’âme et trouble la poitrine, même si les gens t’ont donné des avis favorables. » Un bon hadith rapporté par Ahmad ibn Hanbal et ad-Darimi, avec une bonne chaîne"],[28,"S'attacher à la Sunna et à l'obéissance","sunna obeissance dirigeant innovation califes","عَنْ أَبِي نَجِيحٍ الْعِرْبَاضِ بْنِ سَارِيَةَ رَضِيَ اللهُ عَنْهُ قَالَ: وَعَظَنَا رَسُولُ اللَّهِ صلى الله عليه و سلم مَوْعِظَةً وَجِلَتْ مِنْهَا الْقُلُوبُ، وَذَرَفَتْ مِنْهَا الْعُيُونُ، فَقُلْنَا: يَا رَسُولَ اللَّهِ! كَأَنَّهَا مَوْعِظَةُ مُوَدِّعٍ فَأَوْصِنَا، قَالَ: أُوصِيكُمْ بِتَقْوَى اللَّهِ، وَالسَّمْعِ وَالطَّاعَةِ وَإِنْ تَأَمَّرَ عَلَيْكُمْ عَبْدٌ، فَإِنَّهُ مَنْ يَعِشْ مِنْكُمْ فَسَيَرَى اخْتِلَافًا كَثِيرًا، فَعَلَيْكُمْ بِسُنَّتِي وَسُنَّةِ الْخُلَفَاءِ الرَّاشِدِينَ الْمَهْدِيينَ، عَضُّوا عَلَيْهَا بِالنَّوَاجِذِ، وَإِيَّاكُمْ وَمُحْدَثَاتِ الْأُمُورِ؛ فَإِنَّ كُلَّ بِدْعَةٍ ضَلَالَةٌ . [رَوَاهُ أَبُو دَاوُدَ]، وَاَلتِّرْمِذِيُّ [رقم:266] وَقَالَ: حَدِيثٌ حَسَنٌ صَحِيحٌ","Selon Abou Najih al-‘Irbad ibn Sariyah (qu’Allah l’agrée), qui a dit : Le Messager d’Allah (ﷺ) nous a adressé un sermon qui fit frissonner nos cœurs et couler nos larmes. Nous lui avons dit : « Ô Messager d’Allah, c’est comme un sermon d’adieu, conseille-nous donc. » Il (ﷺ) a dit : « Je vous recommande la crainte d’Allah, d’écouter et d’obéir [à votre chef], même si un esclave devient votre chef. Celui d’entre vous qui vivra verra beaucoup de divergences. Tenez-vous à ma Sounnah et à la Sounnah des califes bien guidés après moi. Accrochez-vous-y fermement ! Prenez garde aux innovations [en religion], car chaque innovation est un égarement. » [Abou Dawoud], rapporté aussi par at-Tirmidhi qui a dit qu’il est bon et authentique"],[29,"Les portes du bien","porte bien acte paradis jeune aumone priere nuit langue jihad","عَنْ مُعَاذِ بْنِ جَبَلٍ رَضِيَ اللهُ عَنْهُ قَالَ: قُلْت يَا رَسُولَ اللَّهِ! أَخْبِرْنِي بِعَمَلٍ يُدْخِلُنِي الْجَنَّةَ وَيُبَاعِدْنِي مِنْ النَّارِ، قَالَ: \"لَقَدْ سَأَلْت عَنْ عَظِيمٍ، وَإِنَّهُ لَيَسِيرٌ عَلَى مَنْ يَسَّرَهُ اللَّهُ عَلَيْهِ: تَعْبُدُ اللَّهَ لَا تُشْرِكْ بِهِ شَيْئًا، وَتُقِيمُ الصَّلَاةَ، وَتُؤْتِي الزَّكَاةَ، وَتَصُومُ رَمَضَانَ، وَتَحُجُّ الْبَيْتَ، ثُمَّ قَالَ: أَلَا أَدُلُّك عَلَى أَبْوَابِ الْخَيْرِ؟ الصَّوْمُ جُنَّةٌ، وَالصَّدَقَةُ تُطْفِئُ الْخَطِيئَةَ كَمَا يُطْفِئُ الْمَاءُ النَّارَ، وَصَلَاةُ الرَّجُلِ فِي جَوْفِ اللَّيْلِ، ثُمَّ تَلَا: \" تَتَجَافَى جُنُوبُهُمْ عَنِ الْمَضَاجِعِ \" حَتَّى بَلَغَ \"يَعْمَلُونَ\"،[ 32 سورة السجدة / الأيتان : 16 و 17 ] ثُمَّ قَالَ: أَلَا أُخْبِرُك بِرَأْسِ الْأَمْرِ وَعَمُودِهِ وَذُرْوَةِ سَنَامِهِ؟ قُلْت: بَلَى يَا رَسُولَ اللَّهِ. قَالَ: رَأْسُ الْأَمْرِ الْإِسْلَامُ، وَعَمُودُهُ الصَّلَاةُ، وَذُرْوَةُ سَنَامِهِ الْجِهَادُ، ثُمَّ قَالَ: أَلَا أُخْبِرُك بِمَلَاكِ ذَلِكَ كُلِّهِ؟ فقُلْت: بَلَى يَا رَسُولَ اللَّهِ ! فَأَخَذَ بِلِسَانِهِ وَقَالَ: كُفَّ عَلَيْك هَذَا. قُلْت: يَا نَبِيَّ اللَّهِ وَإِنَّا لَمُؤَاخَذُونَ بِمَا نَتَكَلَّمُ بِهِ؟ فَقَالَ: ثَكِلَتْك أُمُّك وَهَلْ يَكُبُّ النَّاسَ عَلَى وُجُوهِهِمْ -أَوْ قَالَ عَلَى مَنَاخِرِهِمْ- إلَّا حَصَائِدُ أَلْسِنَتِهِمْ؟!\" . رَوَاهُ التِّرْمِذِيُّ [رقم:2616] وَقَالَ: حَدِيثٌ حَسَنٌ صَحِيحٌ","Selon Mou’adh ibn Jabal (qu’Allah l’agrée), qui a dit : J’ai dit : « Ô Messager d’Allah, indique-moi un acte qui me fera entrer au Paradis et m’éloignera de l’Enfer. » Il (ﷺ) répondit : « Tu demandes une grande chose, mais elle est facile pour celui à qui Allah la facilite : adore Allah sans rien Lui associer, accomplis la prière, donne la zakat, jeûne le Ramadan et fais le pèlerinage à la Maison. » Puis il (ﷺ) ajouta : « Veux-tu que je t’indique les portes du bien ? Le jeûne est un bouclier, l’aumône éteint les péchés comme l’eau éteint le feu, et la prière d’un homme au milieu de la nuit. » Ensuite il récita : « Ils délaissent leurs lits pour invoquer leur Seigneur, avec crainte et espoir, et dépensent de ce que Nous leur avons donné. Nul ne sait quelle joie leur est réservée en récompense de ce qu’ils faisaient. » [as-Sajda, 16-17] Il dit encore : « Veux-tu que je t’informe du sommet, du pilier et de la base de tout cela ? » J’ai répondu : « Oui, ô Messager d’Allah. » Il dit : « Le sommet est l’islam, son pilier est la prière, et son sommet est le jihad. » Puis il dit : « Veux-tu que je t’indique la clé de tout cela ? » J’ai répondu : « Oui, ô Messager d’Allah. » Il saisit sa langue et dit : « Retiens-la. » Je dis : « Ô Prophète d’Allah, serons-nous vraiment jugés pour ce que nous disons ? » Il répondit : « Que ta mère te perde, ô Mou’adh ! Qu’est-ce qui fait tomber les gens en Enfer sur leurs visages — ou sur leur nez — sinon les conséquences de leur langue ? » Rapporté par at-Tirmidhi, qui a dit qu’il est bon et authentique"],[30,"Les limites d'Allah à respecter","obligations limites interdits oubli","عَنْ أَبِي ثَعْلَبَةَ الْخُشَنِيِّ جُرْثُومِ بن نَاشِر رَضِيَ اللهُ عَنْهُ عَنْ رَسُولِ اللَّهِ صلى الله عليه و سلم قَال: \"إنَّ اللَّهَ تَعَالَى فَرَضَ فَرَائِضَ فَلَا تُضَيِّعُوهَا، وَحَدَّ حُدُودًا فَلَا تَعْتَدُوهَا، وَحَرَّمَ أَشْيَاءَ فَلَا تَنْتَهِكُوهَا، وَسَكَتَ عَنْ أَشْيَاءَ رَحْمَةً لَكُمْ غَيْرَ نِسْيَانٍ فَلَا تَبْحَثُوا عَنْهَا\". حَدِيثٌ حَسَنٌ، رَوَاهُ الدَّارَقُطْنِيّ ْ\"في سننه\" [4/184]، وَغَيْرُهُ","Selon Abou Tha’laba al-Kouchani — Jurthoum ibn Nashir (qu’Allah l’agrée) — le Messager d’Allah (ﷺ) a dit : « Allah a établi des obligations religieuses, ne les négligez pas ; Il a fixé des limites, ne les franchissez pas ; Il a interdit certaines choses, ne les transgressez pas ; et Il s’est tu sur d’autres choses, par miséricorde pour vous et non par oubli, ne cherchez donc pas à les connaître. » Un hadith bon rapporté par ad-Daraqutni et d’autres"],[31,"Le renoncement à ce bas monde","renoncement zuhd monde amour dunya","عَنْ أَبِي الْعَبَّاسِ سَهْلِ بْنِ سَعْدٍ السَّاعِدِيّ رَضِيَ اللهُ عَنْهُ قَالَ: جَاءَ رَجُلٌ إلَى النَّبِيِّ صلى الله عليه و سلم فَقَالَ: يَا رَسُولَ اللهِ! دُلَّنِي عَلَى عَمَلٍ إذَا عَمِلْتُهُ أَحَبَّنِي اللهُ وَأَحَبَّنِي النَّاسُ؛ فَقَالَ: ازْهَدْ فِي الدُّنْيَا يُحِبَّك اللهُ، وَازْهَدْ فِيمَا عِنْدَ النَّاسِ يُحِبَّك النَّاسُ . حديث حسن، رَوَاهُ ابْنُ مَاجَهْ [رقم:4102]، وَغَيْرُهُ بِأَسَانِيدَ حَسَنَةٍ","Selon Abou al-‘Abbas Sahl ibn Sa’d as-Sa’idi (qu’Allah l’agrée), qui a dit : Un homme est venu voir le Prophète (ﷺ) et a dit : « Ô Messager d’Allah, montre-moi une œuvre qui fera que Dieu m’aime et que les gens m’aiment. » Il (ﷺ) répondit : « Détache-toi du monde, Allah t’aimera. Détache-toi de ce que possèdent les gens, les gens t’aimeront. » Un hadith bon rapporté par Ibn Majah et d’autres, avec une bonne chaîne"],[32,"Ni nuisance ni représailles","nuisance dommage voisin","عَنْ أَبِي سَعِيدٍ سَعْدِ بْنِ مَالِكِ بْنِ سِنَانٍ الْخُدْرِيّ رَضِيَ اللهُ عَنْهُ أَنَّ رَسُولَ اللَّهِ صلى الله عليه و سلم قَالَ: \" لَا ضَرَرَ وَلَا ضِرَارَ\" . حَدِيثٌ حَسَنٌ، رَوَاهُ ابْنُ مَاجَهْ [راجع رقم:2341]، وَالدَّارَقُطْنِيّ [رقم:4/228]، وَغَيْرُهُمَا مُسْنَدًا. وَرَوَاهُ مَالِكٌ [2/746] فِي \"الْمُوَطَّإِ\" عَنْ عَمْرِو بْنِ يَحْيَى عَنْ أَبِيهِ عَنْ النَّبِيِّ صلى الله عليه و سلم مُرْسَلًا، فَأَسْقَطَ أَبَا سَعِيدٍ، وَلَهُ طُرُقٌ يُقَوِّي بَعْضُهَا بَعْضًا","Selon Abou Sa’id al-Khoudri (qu’Allah l’agrée), le Messager d’Allah (ﷺ) a dit : « Il ne doit y avoir ni préjudice, ni riposte au préjudice. » Un hadith bon rapporté par Ibn Majah, ad-Daraqutni et d’autres, et aussi par Malik dans al-Mouwatta en version moursal d’après ‘Amr ibn Yahya, d’après son père, d’après le Prophète (ﷺ), mais sans Abou Sa’id dans la chaîne. D’autres chaînes se renforcent mutuellement"],[33,"La preuve incombe à celui qui accuse","preuve serment accusation justice","عَنْ ابْنِ عَبَّاسٍ رَضِيَ اللَّهُ عَنْهُمَا أَنَّ رَسُولَ اللَّهِ صلى الله عليه و سلم قَالَ: \"لَوْ يُعْطَى النَّاسُ بِدَعْوَاهُمْ لَادَّعَى رِجَالٌ أَمْوَالَ قَوْمٍ وَدِمَاءَهُمْ، لَكِنَّ الْبَيِّنَةَ عَلَى الْمُدَّعِي، وَالْيَمِينَ عَلَى مَنْ أَنْكَرَ\" . حَدِيثٌ حَسَنٌ، رَوَاهُ الْبَيْهَقِيّ [في\"السنن\" 10/252]، وَغَيْرُهُ هَكَذَا، وَبَعْضُهُ فِي \"الصَّحِيحَيْنِ","Selon Ibn Abbas (qu’Allah l’agrée), le Messager d’Allah (ﷺ) a dit : « Si les gens recevaient tout ce qu’ils réclamaient, certains s’approprieraient les biens et les vies d’autrui. Mais la preuve revient à celui qui revendique, et le serment à celui qui nie. » Un hadith bon rapporté par al-Bayhaqi et d’autres sous cette forme, une partie se trouvant dans les deux Sahih"],[34,"Changer le blâmable","blamable mal main langue coeur faiblesse foi","عَنْ أَبِي سَعِيدٍ الْخُدْرِيّ رَضِيَ اللهُ عَنْهُ قَالَ سَمِعْت رَسُولَ اللَّهِ صلى الله عليه و سلم يَقُولُ: مَنْ رَأَى مِنْكُمْ مُنْكَرًا فَلْيُغَيِّرْهُ بِيَدِهِ، فَإِنْ لَمْ يَسْتَطِعْ فَبِلِسَانِهِ، فَإِنْ لَمْ يَسْتَطِعْ فَبِقَلْبِهِ، وَذَلِكَ أَضْعَفُ الْإِيمَانِ . [رَوَاهُ مُسْلِمٌ]","Selon Abou Sa’id al-Khoudri (qu’Allah l’agrée), qui a dit : J’ai entendu le Messager d’Allah (ﷺ) dire : « Quiconque parmi vous voit un mal, qu’il le corrige de sa main ; s’il ne peut pas, alors par sa parole ; et s’il ne peut pas, alors par son cœur, et c’est là le degré le plus faible de la foi. » [Mouslim]"],[35,"Soyez frères, serviteurs d'Allah","fraternite envie haine jalousie musulman frere","عَنْ أَبِي هُرَيْرَةَ رَضِيَ اللهُ عَنْهُ قَالَ: قَالَ رَسُولُ اللَّهِ صلى الله عليه و سلم لَا تَحَاسَدُوا، وَلَا تَنَاجَشُوا، وَلَا تَبَاغَضُوا، وَلَا تَدَابَرُوا، وَلَا يَبِعْ بَعْضُكُمْ عَلَى بَيْعِ بَعْضٍ، وَكُونُوا عِبَادَ اللَّهِ إخْوَانًا، الْمُسْلِمُ أَخُو الْمُسْلِمِ، لَا يَظْلِمُهُ، وَلَا يَخْذُلُهُ، وَلَا يَكْذِبُهُ، وَلَا يَحْقِرُهُ، التَّقْوَى هَاهُنَا، وَيُشِيرُ إلَى صَدْرِهِ ثَلَاثَ مَرَّاتٍ، بِحَسْبِ امْرِئٍ مِنْ الشَّرِّ أَنْ يَحْقِرَ أَخَاهُ الْمُسْلِمَ، كُلُّ الْمُسْلِمِ عَلَى الْمُسْلِمِ حَرَامٌ: دَمُهُ وَمَالُهُ وَعِرْضُهُ . [رَوَاهُ مُسْلِمٌ]","Selon Abou Hourayra (qu’Allah l’agrée), le Messager d’Allah (ﷺ) a dit : « Ne vous enviez pas, ne faites pas monter les prix entre vous, ne vous détestez pas, ne vous tournez pas le dos, ne vous concurrencez pas de manière déloyale, mais soyez, serviteurs d’Allah, des frères. Le musulman est le frère du musulman : il ne l’opprime pas, ne l’abandonne pas, ne lui ment pas et ne le méprise pas. La piété est ici (en montrant sa poitrine trois fois). Il est déjà mal pour un homme de mépriser son frère musulman. Tout du musulman est sacré pour un autre musulman : son sang, ses biens et son honneur. » [Mouslim]"],[36,"Faciliter la vie d'autrui et chercher la science","facilite peine science savoir couvrir defauts entraide","عَنْ أَبِي هُرَيْرَةَ رَضِيَ اللهُ عَنْهُ عَنْ النَّبِيِّ صلى الله عليه و سلم قَالَ: مَنْ نَفَّسَ عَنْ مُؤْمِنٍ كُرْبَةً مِنْ كُرَبِ الدُّنْيَا نَفَّسَ اللَّهُ عَنْهُ كُرْبَةً مِنْ كُرَبِ يَوْمِ الْقِيَامَةِ، وَمَنْ يَسَّرَ عَلَى مُعْسِرٍ، يَسَّرَ اللَّهُ عَلَيْهِ فِي الدُّنْيَا وَالْآخِرَةِ، وَمَنْ سَتَرَ مُسْلِما سَتَرَهُ اللهُ فِي الدُّنْيَا وَالْآخِرَةِ ، وَاَللَّهُ فِي عَوْنِ الْعَبْدِ مَا كَانَ الْعَبْدُ فِي عَوْنِ أَخِيهِ، وَمَنْ سَلَكَ طَرِيقًا يَلْتَمِسُ فِيهِ عِلْمًا سَهَّلَ اللَّهُ لَهُ بِهِ طَرِيقًا إلَى الْجَنَّةِ، وَمَا اجْتَمَعَ قَوْمٌ فِي بَيْتٍ مِنْ بُيُوتِ اللَّهِ يَتْلُونَ كِتَابَ اللَّهِ، وَيَتَدَارَسُونَهُ فِيمَا بَيْنَهُمْ؛ إلَّا نَزَلَتْ عَلَيْهِمْ السَّكِينَةُ، وَغَشِيَتْهُمْ الرَّحْمَةُ، وَ حَفَّتهُمُ المَلاَئِكَة، وَذَكَرَهُمْ اللَّهُ فِيمَنْ عِنْدَهُ، وَمَنْ أَبَطْأَ بِهِ عَمَلُهُ لَمْ يُسْرِعْ بِهِ نَسَبُهُ . [رَوَاهُ مُسْلِمٌ] بهذا اللفظ","Selon Abou Hourayra (qu’Allah l’agrée), le Prophète (ﷺ) a dit : « Celui qui soulage une peine ici-bas à un croyant, Allah lui enlèvera une peine du Jour de la Résurrection. Celui qui facilite la tâche d’un nécessiteux, Allah lui facilitera dans ce monde et dans l’Au-delà. Celui qui couvre un musulman (ou cache ses fautes), Allah le couvrira ici-bas et dans l’Au-delà. Allah vient en aide au serviteur tant qu’il aide son frère. Celui qui suit un chemin pour rechercher la science, Allah lui facilite un chemin vers le Paradis. Aucun groupe ne se réunit dans une mosquée pour réciter le Livre d’Allah et l’étudier ensemble sans que la tranquillité descende sur eux, que la miséricorde les enveloppe, que les anges les entourent et qu’Allah les mentionne auprès de ceux qui sont auprès de Lui. Celui que ses actes retardent, sa lignée ne le fera pas avancer. » [Mouslim]"],[37,"Les bonnes et mauvaises actions sont consignées","bonnes actions mauvaises actions recompense intention","عَنْ ابْنِ عَبَّاسٍ رَضِيَ اللَّهُ عَنْهُمَا عَنْ رَسُولِ اللَّهِ صلى الله عليه و سلم فِيمَا يَرْوِيهِ عَنْ رَبِّهِ تَبَارَكَ وَتَعَالَى، قَالَ: \"إنَّ اللَّهَ كَتَبَ الْحَسَنَاتِ وَالسَّيِّئَاتِ، ثُمَّ بَيَّنَ ذَلِكَ، فَمَنْ هَمَّ بِحَسَنَةٍ فَلَمْ يَعْمَلْهَا كَتَبَهَا اللَّهُ عِنْدَهُ حَسَنَةً كَامِلَةً، وَإِنْ هَمَّ بِهَا فَعَمِلَهَا كَتَبَهَا اللَّهُ عِنْدَهُ عَشْرَ حَسَنَاتٍ إلَى سَبْعِمِائَةِ ضِعْفٍ إلَى أَضْعَافٍ كَثِيرَةٍ، وَإِنْ هَمَّ بِسَيِّئَةٍ فَلَمْ يَعْمَلْهَا كَتَبَهَا اللَّهُ عِنْدَهُ حَسَنَةً كَامِلَةً، وَإِنْ هَمَّ بِهَا فَعَمِلَهَا كَتَبَهَا اللَّهُ سَيِّئَةً وَاحِدَةً\".<br>[رَوَاهُ الْبُخَارِيُّ] ، [وَمُسْلِمٌ]، في \"صحيحيهما\" بهذه الحروف","Selon Ibn Abbas (qu’Allah l’agrée), du Messager d’Allah (ﷺ), d’après son Seigneur : « Allah a inscrit les bonnes et les mauvaises actions, puis Il les a expliquées : Celui qui a l’intention de faire une bonne action mais ne la fait pas, Allah l’inscrit auprès de Lui comme une bonne action complète. S’il a l’intention de la faire et la fait, Allah l’inscrit comme dix bonnes actions, jusqu’à sept cents fois, voire plus. S’il a l’intention de commettre une mauvaise action mais ne la fait pas, Allah l’inscrit comme une bonne action complète. S’il a l’intention et la fait, Allah l’inscrit comme une seule mauvaise action. » [Boukhari] [Mouslim]"],[38,"Les alliés d'Allah et les œuvres surérogatoires","waliy allies prieres surerogatoires proximite","عَنْ أَبِي هُرَيْرَة رَضِيَ اللهُ عَنْهُ قَالَ: قَالَ رَسُول اللَّهِ صلى الله عليه و سلم إنَّ اللَّهَ تَعَالَى قَالَ: مَنْ عَادَى لِي وَلِيًّا فَقْد آذَنْتهُ بِالْحَرْبِ، وَمَا تَقَرَّبَ إلَيَّ عَبْدِي بِشَيْءٍ أَحَبَّ إلَيَّ مِمَّا افْتَرَضْتُهُ عَلَيْهِ، وَلَا يَزَالُ عَبْدِي يَتَقَرَّبُ إلَيَّ بِالنَّوَافِلِ حَتَّى أُحِبَّهُ، فَإِذَا أَحْبَبْتُهُ كُنْت سَمْعَهُ الَّذِي يَسْمَعُ بِهِ، وَبَصَرَهُ الَّذِي يُبْصِرُ بِهِ، وَيَدَهُ الَّتِي يَبْطِشُ بِهَا، وَرِجْلَهُ الَّتِي يَمْشِي بِهَا، وَلَئِنْ سَأَلَنِي لَأُعْطِيَنَّهُ، وَلَئِنْ اسْتَعَاذَنِي لَأُعِيذَنَّهُ . [رَوَاهُ الْبُخَارِيُّ]","Selon Abou Hourayra (qu’Allah l’agrée), le Messager d’Allah (ﷺ) a dit : « Allah le Très-Haut a dit : Quiconque montre de l’hostilité à un proche (wali) à Moi, alors Je lui déclare la guerre. Mon serviteur ne se rapproche pas de Moi par quelque chose qui Me soit plus aimé que ce que Je lui ai rendu obligatoire. Mon serviteur continue à se rapprocher de Moi par des œuvres surérogatoires, jusqu’à ce que Je l’aime. Et lorsque Je l’aime, Je deviens l’ouïe par laquelle il entend, la vue par laquelle il voit, la main avec laquelle il frappe, le pied avec lequel il marche. S’il Me demande, Je lui accorde. S’il cherche refuge auprès de Moi, Je le protège. » [Boukhari]"],[39,"Allah excuse l'erreur et l'oubli","erreur oubli contrainte pardon excuse","عَنْ ابْنِ عَبَّاسٍ رَضِيَ اللَّهُ عَنْهُمَا أَنَّ رَسُولَ اللَّهِ صلى الله عليه و سلم قَالَ: \"إنَّ اللَّهَ تَجَاوَزَ لِي عَنْ أُمَّتِي الْخَطَأَ وَالنِّسْيَانَ وَمَا اسْتُكْرِهُوا عَلَيْهِ\" . حَدِيثٌ حَسَنٌ، رَوَاهُ ابْنُ مَاجَهْ [رقم:2045]، وَالْبَيْهَقِيّ [\"السنن]","Selon Ibn Abbas (qu’Allah l’agrée), le Messager d’Allah (ﷺ) a dit : « Allah a excusé pour moi ma communauté : l’erreur, l’oubli et ce qu’on les a forcés à faire sous la contrainte. » Un hadith bon rapporté par Ibn Majah, al-Bayhaqi et d’autres"],[40,"Sois en ce monde comme un étranger","etranger voyageur monde mort temps sante","عَنْ ابْن عُمَرَ رَضِيَ اللَّهُ عَنْهُمَا قَالَ: أَخَذَ رَسُولُ اللَّهِ صلى الله عليه و سلم بِمَنْكِبِي، وَقَالَ: كُنْ فِي الدُّنْيَا كَأَنَّك غَرِيبٌ أَوْ عَابِرُ سَبِيلٍ . وَكَانَ ابْنُ عُمَرَ رَضِيَ اللَّهُ عَنْهُمَا يَقُولُ: إذَا أَمْسَيْتَ فَلَا تَنْتَظِرْ الصَّبَاحَ، وَإِذَا أَصْبَحْتَ فَلَا تَنْتَظِرْ الْمَسَاءَ، وَخُذْ مِنْ صِحَّتِك لِمَرَضِك، وَمِنْ حَيَاتِك لِمَوْتِك. [رَوَاهُ الْبُخَارِيُّ]","Selon Abdallah ibn ‘Omar (qu’Allah l’agrée), qui a dit : Le Messager d’Allah (ﷺ) m’a pris par l’épaule et a dit : « Sois dans ce monde comme un étranger ou un voyageur. » Et Ibn ‘Omar (qu’Allah l’agrée) disait : « Quand tu es le soir, n’attends pas le matin ; quand tu es le matin, n’attends pas le soir. Profite de ta santé avant la maladie, et de ta vie avant la mort. » [Boukhari]"],[41,"La passion soumise à ce que le Prophète a apporté","passion foi amour obeissance","عَنْ أَبِي مُحَمَّدٍ عَبْدِ اللَّهِ بْنِ عَمْرِو بْنِ الْعَاصِ رَضِيَ اللَّهُ عَنْهُمَا، قَالَ: قَالَ رَسُولُ اللَّهِ صلى الله عليه و سلم \"لَا يُؤْمِنُ أَحَدُكُمْ حَتَّى يَكُونَ هَوَاهُ تَبَعًا لِمَا جِئْتُ بِهِ\". حَدِيثٌ حَسَنٌ صَحِيحٌ، رَوَيْنَاهُ فِي كِتَابِ \"الْحُجَّةِ\" بِإِسْنَادٍ صَحِيحٍ","Selon Abou Muhammad Abdallah ibn ‘Amr ibn al-‘As (qu’Allah l’agrée), le Messager d’Allah (ﷺ) a dit : « Aucun de vous ne croit vraiment tant que ses désirs ne sont pas conformes à ce que j’ai apporté. » [Imam an-Nawawi précise :] Nous l’avons rapporté dans Kitab al-Hujja avec une chaîne authentique"],[42,"La miséricorde et le pardon d'Allah","pardon repentir misericorde peches invocation terre","عَنْ أَنَسِ بْنِ مَالِكٍ رَضِيَ اللهُ عَنْهُ قَالَ: سَمِعْت رَسُولَ اللَّهِ صلى الله عليه و سلم يَقُولُ: قَالَ اللَّهُ تَعَالَى: يَا ابْنَ آدَمَ! إِنَّكَ مَا دَعَوْتنِي وَرَجَوْتنِي غَفَرْتُ لَك عَلَى مَا كَانَ مِنْك وَلَا أُبَالِي، يَا ابْنَ آدَمَ! لَوْ بَلَغَتْ ذُنُوبُك عَنَانَ السَّمَاءِ ثُمَّ اسْتَغْفَرْتنِي غَفَرْتُ لَك، يَا ابْنَ آدَمَ! إنَّك لَوْ أتَيْتنِي بِقُرَابِ الْأَرْضِ خَطَايَا ثُمَّ لَقِيتنِي لَا تُشْرِكُ بِي شَيْئًا لَأَتَيْتُك بِقُرَابِهَا مَغْفِرَةً . رَوَاهُ التِّرْمِذِيُّ [رقم:3540]، وَقَالَ: حَدِيثٌ حَسَنٌ صَحِيحٌ","Selon Anas (qu’Allah l’agrée), qui a dit : J’ai entendu le Messager d’Allah (ﷺ) dire : « Allah le Tout-Puissant a dit : Ô fils d’Adam, tant que tu M’invoques et espères en Moi, Je te pardonnerai ce que tu as fait, et cela ne M’affectera pas. Ô fils d’Adam, si tes péchés atteignaient les nuages du ciel puis tu Me demandais pardon, Je te pardonnerais. Ô fils d’Adam, si tu venais à Moi avec des péchés proches de la terre entière, puis que tu Me rencontrais sans M’associer quoi que ce soit, Je te donnerais autant de pardon. » Rapporté par at-Tirmidhi, qui a dit qu’il est bon (hasan)"]];
+  let nwIdx = null;
+  function nwNorm(s){ return qsNorm(s).replace(/[^a-z0-9\u0600-\u06ff ]/g, ' ').replace(/\s+/g, ' ').trim(); }
+  function nwBuild(){
+    if(!nwIdx) nwIdx = NAWAWI.map(function(h){ return { title: nwNorm(h[1] + ' ' + h[2]), body: nwNorm(h[4]) }; });
+    return nwIdx;
+  }
+  function nwStem(w){ return w.length > 5 ? w.slice(0, w.length - 1) : w; }
+  // Recherche par thème (titre, mots-clés, texte français) : indices triés par pertinence
+  function nwFind(q){
+    const GEN = ' hadith hadiths nawawi nawawy nawawiy quarante recueil parle parlent traite traitent propos sujet '; // mots sans valeur de recherche
+    const words = nwNorm(q).split(' ').filter(function(w){ return w.length >= 4 && STOP.indexOf(w) < 0 && GEN.indexOf(' ' + w + ' ') < 0; }).map(nwStem);
+    if(!words.length) return [];
+    const idx = nwBuild(), res = [];
+    NAWAWI.forEach(function(h, i){
+      let score = 0;
+      words.forEach(function(w){ if(idx[i].title.indexOf(w) >= 0) score += 3; else if(idx[i].body.indexOf(w) >= 0) score += 1; });
+      if(score >= words.length) res.push([i, score]);
+    });
+    return res.sort(function(a, b){ return b[1] - a[1] || a[0] - b[0]; }).map(function(r){ return r[0]; });
+  }
+  function nwText(h){ return h[3] + '\n' + h[4] + '\n(Les 40 hadiths de Nawawi, n°' + h[0] + ')'; }
+  function nwCard(h){
+    return '<div class="src-card"><div class="src-title">Nawawi — hadith n°' + h[0] + ' : ' + escapeHtml(h[1]) + '</div>' +
+      '<div class="dua-ar" lang="ar" dir="rtl">' + escapeHtml(h[3]) + '</div><div class="dua-fr">' + escapeHtml(h[4]) + '</div>' +
+      '<div class="src-ref">📜 Source : Les 40 hadiths de Nawawi (texte intégré à Rakeb, hors ligne)</div>' +
+      '<div class="add-actions" style="margin:6px 0 0;">' + copyBtn(nwText(h)) + '<button class="btn mini" type="button" data-nw-share="' + h[0] + '" aria-label="Partager le hadith ' + h[0] + ' en image">📤 Partager</button></div></div>';
+  }
+  // Réponse de Muslim IA : « Nawawi 5 » ou un thème (« hadith sur la colère ») ; null si rien de trouvé
+  function nwAnswerFor(q, n, ctx){
+    const wantsNw = /nawawi|nawawy|nawawiy|quarante hadith|40 hadith/.test(n);
+    const n2 = n.replace(/\b(40|42|quarante)\s+hadiths?/g, ' ');
+    const m = wantsNw ? n2.match(/\b(\d{1,2})\b/) : null;
+    let list = [];
+    if(m && +m[1] >= 1 && +m[1] <= 42) list = [+m[1] - 1];
+    else list = nwFind(q).slice(0, 3);
+    if(!list.length) return null;
+    let inner = list.length > 1 || !m ? '<p>Hadiths correspondants parmi les 40 hadiths de Nawawi :</p>' : '', text = '';
+    list.forEach(function(i){ inner += nwCard(NAWAWI[i]); text += (text ? '\n\n' : '') + nwText(NAWAWI[i]); });
+    return srcAnswer(inner, text, 'Les 40 hadiths de Nawawi (intégrés, hors ligne)', ctx);
+  }
+  function renderNawawi(){
+    const list = $('#nw-list'); if(!list) return;
+    const q = ($('#nw-search').value || '').trim(), found = q ? nwFind(q) : NAWAWI.map(function(h, i){ return i; });
+    list.innerHTML = found.length ? found.map(function(i){
+      const h = NAWAWI[i];
+      return '<details class="nw-item"><summary><strong>' + h[0] + '.</strong> ' + escapeHtml(h[1]) + '</summary>' + nwCard(h) + '</details>';
+    }).join('') : '<div class="muted">Aucun hadith trouvé pour « ' + escapeHtml(q) + ' ». Essayez un autre mot (intention, colère, voisin, pardon…).</div>';
+  }
+  (function(){
+    const s = $('#nw-search'); if(!s) return;
+    s.addEventListener('input', renderNawawi);
+    $('#nw-list').addEventListener('click', function(e){
+      const b = e.target.closest('[data-nw-share]'); if(!b) return;
+      const h = NAWAWI[parseInt(b.dataset.nwShare, 10) - 1]; if(h) shareImage({ ar: h[3], fr: h[4], ref: 'Les 40 hadiths de Nawawi, n°' + h[0] });
+    });
+    PANEL_HOOKS.nawawi = renderNawawi;
+  })();
+
+  /* ---------- 6. Rattrapage (prières manquées, jours de jeûne) ---------- */
+  const QADA_KEY = 'rakeb-qada', QADA_PRAYERS = [['fajr', 'Fajr'], ['dhuhr', 'Dhuhr'], ['asr', 'Asr'], ['maghrib', 'Maghrib'], ['isha', 'Isha']];
+  function qadaGet(){
+    const v = store.get(QADA_KEY, {}), o = (v && typeof v === 'object' && !Array.isArray(v)) ? v : {};
+    const g = function(x){ const k = parseInt(x, 10); return isNaN(k) || k < 0 ? 0 : k; };
+    const p = {}, dp = {}; QADA_PRAYERS.forEach(function(r){ p[r[0]] = g(o.p && o.p[r[0]]); dp[r[0]] = g(o.dp && o.dp[r[0]]); });
+    return { p: p, dp: dp, f: g(o.f), df: g(o.df), fy: Array.isArray(o.fy) ? o.fy : [] };
+  }
+  // kind : 'p:fajr' ou 'f' ; delta > 0 : manqué ; delta < 0 : rattrapé
+  function qadaChange(kind, delta){
+    const q = qadaGet();
+    if(kind === 'f'){ if(delta < 0 && q.f > 0){ q.f--; q.df++; } else if(delta > 0) q.f += delta; }
+    else { const k = kind.split(':')[1]; if(q.p[k] === undefined) return q; if(delta < 0 && q.p[k] > 0){ q.p[k]--; q.dp[k]++; } else if(delta > 0) q.p[k] += delta; }
+    store.set(QADA_KEY, q); return q;
+  }
+  // Jours de la dernière série de Ramadan terminée non jeûnés d'après le compteur de l'écran Ramadan
+  function qadaRamadanInfo(){
+    const h = hijriToday(), y = h.month > 9 ? h.year : h.year - 1, fasted = fastedDays(y).length;
+    return { year: y, fasted: fasted, missed: Math.max(0, 30 - fasted) };
+  }
+  function renderQada(){
+    const box = $('#qd-body'); if(!box) return;
+    const q = qadaGet(), totalP = QADA_PRAYERS.reduce(function(a, r){ return a + q.p[r[0]]; }, 0), ri = qadaRamadanInfo();
+    let h = '<p class="muted">À rattraper : <strong>' + totalP + '</strong> prière' + (totalP > 1 ? 's' : '') + ' et <strong>' + q.f + '</strong> jour' + (q.f > 1 ? 's' : '') + ' de jeûne.</p><div class="qd-grid">';
+    QADA_PRAYERS.forEach(function(r){
+      h += '<div class="qd-row"><span class="qd-name">' + r[1] + '</span><span class="chip" role="status" aria-label="' + r[1] + ' restantes">' + q.p[r[0]] + '</span>' +
+        '<button class="btn mini" type="button" data-qd="p:' + r[0] + ':1" aria-label="Ajouter un ' + r[1] + ' manqué">+ manqué</button>' +
+        '<button class="btn mini" type="button" data-qd="p:' + r[0] + ':-1" aria-label="Un ' + r[1] + ' rattrapé">✓ rattrapé</button></div>';
+    });
+    h += '<div class="qd-row"><span class="qd-name">Jeûne</span><span class="chip" role="status" aria-label="Jours de jeûne restants">' + q.f + '</span>' +
+      '<button class="btn mini" type="button" data-qd="f:1" aria-label="Ajouter un jour de jeûne à rattraper">+ à rattraper</button>' +
+      '<button class="btn mini" type="button" data-qd="f:-1" aria-label="Un jour de jeûne rattrapé">✓ rattrapé</button></div></div>';
+    h += '<div class="row-btns" style="margin-top:10px;"><div class="field"><label for="qd-bulk">Prières manquées à ajouter (nombre de jours, les 5 prières)</label><input class="btn" id="qd-bulk" type="number" min="1" max="3650" placeholder="ex. 30"></div><button class="btn" id="qd-bulk-btn" type="button" style="align-self:flex-end;">+ Ajouter</button></div>';
+    const imported = q.fy.indexOf(ri.year) >= 0;
+    h += '<div class="src-card" style="margin-top:10px;"><div class="src-title">Lien avec le compteur du Ramadan</div>' +
+      (ri.fasted > 0 && ri.missed > 0 && !imported ? '<div>Ramadan ' + ri.year + ' AH : ' + ri.fasted + ' jour(s) jeûné(s) enregistré(s), donc ' + ri.missed + ' non jeûné(s) (sur 30 ; corrigez à la main si le mois n\'en comptait que 29).</div><div class="row-btns" style="margin-top:8px;"><button class="btn" type="button" id="qd-import">➕ Ajouter ces ' + ri.missed + ' jours au rattrapage</button></div>'
+        : (imported ? '<div class="muted">Les jours non jeûnés de Ramadan ' + ri.year + ' AH ont déjà été ajoutés.</div>' : '<div class="muted">Aucun jeûne enregistré pour Ramadan ' + ri.year + ' AH dans l\'écran Ramadan : saisissez les jours à la main ci-dessus.</div>')) + '</div>';
+    h += '<p class="muted" style="margin-top:8px;">Déjà rattrapé : ' + QADA_PRAYERS.reduce(function(a, r){ return a + q.dp[r[0]]; }, 0) + ' prière(s), ' + q.df + ' jour(s) de jeûne. Les règles du rattrapage (par exemple pour les femmes ou les malades) relèvent d\'un savant qualifié.</p>';
+    box.innerHTML = h;
+  }
+  (function(){
+    const box = $('#qd-body'); if(!box) return;
+    box.addEventListener('click', function(e){
+      const b = e.target.closest('button'); if(!b) return;
+      if(b.dataset.qd){ const p = b.dataset.qd.split(':'); qadaChange(p.length === 3 ? p[0] + ':' + p[1] : 'f', parseInt(p[p.length - 1], 10)); renderQada(); return; }
+      if(b.id === 'qd-bulk-btn'){
+        const k = parseInt($('#qd-bulk').value, 10); if(!(k > 0)){ toast('Saisissez un nombre de jours.'); return; }
+        const q = qadaGet(); QADA_PRAYERS.forEach(function(r){ q.p[r[0]] += k; }); store.set(QADA_KEY, q); renderQada(); return;
+      }
+      if(b.id === 'qd-import'){
+        const ri = qadaRamadanInfo(), q = qadaGet(); q.f += ri.missed; q.fy.push(ri.year); store.set(QADA_KEY, q); renderQada();
+      }
+    });
+    PANEL_HOOKS.qada = renderQada;
+  })();
+
+  /* ---------- 7. Tarawih et sadaqa pendant le Ramadan ---------- */
+  const RX_KEY = 'rakeb-ram-extra';
+  function rxGet(y){ const all = store.get(RX_KEY, {}), o = all && all[y]; return { t: Array.isArray(o && o.t) ? o.t : [], s: Array.isArray(o && o.s) ? o.s : [] }; }
+  function rxToggle(y, kind, d){
+    const all = store.get(RX_KEY, {}), root = (all && typeof all === 'object' && !Array.isArray(all)) ? all : {}, cur = rxGet(y), a = cur[kind].slice(), i = a.indexOf(d);
+    if(i >= 0) a.splice(i, 1); else a.push(d);
+    cur[kind] = a.sort(function(x, z){ return x - z; }); root[y] = cur; store.set(RX_KEY, root);
+  }
+  function renderRamExtra(){
+    const g1 = $('#ram-tar-grid'); if(!g1) return;
+    const y = ramYear(), cur = rxGet(y), hd = hijriToday();
+    [['t', '#ram-tar-grid', '#ram-tar-count', 'Tarawih', 'soirées'], ['s', '#ram-sad-grid', '#ram-sad-count', 'Sadaqa', 'jours']].forEach(function(c){
+      $(c[2]).textContent = cur[c[0]].length + ' / 30 ' + c[4] + ' (Ramadan ' + y + ' AH)';
+      let g = ''; for(let d = 1; d <= 30; d++){ const on = cur[c[0]].indexOf(d) >= 0; g += '<button type="button" class="chip fast-chip' + (on ? ' active' : '') + '" data-rx="' + c[0] + ':' + d + '" aria-pressed="' + on + '" aria-label="' + c[3] + ', jour ' + d + '">' + d + '</button>'; }
+      $(c[1]).innerHTML = g;
+    });
+    const today = $('#ram-extra-today');
+    if(hd.month === 9 && hd.day <= 30){
+      today.style.display = '';
+      today.innerHTML = '<button class="btn" type="button" data-rx="t:' + hd.day + '">' + (cur.t.indexOf(hd.day) >= 0 ? '✅ Tarawih ce soir' : '☐ Tarawih ce soir') + '</button> <button class="btn" type="button" data-rx="s:' + hd.day + '">' + (cur.s.indexOf(hd.day) >= 0 ? '✅ Sadaqa aujourd\'hui' : '☐ Sadaqa aujourd\'hui') + '</button>';
+    } else today.style.display = 'none';
+  }
+  (function(){
+    const card = $('#ram-extra-card'); if(!card) return;
+    card.addEventListener('click', function(e){
+      const b = e.target.closest('[data-rx]'); if(!b) return;
+      const p = b.dataset.rx.split(':'); rxToggle(ramYear(), p[0], parseInt(p[1], 10)); renderRamExtra();
+    });
+    const prev = PANEL_HOOKS.ramadan;
+    PANEL_HOOKS.ramadan = function(){ if(prev) prev(); renderRamExtra(); };
+  })();
+
+  /* ---------- 10. Sauvegarde automatique de « Mes données » + envoi en un geste ---------- */
+  const BK_AUTO_KEY = 'rakeb-autobackup', BK_META_KEY = 'rakeb-backup-t';
+  let bkLast = null;
+  function bkDump(){
+    const dump = {};
+    for(let i = 0; i < localStorage.length; i++){
+      const k = localStorage.key(i);
+      if(k === 'rakeb-ai-key' || k === 'rakeb-src-cache' || k.indexOf('rakeb-backup') === 0 || k === 'rakeb-autobackup') continue; // jamais la clé API
+      dump[k] = localStorage.getItem(k);
+    }
+    return dump;
+  }
+  function bkDb(){
+    return new Promise(function(res, rej){
+      const r = indexedDB.open('rakeb-backup', 1);
+      r.onupgradeneeded = function(){ r.result.createObjectStore('snap'); };
+      r.onsuccess = function(){ res(r.result); }; r.onerror = function(){ rej(r.error); };
+    });
+  }
+  function bkPut(key, val){ return bkDb().then(function(db){ return new Promise(function(res, rej){ const tx = db.transaction('snap', 'readwrite'); tx.objectStore('snap').put(val, key); tx.oncomplete = function(){ res(); }; tx.onerror = function(){ rej(tx.error); }; }); }); }
+  function bkGet(key){ return bkDb().then(function(db){ return new Promise(function(res){ const g = db.transaction('snap', 'readonly').objectStore('snap').get(key); g.onsuccess = function(){ res(g.result || null); }; g.onerror = function(){ res(null); }; }); }); }
+  function bkKeys(){ return bkDb().then(function(db){ return new Promise(function(res){ const g = db.transaction('snap', 'readonly').objectStore('snap').getAllKeys(); g.onsuccess = function(){ res(g.result || []); }; g.onerror = function(){ res([]); }; }); }); }
+  function bkDel(key){ return bkDb().then(function(db){ return new Promise(function(res){ const tx = db.transaction('snap', 'readwrite'); tx.objectStore('snap').delete(key); tx.oncomplete = function(){ res(); }; tx.onerror = function(){ res(); }; }); }); }
+  async function bkSaveNow(force){
+    try{
+      if(!force && !store.get(BK_AUTO_KEY, true)) return false;
+      const dump = bkDump(); if(!Object.keys(dump).length) return false;
+      const json = JSON.stringify(dump); if(!force && json === bkLast) return false;
+      const snap = { t: Date.now(), json: json };
+      await bkPut('latest', snap); await bkPut('day-' + nowInTz(state.tz).key, snap);
+      const days = (await bkKeys()).filter(function(k){ return String(k).indexOf('day-') === 0; }).sort();
+      for(let i = 0; i < days.length - 7; i++) await bkDel(days[i]);
+      bkLast = json; store.set(BK_META_KEY, snap.t); bkStatus();
+      return true;
+    }catch(e){ return false; }
+  }
+  async function bkRestore(auto){
+    try{
+      const snap = await bkGet('latest'); if(!snap){ if(!auto) toast('Aucune sauvegarde automatique trouvée.'); return false; }
+      const obj = JSON.parse(snap.json);
+      Object.keys(obj).forEach(function(k){ if(k !== 'rakeb-ai-key' && k.indexOf('rakeb-backup') !== 0) localStorage.setItem(k, obj[k]); });
+      toast('Sauvegarde restaurée : relance en cours…');
+      setTimeout(function(){ try{ location.reload(); }catch(e){} }, 1200);
+      return true;
+    }catch(e){ if(!auto) toast('Restauration impossible.'); return false; }
+  }
+  function bkStatus(){
+    const el = $('#bk-status'); if(!el) return;
+    const t = store.get(BK_META_KEY, 0);
+    el.textContent = store.get(BK_AUTO_KEY, true) ? (t ? 'Dernière sauvegarde automatique : ' + fmtTsFr(t) + '.' : 'Sauvegarde automatique activée (la première est faite quelques secondes après l\'ouverture).') : 'Sauvegarde automatique désactivée.';
+  }
+  async function bkSend(){
+    const json = JSON.stringify(bkDump(), null, 2), name = 'rakeb-sauvegarde-' + nowInTz(state.tz).key + '.json';
+    try{
+      const file = new File([json], name, { type: 'application/json' });
+      if(navigator.canShare && navigator.canShare({ files: [file] })){ await navigator.share({ files: [file], title: 'Sauvegarde Rakeb' }); return; }
+    }catch(e){ if(e && e.name === 'AbortError') return; }
+    const blob = new Blob([json], { type: 'application/json' }), a = document.createElement('a');
+    a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); a.remove();
+  }
+  (function(){
+    const c = $('#bk-auto'); if(!c) return;
+    c.checked = !!store.get(BK_AUTO_KEY, true);
+    c.addEventListener('change', function(){ store.set(BK_AUTO_KEY, !!c.checked); bkStatus(); if(c.checked) bkSaveNow(false); });
+    $('#bk-restore').addEventListener('click', function(){ if(confirm('Restaurer la dernière sauvegarde automatique ? Vos données actuelles seront remplacées.')) bkRestore(false); });
+    $('#bk-send').addEventListener('click', bkSend);
+    bkStatus();
+    setTimeout(async function(){
+      // Premier lancement sans aucune donnée mais avec une sauvegarde : proposer la restauration
+      try{
+        if(localStorage.getItem('rakeb-state') === null){
+          const snap = await bkGet('latest');
+          if(snap && snap.json && snap.json.indexOf('rakeb-state') > 0 && confirm('Une sauvegarde automatique de Rakeb (' + fmtTsFr(snap.t) + ') a été trouvée. La restaurer ?')){ await bkRestore(true); return; }
+        }
+      }catch(e){}
+      bkSaveNow(false);
+    }, 6000);
+    setInterval(function(){ bkSaveNow(false); }, 10 * 60 * 1000);
+    document.addEventListener('visibilitychange', function(){ if(document.hidden) bkSaveNow(false); });
+  })();
+
+  /* ---------- 11. Table Umm al-Qura : réglage ---------- */
+  (function(){
+    const c = $('#hijri-uq'); if(!c) return;
+    c.checked = hijriUqOn();
+    c.addEventListener('change', function(){ store.set('rakeb-hijri-uq', !!c.checked); refreshHijriUI(); toast(c.checked ? 'Calendrier Umm al-Qura activé.' : 'Calcul tabulaire activé.'); });
+  })();
+
+  window.RakebTest = Object.assign(window.RakebTest || {}, {
+    sunnaEvents: sunnaEvents, khRange: khRange, khTotal: khTotal, imsakiyaRows: imsakiyaRows, nwFind: nwFind, nwAnswerFor: nwAnswerFor,
+    qadaGet: qadaGet, qadaChange: qadaChange, rxGet: rxGet, rxToggle: rxToggle, bkDump: bkDump, qsSearch: qsSearch, qsNorm: qsNorm,
+    uqHijri: uqHijri, nawawiCount: function(){ return NAWAWI.length; }
+  });
+  PANEL_HOOKS.parametres = (function(prev){ return function(){ if(prev) prev(); bkStatus(); }; })(PANEL_HOOKS.parametres);
 
 
   if(state.lat !== null){ refreshTimes(); }
