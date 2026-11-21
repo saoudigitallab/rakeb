@@ -1,0 +1,26 @@
+{
+  "name": "rakeb",
+  "version": "1.3.0",
+  "private": true,
+  "description": "Rakeb — Compagnon musulman. Une seule source (index.html) pour Windows (Electron) et Android (Capacitor).",
+  "scripts": {
+    "version:sync": "node scripts/sync-version.js",
+    "prepare-desktop": "node scripts/prepare-desktop.js",
+    "prepare-web": "node scripts/prepare-web.js",
+    "test": "cd tests && npm test"
+  },
+  "dependencies": {
+    "@capacitor-community/text-to-speech": "3.0.1",
+    "@capacitor/android": "5.7.8",
+    "@capacitor/core": "5.7.8",
+    "@capacitor/filesystem": "5.2.2",
+    "@capacitor/geolocation": "5.0.8",
+    "@capacitor/local-notifications": "5.0.8",
+    "@capacitor/preferences": "5.0.8",
+    "@capacitor/share": "5.0.8"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "5.7.8",
+    "esbuild": "0.24.2"
+  }
+}
