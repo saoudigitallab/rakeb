@@ -474,7 +474,9 @@ const mins = (hhmm) => { const [h, m] = hhmm.split(':').map(Number); return h * 
   click(d4, '#pst-month-next');
   check('écran Affiches : mois suivant', /Décembre 2026/.test(text(d4, '#pst-month-label')));
   check('raccourcis vers les affiches (Horaires, Calendrier, Sunna, Ramadan, Menu)', !!d4.getElementById('btn-poster-times') && d4.querySelectorAll('[data-poster]').length >= 6 && !!d4.querySelector('#panel-menu [data-goto="affiches"]'));
-  const v130_code = main.slice(main.indexOf('AFFICHES À PARTAGER'), main.indexOf('window.RakebTest = Object.assign(window.RakebTest || {}, { posterModel'));
+  // Lu dans le fichier source : la version convertie pour Android (esbuild) n'a plus les commentaires qui délimitent le bloc
+  const v130_src = fs.readFileSync(path.join(__dirname, '..', 'RakebDesktop', 'index.html'), 'utf8');
+  const v130_code = v130_src.slice(v130_src.indexOf('AFFICHES À PARTAGER (v1.3.0) : horaires'), v130_src.indexOf('window.RakebTest = Object.assign(window.RakebTest || {}, { posterModel'));
   check('affiches : aucun appel réseau (dessin local)', v130_code.length > 1000 && !/fetch\(|netFetch|XMLHttpRequest|https?:\/\//.test(v130_code));
   check('rappel des jours blancs : jamais le 13 Dhou al-Hijja (tachriq)', /hN\.day >= 13 && hN\.day <= 15 && !\(hN\.month === 12 && hN\.day === 13\)/.test(main));
 
