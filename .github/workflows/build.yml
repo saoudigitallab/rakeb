@@ -1,0 +1,261 @@
+# Rakeb : un seul workflow pour tout générer à partir du dossier Rakeb/
+#   1. tests         : tests automatiques (une fois)
+#   2. windows       : .exe Windows 10/11 (32 bits, 64 bits, ARM64 ; portable et installateur)
+#   3. windows7      : .exe Windows 7 SP1, 8 et 8.1 (32 et 64 bits)
+#   4. android       : Rakeb-android.apk (Android 5.1 et plus)
+#   5. release       : avec un tag vX.Y.Z, une seule Release qui contient tous les fichiers et la note de version
+# Se lance à chaque envoi dans Rakeb/ (branche main), avec un tag v*, ou avec le bouton « Run workflow ».
+name: Build Rakeb (Windows + Android)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['Rakeb/**', '.github/workflows/build.yml']
+    tags: ['v*']
+  pull_request:
+    paths: ['Rakeb/**']
+
+permissions:
+  contents: write   # pour publier la Release quand on pousse un tag vX.Y.Z
+
+concurrency:
+  group: build-${{ github.ref }}
+  # un nouvel envoi sur main annule la génération précédente ; une Release (tag) n'est jamais annulée
+  cancel-in-progress: ${{ !startsWith(github.ref, 'refs/tags/') }}
+
+defaults:
+  run:
+    working-directory: Rakeb
+
+jobs:
+  tests:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Tests automatiques de l'application
+        working-directory: Rakeb/tests
+        run: |
+          npm ci --no-audit --no-fund
+          npm test
+
+      - name: Vérifier que le tag correspond à APP_VERSION
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          V=$(grep -oE "const APP_VERSION = '[0-9]+\.[0-9]+\.[0-9]+'" index.html | grep -oE "[0-9]+\.[0-9]+\.[0-9]+")
+          echo "APP_VERSION = $V, tag = $GITHUB_REF_NAME"
+          if [ "v$V" != "$GITHUB_REF_NAME" ]; then
+            echo "::error::Le tag $GITHUB_REF_NAME ne correspond pas à APP_VERSION ($V) dans Rakeb/index.html"
+            exit 1
+          fi
+
+  windows:
+    name: "windows (Windows 10/11 : 32 bits, 64 bits, ARM64)"
+    needs: tests
+    if: github.event_name != 'pull_request'
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Synchroniser le numéro de version
+        run: node scripts/sync-version.js
+
+      - name: Préparer les fichiers de l'application (build/desktop)
+        run: node scripts/prepare-desktop.js
+
+      # --no-save : package.json reste identique
+      - name: Installer Electron 31.7.7 et electron-builder
+        run: npm install --no-save --no-audit --no-fund electron@31.7.7 electron-builder@24.13.3
+
+      - name: Vérifier la syntaxe des fichiers de l'application
+        run: |
+          node --check build/desktop/main.js
+          node --check build/desktop/preload.js
+          node --check build/desktop/netcompat.js
+
+      - name: "Compiler les .exe (portable et installateur, 32 bits, 64 bits et ARM64)"
+        # une compilation par architecture : un installateur et un portable distincts pour chacune
+        run: |
+          npx electron-builder --win --ia32 --publish never
+          npx electron-builder --win --x64 --publish never
+          npx electron-builder --win --arm64 --publish never
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: "false"
+
+      - name: Lister les fichiers produits
+        run: Get-ChildItem dist -Filter *.exe | Select-Object Name, Length
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: rakeb-windows-exe
+          path: Rakeb/dist/*.exe
+          if-no-files-found: error
+
+  windows7:
+    name: "windows7 (Windows 7 SP1, 8 et 8.1 : 32 et 64 bits)"
+    needs: tests
+    if: github.event_name != 'pull_request'
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Synchroniser le numéro de version
+        run: node scripts/sync-version.js
+
+      - name: Préparer les fichiers de l'application (build/desktop)
+        run: node scripts/prepare-desktop.js
+
+      # Electron 22 : dernière version compatible avec Windows 7, 8 et 8.1
+      - name: Installer Electron 22.3.27 et electron-builder
+        run: npm install --no-save --no-audit --no-fund electron@22.3.27 electron-builder@24.13.3
+
+      - name: Compiler les .exe pour Windows 7/8/8.1
+        run: |
+          npx electron-builder --win --ia32 --config electron-builder.legacy.yml --publish never
+          npx electron-builder --win --x64 --config electron-builder.legacy.yml --publish never
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: "false"
+
+      - name: Lister les fichiers produits
+        run: Get-ChildItem dist -Filter *.exe | Select-Object Name, Length
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: rakeb-windows7-8-exe
+          path: Rakeb/dist/*.exe
+          if-no-files-found: error
+
+  android:
+    name: "android (APK, Android 5.1 et plus)"
+    needs: tests
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      # Secrets facultatifs : sans eux, l'APK est signé avec la clé de test du dépôt (Rakeb/android-src/signing/rakeb-test.jks)
+      KS_B64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+      KS_PASS_SECRET: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+      KS_ALIAS_SECRET: ${{ secrets.ANDROID_KEY_ALIAS }}
+      KEY_PASS_SECRET: ${{ secrets.ANDROID_KEY_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Synchroniser le numéro de version
+        run: node scripts/sync-version.js
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Installer Capacitor
+        run: npm install --no-audit --no-fund
+
+      - name: Préparer l'application web (même index.html que la version Windows)
+        run: node scripts/prepare-web.js
+
+      - name: Tester la version convertie pour les anciennes WebView
+        working-directory: Rakeb/tests
+        env:
+          RAKEB_INDEX: ${{ github.workspace }}/Rakeb/www/index.html
+          RAKEB_TRANSPILED: "1"
+        run: |
+          npm ci --no-audit --no-fund
+          npm test
+
+      - name: Générer le projet Android
+        run: npx cap add android
+
+      - name: Version, permissions et icônes
+        run: node scripts/android-setup.js
+        env:
+          VERSION_CODE: ${{ github.run_number }}
+
+      - name: Synchroniser l'application web
+        run: npx cap sync android
+
+      - name: Accepter les licences du SDK Android
+        run: yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null || true
+
+      - name: Compiler l'APK (téléphones et tablettes, Android 5.1 et plus)
+        working-directory: Rakeb/android
+        run: ./gradlew assembleRelease --no-daemon
+
+      - name: Aligner et signer l'APK
+        run: |
+          BT=$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -1)
+          UNSIGNED=$(ls android/app/build/outputs/apk/release/*.apk | head -1)
+          if [ -n "$KS_B64" ]; then
+            echo "$KS_B64" | base64 -d > "$RUNNER_TEMP/release.jks"
+            KS="$RUNNER_TEMP/release.jks"; KPASS="$KS_PASS_SECRET"; ALIAS="$KS_ALIAS_SECRET"; KEYPASS="$KEY_PASS_SECRET"
+            echo "Signature avec votre clé (secrets GitHub)."
+          else
+            KS="android-src/signing/rakeb-test.jks"; KPASS="rakeb-test-key"; ALIAS="rakeb"; KEYPASS="rakeb-test-key"
+            echo "Signature avec la clé de test du dépôt."
+          fi
+          "$BT/zipalign" -p -f 4 "$UNSIGNED" "$RUNNER_TEMP/aligned.apk"
+          "$BT/apksigner" sign --ks "$KS" --ks-pass "pass:$KPASS" --ks-key-alias "$ALIAS" --key-pass "pass:$KEYPASS" \
+            --out Rakeb-android.apk "$RUNNER_TEMP/aligned.apk"
+          rm -f "$RUNNER_TEMP/release.jks"
+
+      - name: Vérifier l'APK (paquet, Android minimal, signature)
+        run: |
+          BT=$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -1)
+          "$BT/aapt" dump badging Rakeb-android.apk | grep -E "^package:|sdkVersion|targetSdk" || true
+          "$BT/apksigner" verify --verbose Rakeb-android.apk | head -8
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: rakeb-android-apk
+          path: Rakeb/Rakeb-android.apk
+          if-no-files-found: error
+
+  release:
+    name: "release (tag vX.Y.Z : tous les fichiers dans une seule Release)"
+    needs: [windows, windows7, android]
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          path: Rakeb/release-files
+          merge-multiple: true
+
+      - name: Note de version (Rakeb/docs/NOTES-VERSION-X.Y.Z.md si elle existe)
+        run: |
+          V="${GITHUB_REF_NAME#v}"
+          F="docs/NOTES-VERSION-$V.md"
+          if [ -f "$F" ]; then cp "$F" release-notes.md; else echo "Rakeb $V" > release-notes.md; fi
+          echo "VERSION=$V" >> "$GITHUB_ENV"
+          ls -la release-files
+
+      - name: Publier la Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Rakeb ${{ env.VERSION }}
+          body_path: Rakeb/release-notes.md
+          files: Rakeb/release-files/*
+          fail_on_unmatched_files: true
