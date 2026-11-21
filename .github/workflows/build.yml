@@ -186,10 +186,17 @@ jobs:
       - name: Générer le projet Android
         run: npx cap add android
 
+      # versionCode = numéro du run + 100. L'ancien workflow « Build Android » est allé jusqu'au run 35 :
+      # sans ce décalage, le nouvel APK aurait un versionCode plus petit que celui déjà installé et
+      # Android refuserait la mise à jour (« le package semble ne pas être valide »). Ne jamais baisser ce décalage.
+      - name: Numéro de build Android (versionCode)
+        run: |
+          VC=$((GITHUB_RUN_NUMBER + 100))
+          echo "VERSION_CODE=$VC" >> "$GITHUB_ENV"
+          echo "versionCode = $VC"
+
       - name: Version, permissions et icônes
         run: node scripts/android-setup.js
-        env:
-          VERSION_CODE: ${{ github.run_number }}
 
       - name: Synchroniser l'application web
         run: npx cap sync android
@@ -222,6 +229,7 @@ jobs:
         run: |
           BT=$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -1)
           "$BT/aapt" dump badging Rakeb-android.apk | grep -E "^package:|sdkVersion|targetSdk" || true
+          "$BT/aapt" dump badging Rakeb-android.apk | grep -q "versionCode='$VERSION_CODE'" || { echo "::error::versionCode inattendu (attendu $VERSION_CODE)"; exit 1; }
           "$BT/apksigner" verify --verbose Rakeb-android.apk | head -8
 
       - uses: actions/upload-artifact@v4
