@@ -9,10 +9,10 @@ Une seule application (celle de ton `Rakeb.exe`) pour les deux plateformes :
 2. **Add file › Upload files** : glisse les dossiers `RakebDesktop` et `RakebMobile` et le fichier `.gitignore`.
 3. Crée les deux workflows à la main (Add file › Create new file) : `.github/workflows/build-windows.yml` et `.github/workflows/build-android.yml`, en collant le contenu des fichiers de cette archive.
 4. **Actions** › choisis chaque workflow › **Run workflow**. Résultat dans **Artifacts** : `rakeb-windows-exe` et `rakeb-android-apk`.
-5. Liens permanents : crée une Release avec le tag `v1.0.0`.
+5. Liens permanents : crée une Release avec le tag de la version (actuellement `v1.3.0`, voir « Publier la version 1.3.0 » en fin de fichier).
 
 ## Fichiers produits
-- Windows : `Rakeb-portable-1.0.0-ia32.exe` (32 bits), `Rakeb-portable-1.0.0-x64.exe` (64 bits), `Rakeb-installateur-1.0.0-ia32.exe`. Windows 10 ou plus.
+- Windows : `Rakeb-portable-1.3.0-ia32.exe` (32 bits), `Rakeb-portable-1.3.0-x64.exe` (64 bits), `Rakeb-installateur-1.3.0-ia32.exe`, etc. (liste complète dans « PC et Android : toutes les architectures et versions »). Windows 7 SP1 ou plus.
 - Android : `Rakeb-android.apk` (téléphones et tablettes, Android 5.1 ou plus).
 
 ## Différences entre Windows et Android
@@ -131,3 +131,36 @@ Points d'attention :
 - **Wolof** : seules ~20 étiquettes sont traduites ; à faire relire par un locuteur avant diffusion.
 - **Sauvegarde automatique** : copie dans le stockage de l'application (IndexedDB), donc perdue si l'on efface les données de l'application. « Envoyer ma sauvegarde » est la vraie protection. La clé API n'est jamais sauvegardée.
 - Khatma : répartition par nombre de versets (pas par pages du mushaf).
+
+## Évolutions du 20 novembre 2026 (version 1.3.0)
+**Affiches à partager** (Menu › Affiches à partager) : une image soignée, prête pour WhatsApp, un statut ou l'impression.
+| Affiche | Contenu |
+|---|---|
+| Horaires du jour / de demain | 5 prières + lever du soleil, noms en arabe, « Joumou'a » le vendredi, dates grégorienne et hégirienne, lieu |
+| Horaires de la semaine | 7 jours, aujourd'hui en évidence, vendredi repéré |
+| Horaires du mois | tous les jours du mois choisi (◀ ▶), avec le jour hégirien |
+| Jours blancs | 13, 14 et 15 du mois hégirien en cours ou du prochain : date, début du jeûne (Fajr), iftar (Maghrib), hadith de référence |
+| Jeûnes recommandés (30 jours) | lundis, jeudis, jours blancs, Arafat, Tassou'a et Achoura ; Aïds et jours de tachriq exclus |
+| Dates importantes | les 6 prochaines fêtes et dates (Ramadan, Aïds, Hajj, Achoura…) et le décompte en jours |
+| Imsakiya du Ramadan | la même que dans l'écran Ramadan, avec le choix du format et des couleurs |
+- **Formats** : carré (1080 × 1080), portrait (1080 × 1350), statut / story (1080 × 1920). Si le contenu dépasse (mois entier), l'image est allongée et l'écran l'indique.
+- **Couleurs** : vert et or (Rakeb), clair (pour imprimer et afficher à la mosquée), nuit.
+- **En-tête** (ex. « Mosquée de Mbour ») et **message** facultatifs, mémorisés.
+- **Aperçu en direct**, bouton « 📤 Partager l'affiche » (Android : feuille de partage ; PC : fichier PNG enregistré) et « 📋 Copier en texte » (version texte avec la mise en forme WhatsApp).
+- **Raccourcis** : bouton « 🖼️ Affiche » dans Horaires (suit la vue Aujourd'hui / Demain / Mois), boutons dans Calendrier, Rappels de sunna et Ramadan.
+- Tout est calculé sur l'appareil, avec les ajustements de mosquée, la méthode de calcul, l'ajustement hégirien et la table Umm al-Qura : **aucun nouveau service réseau** (écran Confidentialité inchangé).
+- **Correctif** : le rappel « jour blanc » n'est plus envoyé pour le 13 Dhou al-Hijja (jour de tachriq, on n'y jeûne pas).
+- **Tests** : 21 vérifications ajoutées (modèles des 8 affiches, dates de Dakar, jours sans jeûne, version texte, écran, raccourcis, absence d'appel réseau, rappel du 13 Dhou al-Hijja).
+- **Version** : `APP_VERSION` passe à **1.3.0** (et les `package.json` via `scripts/sync-version.js`).
+
+À relire avant diffusion :
+1. *Religieux* : texte du hadith des jours blancs (« Si tu jeûnes trois jours dans le mois… », at-Tirmidhi 761, an-Nasa'i 2424) ; liste des jours exclus (Aïd al-Fitr, Aïd al-Adha, 11-13 Dhou al-Hijja) ; libellés « Tassou'a » et « Achoura ».
+2. *Appareils* : rendu de la police arabe (Amiri) sans réseau sur Android : une police arabe du téléphone est utilisée à défaut ; partage de l'image sur un vrai téléphone (WhatsApp).
+
+## Publier la version 1.3.0
+1. Remplacer sur GitHub les fichiers de cette archive (au minimum `RakebDesktop/index.html`, `RakebDesktop/package.json`, `RakebMobile/package.json`, `tests/run.js`, `LISEZ-MOI.md`).
+2. Attendre le workflow **Tests automatiques** (vert).
+3. Créer la Release : **Releases › Draft a new release**, tag `v1.3.0` (cible `main`), titre « Rakeb 1.3.0 », texte : `docs/NOTES-VERSION-1.3.0.md`. Ou en ligne de commande : `git tag v1.3.0 && git push --tags`.
+4. Les workflows **Build Windows** et **Build Android** joignent automatiquement les `.exe` et l'`.apk` à la Release.
+5. Les installations existantes (1.1.0 et suivantes) proposent la mise à jour dans Réglages › « Version et mises à jour ».
+6. Avant une diffusion publique : déposer `RakebMobile/android-res/adhan.mp3` (enregistrement libre de droits) et configurer ta propre clé de signature Android (4 secrets, voir « Signature de l'APK ») ; sinon l'APK est signé avec la clé de test publique.

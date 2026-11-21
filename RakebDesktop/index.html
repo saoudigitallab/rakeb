@@ -549,6 +549,12 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
 .qd-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}.qd-name{min-width:78px;font-weight:600;}
 .nw-item{border-bottom:1px solid var(--line);padding:6px 0;}.nw-item summary{cursor:pointer;}
 #qs-results .src-card{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin:8px 0;background:var(--surface-2);}
+/* Affiches à partager (v1.3.0) */
+.pst-types{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;margin:4px 0 6px;}
+.pst-types .chip{text-align:left;font-size:.82rem;}
+#pst-canvas{width:100%;max-width:440px;height:auto;display:block;margin:6px auto 0;border-radius:10px;box-shadow:0 4px 18px rgba(0,0,0,.28);}
+.pst-fields{display:grid;grid-template-columns:1fr;gap:8px;margin-top:10px;}
+.pst-fields input{width:100%;}
 </style>
 </head>
 <body>
@@ -591,6 +597,7 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
       <button class="tab-btn sub-btn" data-panel="tasbih"><span class="emo">📿</span><span data-i18n="menu.tasbih">Tasbih</span></button>
       <button class="tab-btn sub-btn" data-panel="zakat"><span class="emo">🧮</span><span data-i18n="menu.zakat">Zakat</span></button>
       <button class="tab-btn sub-btn" data-panel="inspiration"><span class="emo">✨</span><span data-i18n="menu.inspiration">Inspiration Islamique</span></button>
+      <button class="tab-btn sub-btn" data-panel="affiches"><span class="emo">🖼️</span><span>Affiches à partager</span></button>
       <button class="tab-btn sub-btn" data-panel="calendrier"><span class="emo">📅</span><span data-i18n="menu.calendrier">Calendrier</span></button>
       <button class="tab-btn sub-btn" data-panel="noms99"><span class="emo">🌙</span><span data-i18n="menu.noms99">Les 99 Noms d'Allah</span></button>
       <button class="tab-btn sub-btn" data-panel="coran365"><span class="emo">📗</span><span data-i18n="menu.coran365">Maîtriser le Coran (365j)</span></button>
@@ -663,7 +670,10 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
     <div class="card span2">
       <div class="card-head">
         <h2 data-i18n="card.horaires">Horaires de prière</h2>
-        <button class="btn mini primary" id="btn-locate2">📍 Ma position</button>
+        <div class="row-btns" style="margin:0;">
+          <button class="btn mini" id="btn-poster-times" type="button" aria-label="Partager ces horaires en affiche">🖼️ Affiche</button>
+          <button class="btn mini primary" id="btn-locate2">📍 Ma position</button>
+        </div>
       </div>
       <div class="view-chips">
         <div class="chip active" id="vchip-today">Aujourd'hui</div>
@@ -1014,6 +1024,7 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
       <button class="menu-tile" data-goto="khatma"><span class="ico">📖</span><span class="t">Planificateur de khatma</span><span class="s">Finir le Coran en N jours, lecture du jour et progression</span></button>
       <button class="menu-tile" data-goto="nawawi"><span class="ico">📚</span><span class="t">40 hadiths de Nawawi</span><span class="s">Texte arabe et français, recherche par thème, sans réseau</span></button>
       <button class="menu-tile" data-goto="qada"><span class="ico">🔁</span><span class="t">Rattrapage</span><span class="s">Prières manquées et jours de jeûne à rattraper</span></button>
+      <button class="menu-tile" data-goto="affiches"><span class="ico">🖼️</span><span class="t">Affiches à partager</span><span class="s">Horaires du jour, de la semaine ou du mois, jours blancs, jeûnes, fêtes : une image prête pour WhatsApp</span></button>
       <button class="menu-tile" data-goto="calendrier"><span class="ico">📅</span><span class="t">Calendrier</span><span class="s">Calendrier hégirien, fêtes et jours blancs</span></button>
       <button class="menu-tile" data-goto="noms99"><span class="ico">🌙</span><span class="t">Les 99 Noms d'Allah</span><span class="s">Lecture, audio et suivi de mémorisation</span></button>
       <button class="menu-tile" data-goto="coran365"><span class="ico">📗</span><span class="t">Maîtriser le Coran (365j)</span><span class="s">Alphabet, voyelles, tajwid puis lecture guidée — un programme sur un an</span></button>
@@ -1224,7 +1235,7 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
     <div class="card">
       <h2 class="small">📤 Imsakiya à partager</h2>
       <p class="muted">Le calendrier des jours du Ramadan (imsak, Fajr, iftar) en une image à envoyer sur WhatsApp.</p>
-      <div class="row-btns"><button class="btn primary" id="ram-imsakiya" type="button">📤 Créer l'imsakiya</button></div>
+      <div class="row-btns"><button class="btn primary" id="ram-imsakiya" type="button">📤 Créer l'imsakiya</button><button class="btn" type="button" data-poster="imsakiya">🖼️ Personnaliser (format, couleurs)</button></div>
     </div>
     <div class="card span2" id="ram-extra-card">
       <h2 class="small">Tarawih et sadaqa</h2>
@@ -1257,7 +1268,8 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
       <p class="muted">Choisissez les rappels à recevoir. Ils utilisent vos heures de prière et le calendrier hégirien, calculés sur l'appareil, sans réseau. Sur Android, ce sont des notifications silencieuses programmées par le système ; sur PC, un message et une notification tant que Rakeb est actif.</p>
       <div id="sunna-list"></div>
     </div>
-    <div class="card span2"><h2 class="small">Prochains rappels</h2><div id="sunna-upcoming"></div></div>
+    <div class="card span2"><h2 class="small">Prochains rappels</h2><div id="sunna-upcoming"></div>
+      <div class="row-btns" style="margin-top:8px;"><button class="btn mini" type="button" data-poster="jeunes">🖼️ Affiche des jeûnes recommandés</button><button class="btn mini" type="button" data-poster="blancs">🖼️ Affiche des jours blancs</button></div></div>
   </section>
 
   <section class="panel grid" id="panel-khatma">
@@ -1280,6 +1292,38 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
     <div class="card span2"><div id="qd-body"></div></div>
   </section>
 
+  <!-- ==================== AFFICHES À PARTAGER ==================== -->
+  <section class="panel grid" id="panel-affiches">
+    <div class="subhead"><button class="btn mini" data-goto="menu">← Menu</button><h2>🖼️ Affiches à partager</h2></div>
+    <div class="card">
+      <h2 class="small">Que voulez-vous partager ?</h2>
+      <div class="pst-types" id="pst-types" role="group" aria-label="Type d'affiche"></div>
+      <div class="row-btns" id="pst-month-nav" style="display:none;">
+        <button class="btn mini" id="pst-month-prev" type="button" aria-label="Mois précédent">◀</button>
+        <strong id="pst-month-label" style="min-width:150px;text-align:center;align-self:center;">—</strong>
+        <button class="btn mini" id="pst-month-next" type="button" aria-label="Mois suivant">▶</button>
+      </div>
+      <h2 class="small" style="margin-top:12px;">Format</h2>
+      <div class="view-chips" id="pst-formats" role="group" aria-label="Format de l'affiche"></div>
+      <h2 class="small">Couleurs</h2>
+      <div class="view-chips" id="pst-themes" role="group" aria-label="Couleurs de l'affiche"></div>
+      <div class="pst-fields">
+        <div class="field"><label for="pst-heading">En-tête (facultatif)</label><input class="btn" id="pst-heading" type="text" maxlength="50" placeholder="Ex. : Mosquée de Mbour"></div>
+        <div class="field"><label for="pst-message">Message (facultatif)</label><input class="btn" id="pst-message" type="text" maxlength="90" placeholder="Ex. : Partagez avec vos proches"></div>
+      </div>
+      <div class="row-btns" style="margin-top:12px;">
+        <button class="btn primary" id="pst-share" type="button">📤 Partager l'affiche</button>
+        <button class="btn" id="pst-copy" type="button">📋 Copier en texte</button>
+      </div>
+      <div class="muted" id="pst-status" role="status" style="margin-top:6px;"></div>
+      <p class="muted" style="margin-top:8px;">L'affiche est dessinée sur votre appareil, sans réseau, avec vos horaires (ajustements de mosquée compris) et votre calendrier hégirien. Sur Android, « Partager » ouvre WhatsApp, Fichiers, etc. ; sur PC, l'image est enregistrée.</p>
+    </div>
+    <div class="card">
+      <h2 class="small">Aperçu</h2>
+      <canvas id="pst-canvas" width="1080" height="1350" role="img" aria-label="Aperçu de l'affiche"></canvas>
+    </div>
+  </section>
+
   <!-- ==================== CALENDRIER ==================== -->
   <section class="panel grid" id="panel-calendrier">
     <div class="subhead"><button class="btn mini" data-goto="menu">← Menu</button><h2>📅 Calendrier</h2></div>
@@ -1299,6 +1343,7 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
       <div class="cal-head"><span>lun</span><span>mar</span><span>mer</span><span>jeu</span><span>ven</span><span>sam</span><span>dim</span></div>
       <div class="cal-grid" id="cal-grid"></div>
       <p class="muted" style="margin-top:10px;">★ fête ou date importante · ● jours blancs (13, 14, 15 du mois hégirien, jeûne recommandé). Calendrier arithmétique : un écart d'un jour avec l'observation locale du croissant est possible.</p>
+      <div class="row-btns"><button class="btn mini" type="button" data-poster="blancs">🖼️ Affiche des jours blancs</button><button class="btn mini" type="button" data-poster="jeunes">🖼️ Affiche des jeûnes recommandés</button></div>
     </div>
     <div class="card">
       <h2 class="small">Jour sélectionné</h2>
@@ -1307,6 +1352,7 @@ a.btn{ display:inline-block; text-decoration:none; text-align:center; }
     <div class="card">
       <h2 class="small">Prochaines dates importantes</h2>
       <div id="cal-upcoming"></div>
+      <div class="row-btns" style="margin-top:8px;"><button class="btn mini" type="button" data-poster="fetes">🖼️ Partager en affiche</button></div>
     </div>
   </section>
 
@@ -1875,7 +1921,7 @@ const UQ_START_YEAR = 1420, UQ_BASE_DAY = 10698, UQ_LENS = "01001011110100100011
   };
 
   /* ---------- navigation: tabs + Menu sub-menu ---------- */
-  const SUB_PANELS = ['serie','suivi','tasbih','zakat','inspiration','calendrier','noms99','coran365','ramadan','sunna','khatma','nawawi','qada'];
+  const SUB_PANELS = ['serie','suivi','tasbih','zakat','inspiration','calendrier','noms99','coran365','ramadan','sunna','khatma','nawawi','qada','affiches'];
   const PANEL_HOOKS = {};
   function showPanel(id){
     const panel = $('#panel-'+id);
@@ -5030,7 +5076,7 @@ const UQ_START_YEAR = 1420, UQ_BASE_DAY = 10698, UQ_LENS = "01001011110100100011
     }
   };
   /* ---------- Version, vérification des mises à jour, signalement ---------- */
-  const APP_VERSION = '1.1.0';
+  const APP_VERSION = '1.3.0';
   const APP_REPO = 'saoudigitallab/rakeb';
   function cmpVer(a, b){
     const pa = String(a).replace(/^v/i,'').split('.').map(n=> parseInt(n,10) || 0), pb = String(b).replace(/^v/i,'').split('.').map(n=> parseInt(n,10) || 0);
@@ -6497,7 +6543,7 @@ const UQ_START_YEAR = 1420, UQ_BASE_DAY = 10698, UQ_LENS = "01001011110100100011
       if(cur.t.isha){
         const eve = mn(cur.t.isha);
         if(p.monthu && (wdN === 1 || wdN === 4)) push('monthu', eve, 'Jeûne de demain (' + FR_DAYS[wdN] + ')', 'Le lundi et le jeudi sont des jours de jeûne surérogatoire recommandé.');
-        if(p.white && hN.day >= 13 && hN.day <= 15) push('white', eve, 'Jeûne de demain : jour blanc', 'Demain est le ' + hN.day + ' du mois hégirien (jours blancs : 13, 14 et 15).');
+        if(p.white && hN.day >= 13 && hN.day <= 15 && !(hN.month === 12 && hN.day === 13)) push('white', eve, 'Jeûne de demain : jour blanc', 'Demain est le ' + hN.day + ' du mois hégirien (jours blancs : 13, 14 et 15).');
         if(p.arafat && hN.month === 12 && hN.day === 9) push('arafat', eve, 'Demain : jour d\'Arafat', 'Jeûne recommandé pour qui ne fait pas le pèlerinage.');
         if(p.ashura && hN.month === 1 && hN.day === 10) push('ashura', eve, 'Demain : Achoura', 'Jeûne du 10 Mouharram (le 9 ou le 11 peuvent s\'y ajouter).');
       }
@@ -6984,6 +7030,436 @@ const UQ_START_YEAR = 1420, UQ_BASE_DAY = 10698, UQ_LENS = "01001011110100100011
     uqHijri: uqHijri, nawawiCount: function(){ return NAWAWI.length; }
   });
   PANEL_HOOKS.parametres = (function(prev){ return function(){ if(prev) prev(); bkStatus(); }; })(PANEL_HOOKS.parametres);
+
+
+
+  /* =========================================================
+     AFFICHES À PARTAGER (v1.3.0) : horaires du jour, de demain,
+     de la semaine, du mois, jours blancs, jeûnes recommandés,
+     dates importantes et imsakiya. L'image est dessinée sur
+     l'appareil (canvas) : aucun service réseau.
+  ========================================================= */
+  const PST_KEY = 'rakeb-poster';
+  const PST_AR = { fajr:'الفجر', sunrise:'الشروق', dhuhr:'الظهر', asr:'العصر', maghrib:'المغرب', isha:'العشاء' };
+  const PST_METHOD = { MWL:'Ligue islamique mondiale', ISNA:'ISNA', Egypt:'Autorité égyptienne', Makkah:'Umm al-Qura', Karachi:'Karachi' };
+  const PST_FORMATS = [['carre', 1080, 1080, 'Carré'], ['portrait', 1080, 1350, 'Portrait'], ['story', 1080, 1920, 'Statut / story']];
+  const PST_THEMES = {
+    jade:  { name:'Vert et or', bg:['#0b1f1c', '#17403a'], frame:'#c9a227', title:'#e3c766', text:'#eef3f1', muted:'#a3bcb5', accent:'#7fd1a8', box:'rgba(255,255,255,0.06)', zebra:'rgba(255,255,255,0.05)', hl:'rgba(201,162,39,0.24)', line:'rgba(255,255,255,0.12)' },
+    clair: { name:'Clair (impression)', bg:['#fdfaf1', '#efe5c8'], frame:'#a6791c', title:'#6e4b0c', text:'#1d2b27', muted:'#4f5f5a', accent:'#1f6b54', box:'rgba(31,107,84,0.07)', zebra:'rgba(31,107,84,0.06)', hl:'rgba(166,121,28,0.20)', line:'rgba(29,43,39,0.14)' },
+    nuit:  { name:'Nuit', bg:['#0d0b21', '#2a2160'], frame:'#d4b45a', title:'#f0d67c', text:'#f1eefc', muted:'#b9b2dc', accent:'#9fd3ff', box:'rgba(255,255,255,0.06)', zebra:'rgba(255,255,255,0.05)', hl:'rgba(212,180,90,0.24)', line:'rgba(255,255,255,0.12)' }
+  };
+  const PST_TYPES = [
+    ['jour', '🕌', 'Horaires du jour'], ['demain', '🌅', 'Horaires de demain'], ['semaine', '🗓️', 'Horaires de la semaine'], ['mois', '📆', 'Horaires du mois'],
+    ['blancs', '🌕', 'Jours blancs'], ['jeunes', '🤲', 'Jeûnes recommandés (30 jours)'], ['fetes', '⭐', 'Dates importantes'], ['imsakiya', '🌙', 'Imsakiya du Ramadan']
+  ];
+  const PST_FONT = 'system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif';
+  const PST_FONT_AR = '"Amiri","Noto Naskh Arabic","Traditional Arabic","Scheherazade New",serif';
+
+  function pstPrefs(){ const v = store.get(PST_KEY, {}); return (v && typeof v === 'object' && !Array.isArray(v)) ? v : {}; }
+  function pstSet(k, v){ const p = pstPrefs(); p[k] = v; store.set(PST_KEY, p); }
+  function pstFmt(x){ return x ? pad(x.h) + ':' + pad(x.m) : '—'; }
+  // Jour « off » à partir d'aujourd'hui (fuseau de la position) : date locale pour le calcul, date UTC pour l'affichage
+  function pstDay(off){ const n = nowInTz(state.tz); return { local: new Date(n.y, n.m, n.d + off, 12), utc: new Date(Date.UTC(n.y, n.m, n.d + off, 12)) }; }
+  function pstTimes(local){ return computeTimes(local, state.lat, state.lon, state.method, state.madhab, state.tz); }
+  function pstGregLong(u){ const s = FR_DAYS[u.getUTCDay()]; return s.charAt(0).toUpperCase() + s.slice(1) + ' ' + u.getUTCDate() + ' ' + FR_MONTHS[u.getUTCMonth()] + ' ' + u.getUTCFullYear(); }
+  const PST_MON = ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'];
+  function pstGregShort(u){ const s = FR_DAYS[u.getUTCDay()].slice(0, 3); return s.charAt(0).toUpperCase() + s.slice(1) + '. ' + u.getUTCDate() + ' ' + PST_MON[u.getUTCMonth()]; }
+  function pstHijriLabel(u){ const h = gregorianToHijri(u); return h.day + ' ' + (HIJRI_MONTHS[h.month - 1] || '') + ' ' + h.year + ' AH'; }
+  // Jours où l'on ne jeûne pas : Aïd al-Fitr, Aïd al-Adha et jours de tachriq (11, 12, 13 Dhou al-Hijja)
+  function pstNoFast(h){ return (h.month === 10 && h.day === 1) || (h.month === 12 && h.day >= 10 && h.day <= 13); }
+
+  // Modèle d'une affiche (données seules, testable sans canvas) :
+  // { type, kind:'list'|'table', title, sub, hijri, place, items | cols+widths+rows, notes[] } ou { error }
+  function posterModel(type, opts){
+    opts = opts || {};
+    if(type !== 'fetes' && (state.lat === null || state.lon === null)) return { error: 'Choisissez d\'abord votre position (onglet Qibla & position).' };
+    const place = state.cityName || (state.lat !== null ? 'Ma position' : '');
+    const calcNote = 'Horaires calculés sur l\'appareil (' + (PST_METHOD[state.method] || state.method || 'MWL') + ') : vérifiez auprès de votre mosquée.';
+    const hijriNote = 'Dates hégiriennes calculées : un écart d\'un jour avec l\'observation locale du croissant est possible.';
+
+    if(type === 'jour' || type === 'demain'){
+      const d = pstDay(type === 'demain' ? 1 : 0), t = pstTimes(d.local), fri = d.utc.getUTCDay() === 5;
+      const items = PRAYER_LABELS.map(function(p){
+        const jum = p[0] === 'dhuhr' && fri;
+        return { key: p[0], label: jum ? 'Joumou\'a' : p[1], ar: jum ? 'الجمعة' : PST_AR[p[0]], time: pstFmt(t[p[0]]), minor: p[0] === 'sunrise' };
+      });
+      return { type: type, kind: 'list', title: type === 'demain' ? 'Horaires de prière de demain' : 'Horaires de prière', sub: pstGregLong(d.utc), hijri: pstHijriLabel(d.utc), place: place, items: items, notes: [calcNote] };
+    }
+
+    if(type === 'semaine'){
+      const rows = [];
+      for(let i = 0; i < 7; i++){
+        const d = pstDay(i), t = pstTimes(d.local);
+        rows.push({ cells: [pstGregShort(d.utc), pstFmt(t.fajr), pstFmt(t.sunrise), pstFmt(t.dhuhr), pstFmt(t.asr), pstFmt(t.maghrib), pstFmt(t.isha)], hl: i === 0, fri: d.utc.getUTCDay() === 5 });
+      }
+      const a = pstDay(0).utc, z = pstDay(6).utc;
+      return { type: type, kind: 'table', title: 'Horaires de la semaine',
+        sub: 'Du ' + a.getUTCDate() + ' ' + FR_MONTHS[a.getUTCMonth()] + ' au ' + z.getUTCDate() + ' ' + FR_MONTHS[z.getUTCMonth()] + ' ' + z.getUTCFullYear(),
+        hijri: pstHijriLabel(a) + '  →  ' + pstHijriLabel(z), place: place,
+        cols: ['Jour', 'Fajr', 'Lever', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'], widths: [1.7, 1, 1, 1, 1, 1.15, 1], rows: rows, notes: [calcNote] };
+    }
+
+    if(type === 'mois'){
+      const n = nowInTz(state.tz), y = opts.year != null ? opts.year : n.y, m = opts.month != null ? opts.month : n.m;
+      const days = new Date(Date.UTC(y, m + 1, 0)).getUTCDate(), rows = [];
+      for(let dd = 1; dd <= days; dd++){
+        const u = new Date(Date.UTC(y, m, dd, 12)), t = pstTimes(new Date(y, m, dd, 12)), h = gregorianToHijri(u);
+        rows.push({ cells: [pad(dd) + ' ' + FR_DAYS[u.getUTCDay()].slice(0, 3) + '.', String(h.day), pstFmt(t.fajr), pstFmt(t.sunrise), pstFmt(t.dhuhr), pstFmt(t.asr), pstFmt(t.maghrib), pstFmt(t.isha)],
+          hl: y === n.y && m === n.m && dd === n.d, fri: u.getUTCDay() === 5 });
+      }
+      const h1 = gregorianToHijri(new Date(Date.UTC(y, m, 1, 12))), h2 = gregorianToHijri(new Date(Date.UTC(y, m, days, 12)));
+      const hl = (h1.month === h2.month && h1.year === h2.year) ? HIJRI_MONTHS[h1.month - 1] + ' ' + h1.year + ' AH'
+        : HIJRI_MONTHS[h1.month - 1] + (h1.year !== h2.year ? ' ' + h1.year : '') + ' – ' + HIJRI_MONTHS[h2.month - 1] + ' ' + h2.year + ' AH';
+      const mn = FR_MONTHS[m];
+      return { type: type, kind: 'table', title: 'Horaires du mois', sub: mn.charAt(0).toUpperCase() + mn.slice(1) + ' ' + y, hijri: hl, place: place, year: y, month: m,
+        cols: ['Date', 'Hég.', 'Fajr', 'Lever', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'], widths: [1.45, 0.75, 1, 1, 1, 1, 1.12, 1], rows: rows, notes: [calcNote] };
+    }
+
+    if(type === 'blancs'){
+      // Groupe des jours blancs en cours (s'il inclut aujourd'hui) ou le prochain
+      const h0 = gregorianToHijri(pstDay(0).utc);
+      let start = null;
+      if(h0.day >= 13 && h0.day <= 15) start = 13 - h0.day;
+      else for(let i = 1; i < 40; i++){ if(gregorianToHijri(pstDay(i).utc).day === 13){ start = i; break; } }
+      if(start === null) return { error: 'Jours blancs introuvables.' };
+      const rows = []; let hm0 = null, tachriq = false;
+      for(let i = start; i < start + 3; i++){
+        const d = pstDay(i), h = gregorianToHijri(d.utc), t = pstTimes(d.local), no = pstNoFast(h);
+        if(!hm0) hm0 = h;
+        if(no) tachriq = true;
+        rows.push({ cells: [pstGregShort(d.utc), h.day + ' ' + HIJRI_MONTHS[h.month - 1], no ? 'Pas de jeûne' : pstFmt(t.fajr), no ? '(tachriq)' : pstFmt(t.maghrib)], hl: i === 0, off: no || i < 0, date: isoDate(d.local), hday: h.day, hmonth: h.month });
+      }
+      const notes = ['Le Prophète (paix et salut sur lui) a dit : « Si tu jeûnes trois jours dans le mois, jeûne le 13, le 14 et le 15. » (at-Tirmidhi 761, an-Nasa\'i 2424)'];
+      if(tachriq) notes.push('Le 13 Dhou al-Hijja est un jour de tachriq : on n\'y jeûne pas.');
+      notes.push(hijriNote);
+      return { type: type, kind: 'table', title: 'Jours blancs', sub: HIJRI_MONTHS[hm0.month - 1] + ' ' + hm0.year + ' AH', hijri: '13, 14 et 15 du mois hégirien : jeûne recommandé', place: place,
+        cols: ['Date', 'Jour hégirien', 'Début (Fajr)', 'Iftar (Maghrib)'], widths: [1.3, 2.3, 1.05, 1.15], rows: rows, notes: notes };
+    }
+
+    if(type === 'jeunes'){
+      const rows = []; let ramadan = false, chawwal = false;
+      const a = pstDay(0).utc, z = pstDay(29).utc;
+      for(let i = 0; i < 30; i++){
+        const d = pstDay(i), h = gregorianToHijri(d.utc), wd = d.utc.getUTCDay();
+        if(h.month === 9){ ramadan = true; continue; }
+        if(h.month === 10 && h.day > 1) chawwal = true;
+        if(pstNoFast(h)) continue;
+        const why = [];
+        if(h.month === 12 && h.day === 9) why.push('Jour d\'Arafat');
+        if(h.month === 1 && h.day === 9) why.push('Tassou\'a');
+        if(h.month === 1 && h.day === 10) why.push('Achoura');
+        if(h.day >= 13 && h.day <= 15) why.push('Jour blanc');
+        if(wd === 1) why.push('Lundi');
+        if(wd === 4) why.push('Jeudi');
+        if(!why.length) continue;
+        const t = pstTimes(d.local);
+        rows.push({ cells: [pstGregShort(d.utc), h.day + ' ' + HIJRI_MONTHS[h.month - 1], why.join(' · '), pstFmt(t.fajr), pstFmt(t.maghrib)], hl: why.length > 1 || /Arafat|Achoura|Tassou/.test(why[0]), date: isoDate(d.local) });
+      }
+      const notes = [];
+      if(ramadan) notes.push('Ramadan : jeûne obligatoire chaque jour (voir l\'imsakiya).');
+      if(chawwal) notes.push('Six jours de Chawwal : à jeûner pendant le mois, après le jour de l\'Aïd.');
+      notes.push('Jours exclus : Aïd al-Fitr, Aïd al-Adha et jours de tachriq.');
+      notes.push(hijriNote);
+      return { type: type, kind: 'table', title: 'Jeûnes recommandés',
+        sub: 'Du ' + a.getUTCDate() + ' ' + FR_MONTHS[a.getUTCMonth()] + ' au ' + z.getUTCDate() + ' ' + FR_MONTHS[z.getUTCMonth()] + ' ' + z.getUTCFullYear(),
+        hijri: 'Lundi, jeudi, jours blancs et dates de la sunna', place: place,
+        cols: ['Date', 'Hégirien', 'Jeûne', 'Fajr', 'Maghrib'], widths: [1.15, 2, 1.7, 0.85, 0.95], rows: rows, notes: notes };
+    }
+
+    if(type === 'fetes'){
+      const ev = computeUpcomingEvents(), today = new Date(); today.setHours(12, 0, 0, 0);
+      const rows = ev.map(function(e){
+        const u = new Date(Date.UTC(e.date.getFullYear(), e.date.getMonth(), e.date.getDate(), 12)), h = gregorianToHijri(u);
+        const n = Math.round((e.date - today) / 86400000);
+        return { cells: [e.name.replace(/\s*\(.*\)$/, ''), pstGregShort(u) + ' ' + u.getUTCFullYear(), h.day + ' ' + HIJRI_MONTHS[h.month - 1] + ' ' + h.year, n === 0 ? 'Aujourd\'hui' : (n === 1 ? 'Demain' : n + ' jours')], hl: n <= 7 };
+      });
+      return { type: type, kind: 'table', title: 'Dates importantes', sub: 'Calendrier hégirien', hijri: pstHijriLabel(pstDay(0).utc), place: place,
+        cols: ['Événement', 'Date', 'Hégirien', 'Dans'], widths: [1.75, 1.45, 1.6, 0.9], rows: rows, notes: [hijriNote, 'Confirmez le début du Ramadan et les Aïds auprès des autorités religieuses locales.'] };
+    }
+
+    if(type === 'imsakiya'){
+      const im = imsakiyaRows(); if(!im) return { error: 'Calendrier du Ramadan indisponible.' };
+      return { type: type, kind: 'table', title: 'Imsakiya — Ramadan ' + im.year, sub: 'Imsak = Fajr − ' + imsakMinutes() + ' min', hijri: 'رمضان ' + im.year, place: place,
+        cols: ['Jour', 'Date', 'Imsak', 'Fajr', 'Iftar'], widths: [0.7, 1.6, 1, 1, 1], gold: 4, rows: im.rows.map(function(r){ return { cells: [String(r.day), r.label, r.imsak, r.fajr, r.iftar] }; }), notes: [calcNote] };
+    }
+    return { error: 'Type d\'affiche inconnu.' };
+  }
+
+  // Version texte (WhatsApp, SMS) : *gras* compris par WhatsApp
+  function posterText(m, o){
+    if(!m || m.error) return '';
+    o = o || {};
+    const L = [];
+    if(o.heading) L.push('*' + o.heading + '*');
+    L.push('*' + m.title + '*');
+    if(m.sub) L.push(m.sub);
+    if(m.hijri) L.push(m.hijri);
+    if(m.place) L.push('📍 ' + m.place);
+    L.push('');
+    if(m.kind === 'list') m.items.forEach(function(it){ L.push((it.minor ? '◦ ' : '• ') + it.label + ' : ' + it.time); });
+    else {
+      L.push(m.cols.join(' | '));
+      m.rows.forEach(function(r){ L.push(r.cells.join(' | ')); });
+    }
+    if(o.message){ L.push(''); L.push(o.message); }
+    if(m.notes && m.notes.length){ L.push(''); m.notes.forEach(function(n){ L.push('_' + n + '_'); }); }
+    L.push(''); L.push('— Rakeb · SAOU DIGITAL LAB');
+    return L.join('\n');
+  }
+
+  /* ---------- Dessin ---------- */
+  let pstLogoP = null;
+  function pstLogo(){
+    if(!pstLogoP) pstLogoP = new Promise(function(r){ const i = new Image(); i.onload = function(){ r(i); }; i.onerror = function(){ r(null); }; i.src = 'icon.png'; });
+    return pstLogoP;
+  }
+  function pstSetFont(x, weight, size, family){ x.font = (weight ? weight + ' ' : '') + size + 'px ' + family; }
+  // Taille de police réduite jusqu'à ce que le texte tienne dans maxW
+  function pstFit(x, text, maxW, size, weight, family){
+    let s = size; pstSetFont(x, weight, s, family);
+    while(s > 12 && x.measureText(String(text)).width > maxW){ s -= 1; pstSetFont(x, weight, s, family); }
+    return s;
+  }
+  function pstWrap(x, text, maxW){
+    const words = String(text).split(/\s+/).filter(Boolean), lines = []; let cur = '';
+    words.forEach(function(w){ const t = cur ? cur + ' ' + w : w; if(x.measureText(t).width > maxW && cur){ lines.push(cur); cur = w; } else cur = t; });
+    if(cur) lines.push(cur);
+    return lines;
+  }
+  function pstRound(x, X, Y, w, h, r){
+    x.beginPath(); x.moveTo(X + r, Y); x.arcTo(X + w, Y, X + w, Y + h, r); x.arcTo(X + w, Y + h, X, Y + h, r); x.arcTo(X, Y + h, X, Y, r); x.arcTo(X, Y, X + w, Y, r); x.closePath();
+  }
+  // Étoile à huit branches (deux carrés superposés)
+  function pstStar(x, cx, cy, r, color, alpha, width){
+    x.save(); x.strokeStyle = color; x.globalAlpha = alpha; x.lineWidth = width || 2;
+    for(let k = 0; k < 2; k++){
+      x.beginPath();
+      for(let i = 0; i < 4; i++){ const a = Math.PI / 4 * k + Math.PI / 2 * i, px = cx + r * Math.cos(a), py = cy + r * Math.sin(a); if(i) x.lineTo(px, py); else x.moveTo(px, py); }
+      x.closePath(); x.stroke();
+    }
+    x.beginPath(); x.arc(cx, cy, r * 0.42, 0, Math.PI * 2); x.stroke();
+    x.restore();
+  }
+
+  // Mise en page (hauteurs) puis dessin. Renvoie {width, height}.
+  async function posterDraw(c, m, o){
+    o = o || {};
+    const fmt = PST_FORMATS.filter(function(f){ return f[0] === o.format; })[0] || PST_FORMATS[1];
+    const th = PST_THEMES[o.theme] || PST_THEMES.jade;
+    try{ if(document.fonts && document.fonts.load) await document.fonts.load('40px "Amiri"'); }catch(e){}
+    const logo = o.noLogo ? null : await pstLogo();
+    const W = fmt[1], H0 = fmt[2], M = 90, inner = W - 2 * M;
+    const x = c.getContext('2d');
+    // Formats hauts (story) : en-tête et lignes agrandis pour remplir l'image
+    const K = H0 >= 1900 ? 1.3 : 1, LOGO = Math.round(76 * K);
+    const F = function(n){ return Math.round(n * K); };
+
+    // --- en-tête ---
+    let hy = 52 + LOGO + 6;
+    const heading = (o.heading || '').trim(), message = (o.message || '').trim();
+    if(heading) hy += 50 * K;
+    hy += 70 * K; hy += m.sub ? 46 * K : 0; hy += m.hijri ? 44 * K : 0; hy += m.place ? 40 * K : 0;
+    const contentTop = hy + 34 * K;
+    // --- pied ---
+    pstSetFont(x, '', 22, PST_FONT);
+    const noteLines = []; (m.notes || []).forEach(function(n){ pstWrap(x, n, inner).forEach(function(l){ noteLines.push(l); }); });
+    pstSetFont(x, 'italic', 30, PST_FONT);
+    const msgLines = message ? pstWrap(x, message, inner) : [];
+    const footerH = 30 + (msgLines.length ? msgLines.length * 40 + 16 : 0) + noteLines.length * 30 + 104;
+    // --- contenu ---
+    let minContent, layout = {};
+    if(m.kind === 'list'){ minContent = m.items.length * 76; }
+    else { layout.hh = 58; minContent = layout.hh + Math.max(1, m.rows.length) * 42; }
+    const H = Math.max(H0, Math.ceil(contentTop + minContent + 24 + footerH));
+    const avail = H - footerH - 24 - contentTop;
+
+    c.width = W; c.height = H;
+    // fond, motif, cadre
+    const g = x.createLinearGradient(0, 0, 0, H); g.addColorStop(0, th.bg[0]); g.addColorStop(1, th.bg[1]);
+    x.fillStyle = g; x.fillRect(0, 0, W, H);
+    pstStar(x, W / 2, contentTop + avail / 2, Math.min(W, avail) * 0.42, th.frame, 0.07, 3);
+    [[70, 70], [W - 70, 70], [70, H - 70], [W - 70, H - 70]].forEach(function(p){ pstStar(x, p[0], p[1], 22, th.frame, 0.6, 2); });
+    x.strokeStyle = th.frame; x.lineWidth = 4; x.strokeRect(28, 28, W - 56, H - 56);
+    x.save(); x.globalAlpha = 0.45; x.lineWidth = 1; x.strokeRect(40, 40, W - 80, H - 80); x.restore();
+
+    // en-tête
+    x.textAlign = 'center'; x.textBaseline = 'alphabetic'; x.direction = 'ltr';
+    let y = 52;
+    if(logo) x.drawImage(logo, W / 2 - LOGO / 2, y, LOGO, LOGO);
+    else pstStar(x, W / 2, y + LOGO / 2, 30 * K, th.title, 1, 3);
+    y += LOGO + 6;
+    if(heading){ y += 50 * K; x.fillStyle = th.accent; pstFit(x, heading, inner, F(36), 'bold', PST_FONT); x.fillText(heading, W / 2, y - 10); }
+    y += 70 * K; x.fillStyle = th.title; pstFit(x, m.title, inner, F(56), 'bold', PST_FONT); x.fillText(m.title, W / 2, y - 8);
+    if(m.sub){ y += 46 * K; x.fillStyle = th.text; pstFit(x, m.sub, inner, F(32), '', PST_FONT); x.fillText(m.sub, W / 2, y - 8); }
+    if(m.hijri){
+      y += 44 * K; x.fillStyle = th.accent;
+      const ar = /[\u0600-\u06FF]/.test(m.hijri) && !/[A-Za-z]/.test(m.hijri);
+      x.direction = ar ? 'rtl' : 'ltr'; pstFit(x, m.hijri, inner, F(ar ? 34 : 28), ar ? '' : 'italic', ar ? PST_FONT_AR : PST_FONT); x.fillText(m.hijri, W / 2, y - 8); x.direction = 'ltr';
+    }
+    if(m.place){ y += 40 * K; x.fillStyle = th.muted; pstFit(x, m.place, inner, F(26), '', PST_FONT); x.fillText(m.place, W / 2, y - 8); }
+
+    // contenu
+    if(m.kind === 'list'){
+      const n = m.items.length, rowH = Math.max(76, Math.min(170 * K, avail / n)), boxH = rowH * n, top = contentTop + Math.max(0, (avail - boxH) / 2);
+      x.fillStyle = th.box; pstRound(x, M - 30, top, inner + 60, boxH, 22); x.fill();
+      m.items.forEach(function(it, i){
+        const cy = top + i * rowH + rowH / 2;
+        if(i){ x.strokeStyle = th.line; x.lineWidth = 1; x.beginPath(); x.moveTo(M, top + i * rowH); x.lineTo(W - M, top + i * rowH); x.stroke(); }
+        const big = Math.min(46 * K, rowH * 0.36), tm = Math.min(66 * K, rowH * 0.5);
+        x.textBaseline = 'middle';
+        x.textAlign = 'left'; x.direction = 'ltr'; x.fillStyle = it.minor ? th.muted : th.text; pstSetFont(x, it.minor ? '' : 'bold', Math.round(it.minor ? big * 0.8 : big), PST_FONT); x.fillText(it.label, M + 10, cy);
+        x.textAlign = 'center'; x.direction = 'rtl'; x.fillStyle = it.minor ? th.muted : th.accent; pstSetFont(x, '', Math.round(big * (it.minor ? 0.85 : 1)), PST_FONT_AR); x.fillText(it.ar, W * 0.55, cy);
+        x.textAlign = 'right'; x.direction = 'ltr'; x.fillStyle = it.minor ? th.muted : th.title; pstSetFont(x, 'bold', Math.round(it.minor ? tm * 0.78 : tm), PST_FONT); x.fillText(it.time, W - M - 10, cy);
+      });
+      x.textBaseline = 'alphabetic';
+    } else {
+      const rows = m.rows.length ? m.rows : [{ cells: ['Aucune date dans cette période.'], span: true }];
+      const hh = layout.hh, rowH = Math.max(42, Math.min(130 * K, (avail - hh) / rows.length)), boxH = hh + rowH * rows.length, top = contentTop + Math.max(0, (avail - boxH) / 2);
+      const tot = m.widths.reduce(function(a, b){ return a + b; }, 0), X0 = M - 20, TW = inner + 40;
+      const colX = []; let acc = X0; m.widths.forEach(function(w){ colX.push(acc); acc += TW * w / tot; }); colX.push(X0 + TW);
+      const fs = Math.round(Math.min(40 * K, rowH * 0.5));
+      x.fillStyle = th.box; pstRound(x, X0 - 10, top, TW + 20, boxH, 18); x.fill();
+      x.fillStyle = th.hl; pstRound(x, X0 - 10, top, TW + 20, hh, 18); x.fill();
+      x.textBaseline = 'middle';
+      m.cols.forEach(function(t, k){
+        const cw = colX[k + 1] - colX[k] - 12;
+        x.fillStyle = th.title; pstFit(x, t, cw, Math.min(30, fs), 'bold', PST_FONT);
+        if(k === 0){ x.textAlign = 'left'; x.fillText(t, colX[k] + 12, top + hh / 2); } else { x.textAlign = 'center'; x.fillText(t, (colX[k] + colX[k + 1]) / 2, top + hh / 2); }
+      });
+      rows.forEach(function(r, i){
+        const ry = top + hh + i * rowH, cy = ry + rowH / 2;
+        if(r.hl){ x.fillStyle = th.hl; x.fillRect(X0, ry, TW, rowH); }
+        else if(i % 2 === 1){ x.fillStyle = th.zebra; x.fillRect(X0, ry, TW, rowH); }
+        if(r.span){ x.textAlign = 'center'; x.fillStyle = th.muted; pstSetFont(x, 'italic', fs, PST_FONT); x.fillText(r.cells[0], W / 2, cy); return; }
+        r.cells.forEach(function(t, k){
+          const cw = colX[k + 1] - colX[k] - 12;
+          let col = r.off ? th.muted : th.text, wt = '';
+          if(k === 0 && r.fri && !r.off) col = th.accent;
+          if(m.gold === k && !r.off){ col = th.title; wt = 'bold'; }
+          if(r.hl && k === 0) wt = 'bold';
+          x.fillStyle = col; pstFit(x, t, cw, fs, wt, PST_FONT);
+          if(k === 0){ x.textAlign = 'left'; x.fillText(t, colX[k] + 12, cy); } else { x.textAlign = 'center'; x.fillText(t, (colX[k] + colX[k + 1]) / 2, cy); }
+        });
+      });
+      x.textBaseline = 'alphabetic';
+    }
+
+    // pied
+    x.textAlign = 'center'; x.direction = 'ltr';
+    let fy = H - footerH + 30;
+    if(msgLines.length){ x.fillStyle = th.accent; pstSetFont(x, 'italic', 30, PST_FONT); msgLines.forEach(function(l){ fy += 40; x.fillText(l, W / 2, fy - 10); }); fy += 16; }
+    x.fillStyle = th.muted; pstSetFont(x, '', 22, PST_FONT);
+    noteLines.forEach(function(l){ fy += 30; x.fillText(l, W / 2, fy - 8); });
+    x.fillStyle = th.title; pstSetFont(x, 'bold', 24, PST_FONT); x.fillText('Rakeb · SAOU DIGITAL LAB', W / 2, H - 58);
+    return { width: W, height: H };
+  }
+
+  /* ---------- Écran « Affiches à partager » ---------- */
+  const pstUI = { type: 'jour', year: null, month: null, token: 0, timer: null };
+  function pstOptions(){
+    const p = pstPrefs();
+    return { format: PST_FORMATS.some(function(f){ return f[0] === p.format; }) ? p.format : 'portrait', theme: PST_THEMES[p.theme] ? p.theme : 'jade', heading: typeof p.heading === 'string' ? p.heading : '', message: typeof p.message === 'string' ? p.message : '' };
+  }
+  function pstCurrentModel(){ return posterModel(pstUI.type, { year: pstUI.year, month: pstUI.month }); }
+  function pstRenderControls(){
+    const o = pstOptions();
+    const tEl = $('#pst-types'), fEl = $('#pst-formats'), cEl = $('#pst-themes');
+    if(tEl) tEl.innerHTML = PST_TYPES.map(function(t){ return '<button class="chip' + (t[0] === pstUI.type ? ' active' : '') + '" type="button" data-pst-type="' + t[0] + '" aria-pressed="' + (t[0] === pstUI.type) + '">' + t[1] + ' ' + escapeHtml(t[2]) + '</button>'; }).join('');
+    if(fEl) fEl.innerHTML = PST_FORMATS.map(function(f){ return '<button class="chip' + (f[0] === o.format ? ' active' : '') + '" type="button" data-pst-format="' + f[0] + '" aria-pressed="' + (f[0] === o.format) + '">' + escapeHtml(f[3]) + '</button>'; }).join('');
+    if(cEl) cEl.innerHTML = Object.keys(PST_THEMES).map(function(k){ return '<button class="chip' + (k === o.theme ? ' active' : '') + '" type="button" data-pst-theme="' + k + '" aria-pressed="' + (k === o.theme) + '">' + escapeHtml(PST_THEMES[k].name) + '</button>'; }).join('');
+    const h = $('#pst-heading'), mg = $('#pst-message');
+    if(h && document.activeElement !== h) h.value = o.heading;
+    if(mg && document.activeElement !== mg) mg.value = o.message;
+    const nav = $('#pst-month-nav');
+    if(nav){
+      nav.style.display = pstUI.type === 'mois' ? '' : 'none';
+      if(pstUI.type === 'mois'){
+        const n = nowInTz(state.tz), y = pstUI.year != null ? pstUI.year : n.y, mo = pstUI.month != null ? pstUI.month : n.m;
+        $('#pst-month-label').textContent = FR_MONTHS[mo].charAt(0).toUpperCase() + FR_MONTHS[mo].slice(1) + ' ' + y;
+      }
+    }
+  }
+  async function pstRefresh(){
+    const c = $('#pst-canvas'), st = $('#pst-status'); if(!c) return;
+    const tok = ++pstUI.token, m = pstCurrentModel();
+    if(m.error){ if(st) st.textContent = m.error; c.style.display = 'none'; return; }
+    try{
+      const off = document.createElement('canvas');
+      if(!off.getContext || !off.getContext('2d')){ if(st) st.textContent = 'Aperçu indisponible sur cet appareil.'; return; }
+      const r = await posterDraw(off, m, pstOptions());
+      if(tok !== pstUI.token) return;
+      c.width = r.width; c.height = r.height; c.getContext('2d').drawImage(off, 0, 0);
+      c.style.display = '';
+      const f = PST_FORMATS.filter(function(z){ return z[0] === pstOptions().format; })[0];
+      if(st) st.textContent = (f && r.height > f[2]) ? 'Le contenu dépasse le format choisi : l\'image est allongée (' + r.width + ' × ' + r.height + ').' : 'Image ' + r.width + ' × ' + r.height + ' px.';
+    }catch(e){ if(st) st.textContent = 'Impossible de dessiner l\'affiche.'; }
+  }
+  function pstSchedule(){ clearTimeout(pstUI.timer); pstUI.timer = setTimeout(pstRefresh, 120); }
+  function renderPosters(){ pstRenderControls(); pstRefresh(); }
+  function openPoster(type, opts){
+    opts = opts || {};
+    pstUI.type = type; pstUI.year = opts.year != null ? opts.year : null; pstUI.month = opts.month != null ? opts.month : null;
+    showPanel('affiches');
+  }
+  async function pstShare(){
+    const m = pstCurrentModel(); if(m.error){ toast(m.error); return; }
+    try{
+      toast('Création de l\'affiche…');
+      const make = async function(noLogo){
+        const c = document.createElement('canvas'), o = pstOptions(); o.noLogo = noLogo;
+        await posterDraw(c, m, o);
+        return new Promise(function(res, rej){ try{ c.toBlob(res, 'image/png'); }catch(e){ rej(e); } });
+      };
+      let blob = null;
+      try{ blob = await make(false); }catch(e){ blob = null; }
+      if(!blob) blob = await make(true); // image « protégée » (logo) sur certains appareils : sans logo
+      if(!blob) throw new Error('blob');
+      const url = URL.createObjectURL(blob), a = document.createElement('a');
+      a.href = url; a.download = 'rakeb-affiche-' + m.type + '-' + nowInTz(state.tz).key + '.png';
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(function(){ URL.revokeObjectURL(url); }, 60000);
+    }catch(e){ toast('Impossible de créer l\'affiche.'); }
+  }
+  async function pstCopy(){
+    const m = pstCurrentModel(); if(m.error){ toast(m.error); return; }
+    const t = posterText(m, pstOptions());
+    try{
+      if(navigator.clipboard && navigator.clipboard.writeText){ await navigator.clipboard.writeText(t); toast('Texte copié : collez-le dans WhatsApp.'); }
+      else throw new Error('clipboard');
+    }catch(e){ toast('Copie impossible sur cet appareil.'); }
+  }
+  (function(){
+    const panel = $('#panel-affiches'); if(!panel) return;
+    panel.addEventListener('click', function(e){
+      const t = e.target.closest('[data-pst-type]'), f = e.target.closest('[data-pst-format]'), th = e.target.closest('[data-pst-theme]');
+      if(t){ pstUI.type = t.dataset.pstType; if(pstUI.type !== 'mois'){ pstUI.year = null; pstUI.month = null; } renderPosters(); }
+      else if(f){ pstSet('format', f.dataset.pstFormat); renderPosters(); }
+      else if(th){ pstSet('theme', th.dataset.pstTheme); renderPosters(); }
+    });
+    const mv = function(d){
+      const n = nowInTz(state.tz); let y = pstUI.year != null ? pstUI.year : n.y, mo = (pstUI.month != null ? pstUI.month : n.m) + d;
+      if(mo < 0){ mo = 11; y--; } if(mo > 11){ mo = 0; y++; }
+      pstUI.year = y; pstUI.month = mo; renderPosters();
+    };
+    $('#pst-month-prev').addEventListener('click', function(){ mv(-1); });
+    $('#pst-month-next').addEventListener('click', function(){ mv(1); });
+    $('#pst-heading').addEventListener('input', function(e){ pstSet('heading', e.target.value.slice(0, 50)); pstSchedule(); });
+    $('#pst-message').addEventListener('input', function(e){ pstSet('message', e.target.value.slice(0, 90)); pstSchedule(); });
+    $('#pst-share').addEventListener('click', pstShare);
+    $('#pst-copy').addEventListener('click', pstCopy);
+    PANEL_HOOKS.affiches = renderPosters;
+    // Raccourcis depuis les autres écrans
+    const hb = $('#btn-poster-times');
+    if(hb) hb.addEventListener('click', function(){
+      if(horairesView === 'month') openPoster('mois', { year: monthCursor.getFullYear(), month: monthCursor.getMonth() });
+      else openPoster(horairesView === 'tomorrow' ? 'demain' : 'jour');
+    });
+    document.addEventListener('click', function(e){
+      const b = e.target.closest('[data-poster]'); if(!b) return;
+      e.preventDefault(); openPoster(b.dataset.poster);
+    });
+  })();
+  window.RakebTest = Object.assign(window.RakebTest || {}, { posterModel: posterModel, posterText: posterText, posterDraw: posterDraw, openPoster: openPoster, pstNoFast: pstNoFast });
 
 
   if(state.lat !== null){ refreshTimes(); }

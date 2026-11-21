@@ -441,6 +441,43 @@ const mins = (hhmm) => { const [h, m] = hhmm.split(':').map(Number); return h * 
   check('widget Android : ressources présentes', ['layout/rakeb_widget.xml', 'xml/rakeb_widget_info.xml', 'drawable/rakeb_widget_bg.xml'].every((f) => fs.existsSync(path.join(__dirname, '..', 'RakebMobile', 'android-widget', 'res', f))));
   check('pont Android : rappels triés par date avant la limite de 60 notifications', /toLN\.slice\(\)\.sort/.test(fs.readFileSync(path.join(__dirname, '..', 'RakebMobile', 'shim', 'android-shim.js'), 'utf8')));
   check('Confidentialité : sauvegarde automatique locale mentionnée', /sauvegarde automatique/.test(text(d4, '#panel-confidentialite')));
+  // ---------- Affiches à partager (v1.3.0) ----------
+  const PM = T4.posterModel;
+  const pJour = PM('jour'), pDem = PM('demain');
+  check('affiche du jour : 6 lignes (5 prières + lever), heures au format HH:MM', pJour.kind === 'list' && pJour.items.length === 6 && pJour.items.every((it) => /^\d\d:\d\d$/.test(it.time)) && pJour.items[1].minor === true);
+  check('affiche du jour : mêmes heures que l\'écran Horaires', ['fajr', 'dhuhr', 'maghrib', 'isha'].every((k) => text(d4, '#prayer-list').indexOf(pJour.items.find((it) => it.key === k).time) >= 0));
+  check('affiche du jour : date grégorienne et hégirienne, lieu', /mercredi 18 novembre 2026/i.test(pJour.sub) && /8 Joumada ath-Thania 1448 AH/.test(pJour.hijri) && pJour.place === 'Dakar');
+  check('affiche de demain : jeudi 19 novembre', /demain/.test(pDem.title) && /jeudi 19 novembre 2026/i.test(pDem.sub));
+  const pSem = PM('semaine');
+  check('affiche de la semaine : 7 jours, aujourd\'hui en évidence, vendredi repéré', pSem.rows.length === 7 && pSem.rows[0].hl && pSem.rows.filter((r) => r.fri).length === 1 && /^Ven\. 20 nov\.$/.test(pSem.rows.find((r) => r.fri).cells[0]));
+  const pMois = PM('mois', { year: 2027, month: 1 });
+  check('affiche du mois : février 2027 = 28 lignes, 8 colonnes, mois hégiriens', pMois.rows.length === 28 && pMois.cols.length === 8 && pMois.rows.every((r) => r.cells.length === 8) && /Février 2027/.test(pMois.sub) && /Ramadan/.test(pMois.hijri));
+  const pBl = PM('blancs');
+  check('affiche des jours blancs : 13, 14 et 15 Joumada ath-Thania = 23, 24 et 25 novembre', pBl.rows.length === 3 && pBl.rows.map((r) => r.date).join() === '2026-11-23,2026-11-24,2026-11-25' && pBl.rows.map((r) => r.hday).join() === '13,14,15' && /Joumada ath-Thania 1448/.test(pBl.sub));
+  check('jours sans jeûne : Aïd al-Fitr, Aïd al-Adha et tachriq (dont le 13 Dhou al-Hijja)', T4.pstNoFast({ month: 10, day: 1 }) && T4.pstNoFast({ month: 12, day: 13 }) && T4.pstNoFast({ month: 12, day: 10 }) && !T4.pstNoFast({ month: 12, day: 9 }) && !T4.pstNoFast({ month: 6, day: 13 }));
+  const pJe = PM('jeunes');
+  check('affiche des jeûnes : lundis, jeudis et jours blancs sur 30 jours, avec Fajr et Maghrib', pJe.rows.length >= 8 && pJe.rows.every((r) => r.cells.length === 5 && r.cells[2].length > 0) && pJe.rows.some((r) => /Jour blanc · Lundi/.test(r.cells[2])) && pJe.rows.some((r) => r.cells[2] === 'Jeudi'));
+  const pFe = PM('fetes');
+  check('affiche des dates importantes : prochain événement = début du Ramadan 1448', pFe.rows.length > 0 && pFe.rows.length <= 6 && pFe.rows[0].cells[0] === 'Début du Ramadan' && /1448/.test(pFe.rows[0].cells[2]));
+  const pIm = PM('imsakiya');
+  check('affiche imsakiya : jours du Ramadan 1448 avec imsak, Fajr et iftar', !pIm.error && pIm.rows.length >= 29 && pIm.rows.length <= 30 && pIm.rows[0].cells[0] === '1' && /1448/.test(pIm.title));
+  check('affiche : type inconnu refusé proprement', !!PM('nimporte').error);
+  const pTxt = T4.posterText(pBl, { heading: 'Mosquée de Mbour', message: 'À partager' });
+  check('affiche en texte (WhatsApp) : en-tête, titre, lignes, message et signature', /^\*Mosquée de Mbour\*\n\*Jours blancs\*/.test(pTxt) && /13 Joumada ath-Thania/.test(pTxt) && /À partager/.test(pTxt) && /— Rakeb/.test(pTxt));
+  T4.openPoster('blancs'); await wait(250);
+  check('écran Affiches : ouvert depuis un raccourci, 8 types, type choisi actif', d4.getElementById('panel-affiches').classList.contains('active') && d4.querySelectorAll('#pst-types [data-pst-type]').length === 8 && d4.querySelector('#pst-types .chip.active').dataset.pstType === 'blancs');
+  check('écran Affiches : 3 formats, 3 couleurs, en-tête et message', d4.querySelectorAll('#pst-formats [data-pst-format]').length === 3 && d4.querySelectorAll('#pst-themes [data-pst-theme]').length === 3 && !!d4.getElementById('pst-heading') && !!d4.getElementById('pst-message'));
+  click(d4, '#pst-themes [data-pst-theme="clair"]'); click(d4, '#pst-formats [data-pst-format="story"]');
+  check('écran Affiches : format et couleurs mémorisés', /"theme":"clair"/.test(w4.localStorage.getItem('rakeb-poster')) && /"format":"story"/.test(w4.localStorage.getItem('rakeb-poster')));
+  click(d4, '#pst-types [data-pst-type="mois"]');
+  check('écran Affiches : navigation par mois pour l\'affiche du mois', d4.getElementById('pst-month-nav').style.display === '' && /Novembre 2026/.test(text(d4, '#pst-month-label')));
+  click(d4, '#pst-month-next');
+  check('écran Affiches : mois suivant', /Décembre 2026/.test(text(d4, '#pst-month-label')));
+  check('raccourcis vers les affiches (Horaires, Calendrier, Sunna, Ramadan, Menu)', !!d4.getElementById('btn-poster-times') && d4.querySelectorAll('[data-poster]').length >= 6 && !!d4.querySelector('#panel-menu [data-goto="affiches"]'));
+  const v130_code = main.slice(main.indexOf('AFFICHES À PARTAGER'), main.indexOf('window.RakebTest = Object.assign(window.RakebTest || {}, { posterModel'));
+  check('affiches : aucun appel réseau (dessin local)', v130_code.length > 1000 && !/fetch\(|netFetch|XMLHttpRequest|https?:\/\//.test(v130_code));
+  check('rappel des jours blancs : jamais le 13 Dhou al-Hijja (tachriq)', /hN\.day >= 13 && hN\.day <= 15 && !\(hN\.month === 12 && hN\.day === 13\)/.test(main));
+
   check('aucune erreur JavaScript (évolutions v1.3)', app4.errors.length === 0 && app5.errors.length === 0, app4.errors.concat(app5.errors).slice(0, 2).join(' | '));
 
   check('aucune erreur JavaScript pendant les tests', errors.length === 0, errors.slice(0, 2).join(' | '));
